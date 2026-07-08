@@ -1,0 +1,121 @@
+vin,category_id,registration_number,manufacturer,model,year_of_manufacture,current_odometer,current_depot_id,operational_status
+1FTWW3DY8AE582232,5,error: Access denied to method rand.,Volvo,FMX,2012,48967,4,Retired
+WDCGG5GB9BF878003,1,error: Access denied to method rand.,Mitsubishi Fuso,FMX,2014,153083,3,Under Maintenance
+19XFA1F3XBE886496,5,error: Access denied to method rand.,Isuzu,HiAce,2016,123038,4,Out of Service
+5NPDH4AE7BH880289,1,error: Access denied to method rand.,Mercedes-Benz,HiAce,2024,177306,4,Out of Service
+1G6KE57YX1U394476,1,error: Access denied to method rand.,Mitsubishi Fuso,HiAce,2018,313461,4,Under Maintenance
+1G6DU6EV6A0505350,2,error: Access denied to method rand.,Toyota,Daily,2021,166696,3,Active
+WAUXU64B03N770138,2,error: Access denied to method rand.,Hyundai,Ranger,2012,98011,2,Out of Service
+2GKALMEK7C6578853,1,error: Access denied to method rand.,Hyundai,FVR,2016,302537,4,Retired
+WDDGF4HB2DF758036,1,error: Access denied to method rand.,Hino,Daily,2023,216392,4,Available
+WBAYF8C5XFD834167,3,error: Access denied to method rand.,Mercedes-Benz,Daily,2023,339242,3,Out of Service
+1FMJK1G51BE845962,5,error: Access denied to method rand.,Mitsubishi Fuso,Ranger,2012,434798,2,Out of Service
+2B3CA5CT5AH016335,5,error: Access denied to method rand.,Hino,NQR,2020,300511,2,Out of Service
+1G6DJ577380893035,1,error: Access denied to method rand.,Toyota,FVR,2012,405922,4,Awaiting Inspection
+WAUJC58E15A728921,3,error: Access denied to method rand.,Mitsubishi Fuso,Transit,2019,1761,4,Awaiting Inspection
+KNAFT4A23D5722089,1,error: Access denied to method rand.,Mitsubishi Fuso,Transit,2013,280333,4,Retired
+WAUKFAFL8BA343132,1,error: Access denied to method rand.,Hino,Transit,2016,120898,1,Active
+3C6TD5CT9CG582160,4,error: Access denied to method rand.,Isuzu,Daily,2020,217844,3,Active
+WAUGL58E25A695115,4,error: Access denied to method rand.,Hino,FVR,2024,229862,1,Out of Service
+WAUJGBFC8DN711304,1,error: Access denied to method rand.,Isuzu,Transit,2015,221498,4,Available
+1D7RV1CP6BS573327,1,error: Access denied to method rand.,Toyota,NQR,2022,418577,3,Active
+2HNYD18411H135970,2,error: Access denied to method rand.,Isuzu,FMX,2021,339309,3,Under Maintenance
+1D4PT7GX1BW457453,3,error: Access denied to method rand.,Mitsubishi Fuso,Ranger,2023,334105,1,Awaiting Inspection
+JH4CL95858C155899,3,error: Access denied to method rand.,Isuzu,Ranger,2018,197080,2,Out of Service
+1GKUKFDJ3AR900703,2,error: Access denied to method rand.,Toyota,NQR,2025,63056,3,Out of Service
+JN1BJ0HR2FM885850,3,error: Access denied to method rand.,Mercedes-Benz,FMX,2014,430784,1,Under Maintenance
+2C3CCAHG6CH829137,2,error: Access denied to method rand.,Volvo,Daily,2020,2789,3,Awaiting Inspection
+WBAVC535X8A183606,3,error: Access denied to method rand.,Isuzu,FVR,2020,326353,3,Retired
+WAUFEAFM7BA663815,4,error: Access denied to method rand.,Hino,Daily,2013,50930,2,Under Maintenance
+1N4AL2AP9CC039844,4,error: Access denied to method rand.,Hyundai,HiAce,2023,212050,4,Under Maintenance
+JTDBT4K31B1198065,3,error: Access denied to method rand.,Hyundai,FVR,2022,10408,3,Retired
+5FRYD4H90GB804388,3,error: Access denied to method rand.,Mitsubishi Fuso,Ranger,2013,40014,1,Under Maintenance
+1FTMF1C87AK399029,2,error: Access denied to method rand.,Hyundai,Transit,2018,421616,2,Active
+JTDKDTB3XD1680656,1,error: Access denied to method rand.,Hino,Transit,2020,4817,2,Available
+1D7CW3BK6AS551475,3,error: Access denied to method rand.,Hyundai,FVR,2024,146730,4,Under Maintenance
+5UXWX9C57DL469610,2,error: Access denied to method rand.,Isuzu,FMX,2025,422361,1,Out of Service
+WAULFAFR5CA963110,3,error: Access denied to method rand.,Isuzu,FVR,2017,63342,4,Under Maintenance
+2FMGK5BC4CB002729,1,error: Access denied to method rand.,Toyota,FMX,2017,276819,2,Under Maintenance
+JA4AP3AU9BZ528311,4,error: Access denied to method rand.,Isuzu,HiAce,2020,83599,4,Out of Service
+1GYUKKEF2AR719083,5,error: Access denied to method rand.,Isuzu,FVR,2015,40443,2,Available
+19XFB4F22DE687676,3,error: Access denied to method rand.,Hyundai,HiAce,2025,250116,3,Under Maintenance
+1N6AD0CW4EN934677,1,error: Access denied to method rand.,Isuzu,FVR,2025,148202,4,Awaiting Inspection
+1FTEW1CF1FF036180,4,error: Access denied to method rand.,Hyundai,NQR,2021,112669,2,Under Maintenance
+WBAKG7C51BE598834,1,error: Access denied to method rand.,Hyundai,Transit,2024,329010,4,Active
+4JGDA0EB3FA908790,5,error: Access denied to method rand.,Mitsubishi Fuso,Ranger,2022,205092,2,Under Maintenance
+3D4PG9FG6BT795034,4,error: Access denied to method rand.,Mercedes-Benz,NQR,2024,329453,3,Retired
+1G4HR54K35U763725,1,error: Access denied to method rand.,Mitsubishi Fuso,Ranger,2024,58429,3,Out of Service
+5GAKVCKD2DJ818424,3,error: Access denied to method rand.,Hino,Daily,2014,161776,2,Available
+WBAKF5C56DE377725,4,error: Access denied to method rand.,Hino,NQR,2024,388386,1,Under Maintenance
+SAJWJ0FF9F8163177,2,error: Access denied to method rand.,Hino,FMX,2019,1839,2,Awaiting Inspection
+WAUEFAFL3BA716428,2,error: Access denied to method rand.,Isuzu,FMX,2018,299166,2,Awaiting Inspection
+1G4CU541514675480,4,error: Access denied to method rand.,Mercedes-Benz,Transit,2016,375519,2,Out of Service
+1C4AJWAG5FL475053,2,error: Access denied to method rand.,Isuzu,Ranger,2018,337549,2,Available
+KNDMG4C75C6789423,4,error: Access denied to method rand.,Mitsubishi Fuso,Transit,2013,362216,3,Active
+2C3CCAST7CH232729,5,error: Access denied to method rand.,Mercedes-Benz,HiAce,2020,374120,3,Available
+JN8AZ2KR8BT539263,2,error: Access denied to method rand.,Volvo,Transit,2024,97647,4,Out of Service
+SCFFDCBD3CG592295,2,error: Access denied to method rand.,Volvo,Daily,2016,137491,3,Awaiting Inspection
+5TDDK4CC5AS479877,4,error: Access denied to method rand.,Mercedes-Benz,Daily,2023,203965,4,Available
+WP0CA2A85AS038730,1,error: Access denied to method rand.,Mercedes-Benz,Daily,2021,112585,2,Under Maintenance
+WAUAC48H74K774377,2,error: Access denied to method rand.,Isuzu,Ranger,2021,399822,3,Out of Service
+JN1AZ4EH0CM906925,2,error: Access denied to method rand.,Hyundai,Daily,2019,250464,2,Retired
+3VWML7AJ5EM332154,4,error: Access denied to method rand.,Isuzu,HiAce,2019,39181,3,Out of Service
+2HNYD28527H951156,4,error: Access denied to method rand.,Hino,NQR,2021,177377,1,Retired
+JHMFA3F25BS785414,1,error: Access denied to method rand.,Volvo,FMX,2018,150815,1,Available
+1G6DF5E59D0691040,4,error: Access denied to method rand.,Hyundai,Ranger,2021,28086,1,Active
+WVWGU7AN2CE666385,3,error: Access denied to method rand.,Isuzu,Transit,2020,139382,2,Out of Service
+WDDGF4HB5DF770214,2,error: Access denied to method rand.,Volvo,NQR,2017,370409,2,Available
+KMHHT6KD2AU454057,1,error: Access denied to method rand.,Mitsubishi Fuso,Ranger,2025,373226,3,Awaiting Inspection
+2HNYD18652H658685,1,error: Access denied to method rand.,Mercedes-Benz,NQR,2012,249662,1,Out of Service
+WBAKB4C57CC725810,1,error: Access denied to method rand.,Hyundai,Ranger,2016,68663,1,Retired
+WAU2GAFCXFN478947,1,error: Access denied to method rand.,Isuzu,Ranger,2023,52957,2,Available
+5FRYD3H47EB081134,2,error: Access denied to method rand.,Mitsubishi Fuso,FMX,2014,258649,1,Out of Service
+JN1CV6EK6FM130820,2,error: Access denied to method rand.,Toyota,NQR,2014,173853,4,Available
+WBAXA5C55ED648785,2,error: Access denied to method rand.,Hyundai,HiAce,2017,21502,2,Out of Service
+JA4AS2AW7AZ149137,1,error: Access denied to method rand.,Volvo,FMX,2018,337869,3,Under Maintenance
+SAJWA4FB4EL907445,4,error: Access denied to method rand.,Hyundai,Transit,2022,253576,3,Active
+WP0AA2A84BU117853,2,error: Access denied to method rand.,Volvo,FMX,2025,216166,1,Out of Service
+1G6YV36AX85754319,4,error: Access denied to method rand.,Mitsubishi Fuso,Transit,2022,138835,4,Awaiting Inspection
+WAUMFAFL5DN486561,4,error: Access denied to method rand.,Mercedes-Benz,Ranger,2024,267415,1,Out of Service
+WBXPC93437W650279,2,error: Access denied to method rand.,Hino,FMX,2015,354729,2,Available
+WBAPN73599A344396,1,error: Access denied to method rand.,Volvo,FMX,2021,393749,2,Available
+WUATNAFG5CN926333,3,error: Access denied to method rand.,Mitsubishi Fuso,Daily,2018,403416,3,Under Maintenance
+WAUJC58E05A104334,4,error: Access denied to method rand.,Mitsubishi Fuso,FMX,2024,424888,3,Awaiting Inspection
+JM3KE2BE0F0137468,2,error: Access denied to method rand.,Hino,Ranger,2023,18098,4,Under Maintenance
+WP0AA2A96CS166025,3,error: Access denied to method rand.,Hyundai,NQR,2012,268631,3,Available
+WBAYA6C54ED204713,4,error: Access denied to method rand.,Mercedes-Benz,FMX,2020,154601,3,Retired
+1FTDS3EL7AD762331,1,error: Access denied to method rand.,Hyundai,Transit,2024,302367,1,Under Maintenance
+JTHFE2C20A2962713,3,error: Access denied to method rand.,Mercedes-Benz,FVR,2017,365398,4,Awaiting Inspection
+WBA5A5C52ED620885,5,error: Access denied to method rand.,Hyundai,HiAce,2015,298771,2,Available
+NM0GE9F73F1990599,1,error: Access denied to method rand.,Volvo,Transit,2017,135325,2,Available
+WP1AE2A2XEL101209,4,error: Access denied to method rand.,Hino,FVR,2024,428504,2,Available
+SCBZK25E41C720342,1,error: Access denied to method rand.,Isuzu,FMX,2012,296545,1,Retired
+2B3CK9CV0AH667345,1,error: Access denied to method rand.,Volvo,NQR,2021,180985,2,Out of Service
+WAUEF98E68A774491,2,error: Access denied to method rand.,Hino,Transit,2017,119009,1,Out of Service
+1GD311CGXFZ408305,3,error: Access denied to method rand.,Hino,FVR,2012,139324,3,Active
+5GAKRCED7CJ475771,3,error: Access denied to method rand.,Toyota,Transit,2020,136229,4,Retired
+1FTSX2A56AE333959,4,error: Access denied to method rand.,Volvo,FMX,2014,271641,3,Out of Service
+1D4PU2GK1AW883209,2,error: Access denied to method rand.,Toyota,Daily,2025,136224,4,Under Maintenance
+JN8AZ2KR3AT283029,3,error: Access denied to method rand.,Hino,FMX,2019,80556,3,Under Maintenance
+KNAGG4A83A5766912,2,error: Access denied to method rand.,Mercedes-Benz,Ranger,2020,229067,1,Available
+2G61W5S80F9106355,1,error: Access denied to method rand.,Hyundai,HiAce,2018,192949,1,Retired
+1FTEW1CM7BK633611,3,error: Access denied to method rand.,Mitsubishi Fuso,FMX,2015,199489,2,Out of Service
+JN1CV6FE5FM659989,2,error: Access denied to method rand.,Isuzu,FMX,2013,173259,2,Retired
+1G6KD57YX9U271274,5,error: Access denied to method rand.,Volvo,NQR,2016,261444,1,Under Maintenance
+1G6DC1ED3B0742599,4,error: Access denied to method rand.,Mercedes-Benz,HiAce,2024,177650,1,Retired
+5UXZV8C59CL983406,1,error: Access denied to method rand.,Volvo,Daily,2012,129065,4,Available
+WVWBB7AJ5DW991637,4,error: Access denied to method rand.,Hyundai,FVR,2019,130288,1,Out of Service
+SCFBF04BX7G678356,4,error: Access denied to method rand.,Mitsubishi Fuso,FVR,2022,409292,3,Out of Service
+WP1AE2A23FL596645,4,error: Access denied to method rand.,Toyota,HiAce,2016,239056,2,Awaiting Inspection
+WBAYP9C59ED909880,4,error: Access denied to method rand.,Volvo,FMX,2021,21007,2,Out of Service
+5LMCJ1A98FU358020,5,error: Access denied to method rand.,Mitsubishi Fuso,Ranger,2021,118978,3,Under Maintenance
+2HNYD18834H078288,4,error: Access denied to method rand.,Mercedes-Benz,Daily,2020,9413,3,Active
+WBAKN9C50ED426144,2,error: Access denied to method rand.,Volvo,Ranger,2013,73039,3,Awaiting Inspection
+KNAFX6A81F5248327,2,error: Access denied to method rand.,Volvo,Daily,2018,340042,2,Awaiting Inspection
+1D7RV1CP2BS612365,3,error: Access denied to method rand.,Toyota,FMX,2015,291143,3,Out of Service
+WAUWGAFC2DN312162,3,error: Access denied to method rand.,Volvo,Daily,2015,31535,2,Active
+1D4PU5GKXBW150126,2,error: Access denied to method rand.,Volvo,HiAce,2023,148770,1,Available
+KMHFG4JG0DA540341,2,error: Access denied to method rand.,Mercedes-Benz,FVR,2021,287863,1,Under Maintenance
+2C3CCARGXFH248100,3,error: Access denied to method rand.,Volvo,Ranger,2018,161771,3,Active
+5TDBCRFHXFS845638,2,error: Access denied to method rand.,Mercedes-Benz,Daily,2018,111190,2,Retired
+2C3CCAJT3CH707455,1,error: Access denied to method rand.,Mitsubishi Fuso,Daily,2014,17278,4,Awaiting Inspection
