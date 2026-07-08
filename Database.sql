@@ -149,7 +149,8 @@ CREATE TABLE Job_Activities (
 
 CREATE TABLE Mechanics (
     mechanic_id INT AUTO_INCREMENT NOT NULL,
-    full_name VARCHAR(100) NOT NULL,
+    first_name    VARCHAR(100) NOT NULL,
+    last_name     VARCHAR(100) NOT NULL,
     contact_information VARCHAR(255),
     depot_id INT NOT NULL,
     specialization VARCHAR(100),
