@@ -16,4 +16,4 @@ Duy Anh :  Database Manager
 <img width="2048" height="1210" alt="SQL TABLE" src="https://github.com/user-attachments/assets/da066191-9959-46bd-85b7-acc1669e35a4" />
 
 
-SQL file doc: https://docs.google.com/document/d/1lVjvuG6nRSFIr7-UOKOQqij0vpMOVkVwChylIyvNves/edit?usp=sharing
+[DATABASE_SQL file HERE](Database.sql)
