@@ -186,4 +186,11 @@ CREATE INDEX idx_vehicle_category ON Vehicles(category_id);
 CREATE INDEX idx_driver_depot ON Drivers(current_depot_id);
 CREATE INDEX idx_event_time ON Telematics_Events(event_timestamp);
 
+SELECT * FROM certifications;
+SELECT * FROM Depots;
+SELECT * FROM Drivers;
+SELECT * FROM Mechanics;
+SELECT * FROM Vehicle_categories;
+SELECT * FROM Vehicles;
+
 SHOW TABLES;
