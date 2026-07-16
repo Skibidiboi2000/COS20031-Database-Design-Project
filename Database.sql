@@ -208,5 +208,11 @@ CREATE TABLE Safety_Reviews (
     PRIMARY KEY (review_id),
     FOREIGN KEY (event_id) REFERENCES Telematics_Events(event_id)
 );
+SELECT * FROM certifications;
+SELECT * FROM Depots;
+SELECT * FROM Drivers;
+SELECT * FROM Mechanics;
+SELECT * FROM Vehicle_categories;
+SELECT * FROM Vehicles;
 
 SHOW TABLES;
