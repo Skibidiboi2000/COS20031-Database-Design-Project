@@ -1,12 +1,11 @@
-
-DROP DATABASE IF EXISTS sample;
-CREATE DATABASE sample;
-USE sample;
+DROP DATABASE IF EXISTS smart_fleet;
+CREATE DATABASE smart_fleet;
+USE smart_fleet;
 
 CREATE TABLE Depots (
-    depot_id INT AUTO_INCREMENT PRIMARY KEY,
+	depot_id INT AUTO_INCREMENT PRIMARY KEY,
     depot_name VARCHAR(100) NOT NULL UNIQUE,
-    location VARCHAR(255) NOT NULL
+    location_details VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE Vehicle_Categories (
@@ -23,12 +22,12 @@ CREATE TABLE Drivers (
     driver_id INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
-    contact_information VARCHAR(255),
+    contact_information VARCHAR(255) UNIQUE,
     emergency_contact VARCHAR(255),
     licence_type VARCHAR(50),
     licence_expiry_date DATE,
     employment_status ENUM('Active','On Leave','Suspended','Inactive') DEFAULT 'Active',
-    current_depot_id INT,
+    current_depot_id INT NOT NULL,
     CONSTRAINT fk_driver_depot FOREIGN KEY(current_depot_id)
       REFERENCES Depots(depot_id)
 );
@@ -71,14 +70,19 @@ CREATE TABLE Vehicles (
     FOREIGN KEY(current_depot_id) REFERENCES Depots(depot_id)
 );
 
-CREATE TABLE Predictive_Alerts (
-    alert_id INT AUTO_INCREMENT PRIMARY KEY,
-    vin CHAR(17) NOT NULL,
-    alert_type VARCHAR(100),
-    generated_at DATETIME NOT NULL,
-    status ENUM('Open','Monitoring','Resolved','Escalated') DEFAULT 'Open',
-    alert_threshold_snapshot INT,
-    FOREIGN KEY(vin) REFERENCES Vehicles(vin)
+CREATE TABLE Predictive_Alerts(
+
+alert_id INT AUTO_INCREMENT PRIMARY KEY,
+vin CHAR(17) NOT NULL,
+alert_type VARCHAR(100),
+severity_level ENUM
+('Low','Medium','High','Critical'),
+generated_at DATETIME,
+status ENUM
+('Open','Monitoring','Resolved','Escalated'),
+alert_threshold_snapshot INT,
+FOREIGN KEY(vin)
+REFERENCES Vehicles(vin)
 );
 
 CREATE TABLE Vehicle_Assignments (
@@ -95,13 +99,17 @@ CREATE TABLE Vehicle_Assignments (
 
 CREATE TABLE Monthly_Safety_Scores (
     score_id INT AUTO_INCREMENT PRIMARY KEY,
-    driver_id INT NOT NULL,
-    score_month DATE NOT NULL,
-    total_penalty DOUBLE DEFAULT 0,
-    final_score DOUBLE DEFAULT 100,
-    coaching_required BOOLEAN DEFAULT FALSE,
-    grounded BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY(driver_id) REFERENCES Drivers(driver_id)
+	driver_id INT NOT NULL,
+	score_month DATE NOT NULL,
+    base_score DECIMAL(5,2) NOT NULL DEFAULT 100.00,
+    event_penalty DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+    repeat_penalty DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+    total_penalty DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+    final_score DECIMAL(5,2) NOT NULL DEFAULT 100.00,
+    coaching_required BOOLEAN NOT NULL DEFAULT FALSE,
+    grounded BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY(driver_id) REFERENCES Drivers(driver_id),
+    UNIQUE KEY uq_driver_month (driver_id, score_month)
 );
 
 CREATE TABLE Maintenance_Jobs (
@@ -132,7 +140,7 @@ CREATE TABLE Mechanics (
     mechanic_id INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(100),
     last_name VARCHAR(100),
-    contact_information VARCHAR(255),
+    contact_information VARCHAR(255) UNIQUE,
     depot_id INT NOT NULL,
     hire_date DATE,
     FOREIGN KEY(depot_id) REFERENCES Depots(depot_id)
