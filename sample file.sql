@@ -192,7 +192,6 @@ CREATE TABLE Safety_Reviews (
 CREATE INDEX idx_vehicle_depot ON Vehicles(current_depot_id);
 CREATE INDEX idx_vehicle_category ON Vehicles(category_id);
 CREATE INDEX idx_driver_depot ON Drivers(current_depot_id);
-CREATE INDEX idx_event_time ON Telematics_Events(event_timestamp);
 
 SELECT * FROM certifications;
 SELECT * FROM Depots;
