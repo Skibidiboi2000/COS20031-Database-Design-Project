@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRUD — Fleet Management</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;font-size:13px;background:#f0f0f0;color:#333}
+
+/* Header */
+.header{background:#444;color:#fff;padding:16px 24px}
+.header h1{font-size:22px;font-weight:bold}
+.msg{background:#e8e8b0;border-bottom:1px solid #ccc;padding:8px 24px;font-size:13px;color:#555}
+
+/* Layout */
+.wrap{max-width:960px;margin:0 auto;padding:20px 24px}
+
+/* Form */
+.form-section{background:#f5f5f5;border:1px solid #ddd;padding:16px 20px;margin-bottom:24px}
+.form-section h2{font-size:16px;margin-bottom:10px;color:#333}
+.form-row{display:flex;flex-wrap:wrap;gap:8px 16px;margin-bottom:10px}
+.form-group{display:flex;align-items:center;gap:6px}
+.form-group label{font-weight:bold;font-size:13px;min-width:50px}
+.form-group input,.form-group select{
+  padding:4px 6px;border:1px solid #999;font-size:13px;font-family:Arial,sans-serif;
+  background:#fff;
+}
+.form-group input:focus,.form-group select:focus{outline:1px solid #4477aa}
+.form-btn{
+  background:#ddd;border:1px solid #999;padding:5px 16px;font-size:13px;cursor:pointer;
+  font-family:Arial,sans-serif;margin-top:4px;
+}
+.form-btn:hover{background:#ccc}
+.form-btn.primary{background:#4477aa;color:#fff;border-color:#336699}
+.form-btn.primary:hover{background:#336699}
+
+/* Table */
+.table-section h2{font-size:16px;margin-bottom:8px;color:#333}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #ccc;margin-bottom:20px}
+th{background:#e8e8e8;text-align:left;padding:6px 10px;border:1px solid #ccc;font-size:12px;font-weight:bold}
+td{padding:5px 10px;border:1px solid #ddd;font-size:12px}
+tbody tr:nth-child(even){background:#f7f7f7}
+tbody tr:hover{background:#ffffcc}
+.action-btn{
+  padding:2px 8px;border:1px solid #999;background:#eee;font-size:11px;cursor:pointer;
+  font-family:Arial,sans-serif;margin-right:2px;
+}
+.action-btn:hover{background:#ddd}
+.action-btn.del{color:#c33}
+.action-btn.del:hover{background:#fdd}
+
+/* Tabs */
+.tabs{display:flex;gap:0;margin-bottom:0;border-bottom:2px solid #444}
+.tab-btn{
+  padding:7px 16px;border:1px solid #999;border-bottom:none;background:#ddd;
+  font-size:12px;font-weight:bold;cursor:pointer;font-family:Arial,sans-serif;
+  margin-bottom:-2px;
+}
+.tab-btn.active{background:#f5f5f5;border-bottom:2px solid #f5f5f5}
+.tab-btn:hover{background:#eee}
+
+.entity-tab{display:none}
+.entity-tab.active{display:block}
+
+/* Inline edit */
+.inline-edit{background:#ffe;border:1px solid #cc0;padding:10px 16px;margin-bottom:16px;display:none}
+.inline-edit h3{font-size:14px;margin-bottom:8px}
+.inline-edit .form-row{margin-bottom:8px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>CRUD</h1>
+</div>
+<div class="msg" id="msg-bar"></div>
+
+<div class="wrap">
+  <div class="tabs" id="tabs">
+    <button class="tab-btn active" data-tab="vehicles">Vehicles</button>
+    <button class="tab-btn" data-tab="drivers">Drivers</button>
+    <button class="tab-btn" data-tab="depots">Depots</button>
+    <button class="tab-btn" data-tab="mechanics">Mechanics</button>
+  </div>
+
+  <!-- =================== VEHICLES =================== -->
+  <div class="entity-tab active" id="tab-vehicles">
+    <div class="form-section">
+      <h2>Add Vehicle</h2>
+      <div class="form-row">
+        <div class="form-group"><label>VIN:</label><input type="text" id="v-vin" maxlength="17" style="width:160px"></div>
+        <div class="form-group"><label>Reg:</label><input type="text" id="v-reg" style="width:90px"></div>
+        <div class="form-group"><label>Model:</label><input type="text" id="v-model" style="width:140px"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Category:</label>
+          <select id="v-cat"><option>Heavy Truck</option><option>Medium Truck</option><option>Light Truck</option></select>
+        </div>
+        <div class="form-group"><label>Year:</label><input type="number" id="v-year" value="2024" style="width:70px"></div>
+        <div class="form-group">
+          <label>Depot:</label>
+          <select id="v-depot"><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select>
+        </div>
+        <div class="form-group">
+          <label>Status:</label>
+          <select id="v-status"><option>Available</option><option>On Road</option><option>In Shop</option><option>Out of Service</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <button class="form-btn primary" onclick="addVehicle()">Add Vehicle</button>
+      </div>
+    </div>
+
+    <div class="inline-edit" id="v-edit">
+      <h3>Edit Vehicle</h3>
+      <div class="form-row">
+        <div class="form-group"><label>VIN:</label><input type="text" id="ve-vin" readonly style="width:160px;background:#eee"></div>
+        <div class="form-group"><label>Reg:</label><input type="text" id="ve-reg" style="width:90px"></div>
+        <div class="form-group"><label>Model:</label><input type="text" id="ve-model" style="width:140px"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Category:</label><select id="ve-cat"><option>Heavy Truck</option><option>Medium Truck</option><option>Light Truck</option></select></div>
+        <div class="form-group"><label>Year:</label><input type="number" id="ve-year" style="width:70px"></div>
+        <div class="form-group"><label>Depot:</label><select id="ve-depot"><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select></div>
+        <div class="form-group"><label>Status:</label><select id="ve-status"><option>Available</option><option>On Road</option><option>In Shop</option><option>Out of Service</option></select></div>
+      </div>
+      <div class="form-row">
+        <button class="form-btn primary" onclick="saveVehicleEdit()">Save</button>
+        <button class="form-btn" onclick="cancelEdit('v-edit')">Cancel</button>
+      </div>
+    </div>
+
+    <div class="table-section">
+      <h2>Vehicles <span id="v-count" style="font-weight:normal;font-size:12px;color:#888"></span></h2>
+      <table><thead><tr><th>VIN</th><th>Reg</th><th>Model</th><th>Category</th><th>Year</th><th>Status</th><th>Depot</th><th>Action</th></tr></thead>
+      <tbody id="v-body"></tbody></table>
+    </div>
+  </div>
+
+  <!-- =================== DRIVERS =================== -->
+  <div class="entity-tab" id="tab-drivers">
+    <div class="form-section">
+      <h2>Add Driver</h2>
+      <div class="form-row">
+        <div class="form-group"><label>Name:</label><input type="text" id="d-name" style="width:160px"></div>
+        <div class="form-group"><label>Licence:</label><select id="d-lic"><option>Class C</option><option>Class D</option><option>Class E</option></select></div>
+        <div class="form-group"><label>Contact:</label><input type="text" id="d-contact" style="width:130px"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Depot:</label><select id="d-depot"><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select></div>
+        <div class="form-group"><label>Status:</label><select id="d-status"><option>Active</option><option>Suspended</option><option>On Leave</option></select></div>
+        <div class="form-group"><label>Score:</label><input type="number" id="d-score" value="100" min="0" max="100" style="width:60px"></div>
+      </div>
+      <div class="form-row">
+        <button class="form-btn primary" onclick="addDriver()">Add Driver</button>
+      </div>
+    </div>
+
+    <div class="inline-edit" id="d-edit">
+      <h3>Edit Driver</h3>
+      <div class="form-row">
+        <div class="form-group"><label>ID:</label><input type="text" id="de-id" readonly style="width:70px;background:#eee"></div>
+        <div class="form-group"><label>Name:</label><input type="text" id="de-name" style="width:160px"></div>
+        <div class="form-group"><label>Licence:</label><select id="de-lic"><option>Class C</option><option>Class D</option><option>Class E</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Contact:</label><input type="text" id="de-contact" style="width:130px"></div>
+        <div class="form-group"><label>Depot:</label><select id="de-depot"><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select></div>
+        <div class="form-group"><label>Status:</label><select id="de-status"><option>Active</option><option>Suspended</option><option>On Leave</option></select></div>
+        <div class="form-group"><label>Score:</label><input type="number" id="de-score" min="0" max="100" style="width:60px"></div>
+      </div>
+      <div class="form-row">
+        <button class="form-btn primary" onclick="saveDriverEdit()">Save</button>
+        <button class="form-btn" onclick="cancelEdit('d-edit')">Cancel</button>
+      </div>
+    </div>
+
+    <div class="table-section">
+      <h2>Drivers <span id="d-count" style="font-weight:normal;font-size:12px;color:#888"></span></h2>
+      <table><thead><tr><th>ID</th><th>Name</th><th>Licence</th><th>Contact</th><th>Depot</th><th>Status</th><th>Score</th><th>Action</th></tr></thead>
+      <tbody id="d-body"></tbody></table>
+    </div>
+  </div>
+
+  <!-- =================== DEPOTS =================== -->
+  <div class="entity-tab" id="tab-depots">
+    <div class="form-section">
+      <h2>Add Depot</h2>
+      <div class="form-row">
+        <div class="form-group"><label>Name:</label><input type="text" id="dp-name" style="width:160px"></div>
+        <div class="form-group"><label>Location:</label><input type="text" id="dp-loc" style="width:200px"></div>
+      </div>
+      <div class="form-row">
+        <button class="form-btn primary" onclick="addDepot()">Add Depot</button>
+      </div>
+    </div>
+
+    <div class="inline-edit" id="dp-edit">
+      <h3>Edit Depot</h3>
+      <div class="form-row">
+        <div class="form-group"><label>ID:</label><input type="text" id="dpe-id" readonly style="width:50px;background:#eee"></div>
+        <div class="form-group"><label>Name:</label><input type="text" id="dpe-name" style="width:160px"></div>
+        <div class="form-group"><label>Location:</label><input type="text" id="dpe-loc" style="width:200px"></div>
+      </div>
+      <div class="form-row">
+        <button class="form-btn primary" onclick="saveDepotEdit()">Save</button>
+        <button class="form-btn" onclick="cancelEdit('dp-edit')">Cancel</button>
+      </div>
+    </div>
+
+    <div class="table-section">
+      <h2>Depots <span id="dp-count" style="font-weight:normal;font-size:12px;color:#888"></span></h2>
+      <table><thead><tr><th>ID</th><th>Name</th><th>Location</th><th>Vehicles</th><th>Drivers</th><th>Mechanics</th><th>Action</th></tr></thead>
+      <tbody id="dp-body"></tbody></table>
+    </div>
+  </div>
+
+  <!-- =================== MECHANICS =================== -->
+  <div class="entity-tab" id="tab-mechanics">
+    <div class="form-section">
+      <h2>Add Mechanic</h2>
+      <div class="form-row">
+        <div class="form-group"><label>Name:</label><input type="text" id="m-name" style="width:160px"></div>
+        <div class="form-group"><label>Contact:</label><input type="text" id="m-contact" style="width:130px"></div>
+        <div class="form-group"><label>Depot:</label><select id="m-depot"><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Specialization:</label><input type="text" id="m-spec" style="width:140px" placeholder="e.g. Engine, Transmission"></div>
+        <div class="form-group"><label>Hire Date:</label><input type="date" id="m-date"></div>
+      </div>
+      <div class="form-row">
+        <button class="form-btn primary" onclick="addMechanic()">Add Mechanic</button>
+      </div>
+    </div>
+
+    <div class="inline-edit" id="m-edit">
+      <h3>Edit Mechanic</h3>
+      <div class="form-row">
+        <div class="form-group"><label>ID:</label><input type="text" id="me-id" readonly style="width:50px;background:#eee"></div>
+        <div class="form-group"><label>Name:</label><input type="text" id="me-name" style="width:160px"></div>
+        <div class="form-group"><label>Contact:</label><input type="text" id="me-contact" style="width:130px"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Depot:</label><select id="me-depot"><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select></div>
+        <div class="form-group"><label>Specialization:</label><input type="text" id="me-spec" style="width:140px"></div>
+        <div class="form-group"><label>Hire Date:</label><input type="date" id="me-date"></div>
+      </div>
+      <div class="form-row">
+        <button class="form-btn primary" onclick="saveMechEdit()">Save</button>
+        <button class="form-btn" onclick="cancelEdit('m-edit')">Cancel</button>
+      </div>
+    </div>
+
+    <div class="table-section">
+      <h2>Mechanics <span id="m-count" style="font-weight:normal;font-size:12px;color:#888"></span></h2>
+      <table><thead><tr><th>ID</th><th>Name</th><th>Contact</th><th>Depot</th><th>Specialization</th><th>Hire Date</th><th>Action</th></tr></thead>
+      <tbody id="m-body"></tbody></table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   DATA — seed from CSV files
+   ============================================================ */
+let vehicles = [
+  {vin:"1HGBH41JXMN109186",reg:"71C-12345",model:"Kenworth T680",cat:"Heavy Truck",year:2021,status:"Available",depot:"Hanoi Main"},
+  {vin:"2FZHAZCVX5AB12345",reg:"51F-67890",model:"Volvo FH16",cat:"Heavy Truck",year:2022,status:"On Road",depot:"Hanoi Main"},
+  {vin:"3AKJGBDC5SCLA1234",reg:"30A-11111",model:"Scania R500",cat:"Heavy Truck",year:2020,status:"On Road",depot:"Da Nang"},
+  {vin:"4V4NC9EJXNN345678",reg:"29B-22222",model:"Freightliner Cascadia",cat:"Heavy Truck",year:2019,status:"In Shop",depot:"HCMC"},
+  {vin:"5J6YH1F37NL012345",reg:"72C-33333",model:"Isuzu FVR",cat:"Medium Truck",year:2022,status:"Available",depot:"Hai Phong"},
+  {vin:"6F1FA6E86NG456789",reg:"52F-44444",model:"Hino 700",cat:"Heavy Truck",year:2021,status:"On Road",depot:"Da Nang"},
+  {vin:"7MTAZ33C0NT012345",reg:"30B-55555",model:"Mercedes Actros",cat:"Heavy Truck",year:2023,status:"Available",depot:"Hanoi Main"},
+  {vin:"8BCDE123456789012",reg:"71D-66666",model:"Hyundai Xcient",cat:"Heavy Truck",year:2022,status:"On Road",depot:"HCMC"},
+  {vin:"9XYZ9876543210ABC",reg:"29A-77777",model:"Dongfeng KL",cat:"Light Truck",year:2020,status:"Out of Service",depot:"Hai Phong"},
+  {vin:"ABC123DEF45678901",reg:"51A-88888",model:"Kenworth C500",cat:"Heavy Truck",year:2023,status:"Available",depot:"Da Nang"},
+  {vin:"BCD234EFG56789012",reg:"72D-99999",model:"Volvo FMX",cat:"Heavy Truck",year:2021,status:"On Road",depot:"HCMC"},
+  {vin:"CDE345FGH67890123",reg:"30C-10101",model:"Scania G460",cat:"Heavy Truck",year:2022,status:"In Shop",depot:"Hanoi Main"},
+  {vin:"DEF456GHI78901234",reg:"52A-20202",model:"Isuzu Giga",cat:"Medium Truck",year:2020,status:"Available",depot:"Hai Phong"},
+  {vin:"EFG567HIJ89012345",reg:"71B-30303",model:"Hino Profia",cat:"Heavy Truck",year:2023,status:"On Road",depot:"Da Nang"},
+  {vin:"FGH678IJK90123456",reg:"29C-40404",model:"Mitsubishi Fuso",cat:"Medium Truck",year:2021,status:"Available",depot:"HCMC"},
+  {vin:"GHI789JKL01234567",reg:"51B-50505",model:"Mercedes Arocs",cat:"Heavy Truck",year:2022,status:"On Road",depot:"Hanoi Main"},
+];
+let drivers = [
+  {id:1,name:"Nguyen Van An",lic:"Class E",contact:"+84 912 345 678",depot:"Hanoi Main",status:"Active",score:94},
+  {id:2,name:"Tran Thi Binh",lic:"Class E",contact:"+84 913 456 789",depot:"HCMC",status:"Active",score:88},
+  {id:3,name:"Le Van Cuong",lic:"Class D",contact:"+84 914 567 890",depot:"Da Nang",status:"Active",score:76},
+  {id:4,name:"Pham Van Dung",lic:"Class E",contact:"+84 915 678 901",depot:"Hai Phong",status:"Suspended",score:45},
+  {id:5,name:"Hoang Thi Em",lic:"Class C",contact:"+84 916 789 012",depot:"Hanoi Main",status:"Active",score:97},
+  {id:6,name:"Vu Van Phong",lic:"Class E",contact:"+84 917 890 123",depot:"HCMC",status:"Active",score:82},
+  {id:7,name:"Dang Thi Gam",lic:"Class D",contact:"+84 918 901 234",depot:"Da Nang",status:"On Leave",score:70},
+  {id:8,name:"Bui Van Huy",lic:"Class E",contact:"+84 919 012 345",depot:"Hanoi Main",status:"Active",score:91},
+  {id:9,name:"Nguyen Thi Hien",lic:"Class C",contact:"+84 920 123 456",depot:"Hai Phong",status:"Active",score:85},
+  {id:10,name:"Tran Van Khoa",lic:"Class E",contact:"+84 921 234 567",depot:"HCMC",status:"Active",score:79},
+];
+let depots = [
+  {id:1,name:"Hanoi Main",loc:"Long Bien, Hanoi",vehicles:42,drivers:28,mechanics:8},
+  {id:2,name:"HCMC",loc:"Binh Tan, Ho Chi Minh City",vehicles:36,drivers:24,mechanics:6},
+  {id:3,name:"Da Nang",loc:"Lien Chieu, Da Nang",vehicles:24,drivers:16,mechanics:5},
+  {id:4,name:"Hai Phong",loc:"Ngo Quyen, Hai Phong",vehicles:18,drivers:12,mechanics:6},
+];
+let mechanics = [
+  {id:1,name:"Tran Minh Tu",contact:"+84 931 000 111",depot:"Hanoi Main",spec:"Engine",hire:"2020-03-15"},
+  {id:2,name:"Nguyen Duc Thang",contact:"+84 932 000 222",depot:"Hanoi Main",spec:"Transmission",hire:"2019-06-20"},
+  {id:3,name:"Pham Hong Son",contact:"+84 933 000 333",depot:"HCMC",spec:"Electrical",hire:"2021-01-10"},
+  {id:4,name:"Vo Thanh Nam",contact:"+84 934 000 444",depot:"HCMC",spec:"Brake System",hire:"2020-08-05"},
+  {id:5,name:"Hoang Duc Long",contact:"+84 935 000 555",depot:"Da Nang",spec:"Engine",hire:"2022-02-14"},
+  {id:6,name:"Le Quoc Bao",contact:"+84 936 000 666",depot:"Hai Phong",spec:"Hydraulics",hire:"2021-05-22"},
+];
+
+let driverNextId = 11;
+let mechanicNextId = 7;
+let depotNextId = 5;
+
+/* ============================================================
+   MESSAGE BAR
+   ============================================================ */
+function showMsg(text) {
+  const bar = document.getElementById('msg-bar');
+  bar.textContent = text;
+  bar.style.display = 'block';
+  setTimeout(() => { bar.style.display = 'none'; }, 3000);
+}
+
+/* ============================================================
+   TABS
+   ============================================================ */
+document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', function() {
+  document.querySelectorAll('.tab-btn,.entity-tab').forEach(e => e.classList.remove('active'));
+  this.classList.add('active');
+  document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+}));
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function val(id) { return document.getElementById(id).value.trim(); }
+function setVal(id, v) { document.getElementById(id).value = v; }
+function cancelEdit(id) { document.getElementById(id).style.display = 'none'; }
+function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+/* ============================================================
+   VEHICLES CRUD
+   ============================================================ */
+function renderVehicles() {
+  const tbody = document.getElementById('v-body');
+  tbody.innerHTML = vehicles.map((v, i) =>
+    `<tr>
+      <td><code>${escapeHtml(v.vin)}</code></td>
+      <td>${escapeHtml(v.reg)}</td>
+      <td>${escapeHtml(v.model)}</td>
+      <td>${escapeHtml(v.cat)}</td>
+      <td>${v.year}</td>
+      <td>${escapeHtml(v.status)}</td>
+      <td>${escapeHtml(v.depot)}</td>
+      <td>
+        <button class="action-btn" onclick="editVehicle(${i})">Edit</button>
+        <button class="action-btn del" onclick="deleteVehicle(${i})">Delete</button>
+      </td>
+    </tr>`
+  ).join('');
+  document.getElementById('v-count').textContent = `(${vehicles.length} records)`;
+}
+function addVehicle() {
+  const vin = val('v-vin'), reg = val('v-reg'), model = val('v-model');
+  if (!vin || !reg || !model) { showMsg('Error: VIN, Registration, and Model are required.'); return; }
+  if (vehicles.find(v => v.vin === vin)) { showMsg('Error: VIN already exists.'); return; }
+  vehicles.push({ vin, reg, model, cat: val('v-cat'), year: parseInt(val('v-year')) || 2024, status: val('v-status'), depot: val('v-depot') });
+  ['v-vin','v-reg','v-model'].forEach(id => setVal(id, ''));
+  showMsg(`Vehicle ${vin} added successfully.`);
+  renderVehicles();
+}
+function editVehicle(i) {
+  const v = vehicles[i];
+  setVal('ve-vin', v.vin); setVal('ve-reg', v.reg); setVal('ve-model', v.model);
+  setVal('ve-cat', v.cat); setVal('ve-year', v.year); setVal('ve-depot', v.depot); setVal('ve-status', v.status);
+  document.getElementById('v-edit').style.display = 'block';
+  document.getElementById('v-edit').dataset.idx = i;
+}
+function saveVehicleEdit() {
+  const i = parseInt(document.getElementById('v-edit').dataset.idx);
+  vehicles[i] = { vin: val('ve-vin'), reg: val('ve-reg'), model: val('ve-model'), cat: val('ve-cat'), year: parseInt(val('ve-year')), depot: val('ve-depot'), status: val('ve-status') };
+  cancelEdit('v-edit');
+  showMsg(`Vehicle ${vehicles[i].vin} updated.`);
+  renderVehicles();
+}
+function deleteVehicle(i) {
+  if (!confirm('Delete vehicle ' + vehicles[i].vin + '?')) return;
+  const vin = vehicles[i].vin;
+  vehicles.splice(i, 1);
+  showMsg(`Vehicle ${vin} deleted.`);
+  renderVehicles();
+}
+
+/* ============================================================
+   DRIVERS CRUD
+   ============================================================ */
+function renderDrivers() {
+  const tbody = document.getElementById('d-body');
+  tbody.innerHTML = drivers.map((d, i) =>
+    `<tr>
+      <td>D-${String(d.id).padStart(4,'0')}</td>
+      <td>${escapeHtml(d.name)}</td>
+      <td>${escapeHtml(d.lic)}</td>
+      <td>${escapeHtml(d.contact)}</td>
+      <td>${escapeHtml(d.depot)}</td>
+      <td>${escapeHtml(d.status)}</td>
+      <td>${d.score}</td>
+      <td>
+        <button class="action-btn" onclick="editDriver(${i})">Edit</button>
+        <button class="action-btn del" onclick="deleteDriver(${i})">Delete</button>
+      </td>
+    </tr>`
+  ).join('');
+  document.getElementById('d-count').textContent = `(${drivers.length} records)`;
+}
+function addDriver() {
+  const name = val('d-name');
+  if (!name) { showMsg('Error: Name is required.'); return; }
+  drivers.push({ id: driverNextId++, name, lic: val('d-lic'), contact: val('d-contact'), depot: val('d-depot'), status: val('d-status'), score: parseInt(val('d-score')) || 100 });
+  setVal('d-name', ''); setVal('d-contact', '');
+  showMsg(`Driver "${name}" added as D-${String(driverNextId-1).padStart(4,'0')}.`);
+  renderDrivers();
+}
+function editDriver(i) {
+  const d = drivers[i];
+  setVal('de-id', 'D-' + String(d.id).padStart(4,'0'));
+  setVal('de-name', d.name); setVal('de-lic', d.lic);
+  setVal('de-contact', d.contact); setVal('de-depot', d.depot);
+  setVal('de-status', d.status); setVal('de-score', d.score);
+  document.getElementById('d-edit').style.display = 'block';
+  document.getElementById('d-edit').dataset.idx = i;
+}
+function saveDriverEdit() {
+  const i = parseInt(document.getElementById('d-edit').dataset.idx);
+  drivers[i] = { id: drivers[i].id, name: val('de-name'), lic: val('de-lic'), contact: val('de-contact'), depot: val('de-depot'), status: val('de-status'), score: parseInt(val('de-score')) };
+  cancelEdit('d-edit');
+  showMsg(`Driver D-${String(drivers[i].id).padStart(4,'0')} updated.`);
+  renderDrivers();
+}
+function deleteDriver(i) {
+  if (!confirm('Delete driver ' + drivers[i].name + '?')) return;
+  drivers.splice(i, 1);
+  showMsg('Driver deleted.');
+  renderDrivers();
+}
+
+/* ============================================================
+   DEPOTS CRUD
+   ============================================================ */
+function renderDepots() {
+  const tbody = document.getElementById('dp-body');
+  tbody.innerHTML = depots.map((d, i) =>
+    `<tr>
+      <td>${d.id}</td>
+      <td>${escapeHtml(d.name)}</td>
+      <td>${escapeHtml(d.loc)}</td>
+      <td>${d.vehicles}</td>
+      <td>${d.drivers}</td>
+      <td>${d.mechanics}</td>
+      <td>
+        <button class="action-btn" onclick="editDepot(${i})">Edit</button>
+        <button class="action-btn del" onclick="deleteDepot(${i})">Delete</button>
+      </td>
+    </tr>`
+  ).join('');
+  document.getElementById('dp-count').textContent = `(${depots.length} records)`;
+}
+function addDepot() {
+  const name = val('dp-name'), loc = val('dp-loc');
+  if (!name || !loc) { showMsg('Error: Name and Location are required.'); return; }
+  depots.push({ id: depotNextId++, name, loc, vehicles: 0, drivers: 0, mechanics: 0 });
+  setVal('dp-name', ''); setVal('dp-loc', '');
+  showMsg(`Depot "${name}" added.`);
+  renderDepots();
+}
+function editDepot(i) {
+  const d = depots[i];
+  setVal('dpe-id', d.id); setVal('dpe-name', d.name); setVal('dpe-loc', d.loc);
+  document.getElementById('dp-edit').style.display = 'block';
+  document.getElementById('dp-edit').dataset.idx = i;
+}
+function saveDepotEdit() {
+  const i = parseInt(document.getElementById('dp-edit').dataset.idx);
+  depots[i] = { id: depots[i].id, name: val('dpe-name'), loc: val('dpe-loc'), vehicles: depots[i].vehicles, drivers: depots[i].drivers, mechanics: depots[i].mechanics };
+  cancelEdit('dp-edit');
+  showMsg(`Depot "${depots[i].name}" updated.`);
+  renderDepots();
+}
+function deleteDepot(i) {
+  if (!confirm('Delete depot ' + depots[i].name + '?')) return;
+  depots.splice(i, 1);
+  showMsg('Depot deleted.');
+  renderDepots();
+}
+
+/* ============================================================
+   MECHANICS CRUD
+   ============================================================ */
+function renderMechanics() {
+  const tbody = document.getElementById('m-body');
+  tbody.innerHTML = mechanics.map((m, i) =>
+    `<tr>
+      <td>M-${String(m.id).padStart(4,'0')}</td>
+      <td>${escapeHtml(m.name)}</td>
+      <td>${escapeHtml(m.contact)}</td>
+      <td>${escapeHtml(m.depot)}</td>
+      <td>${escapeHtml(m.spec)}</td>
+      <td>${m.hire}</td>
+      <td>
+        <button class="action-btn" onclick="editMech(${i})">Edit</button>
+        <button class="action-btn del" onclick="deleteMech(${i})">Delete</button>
+      </td>
+    </tr>`
+  ).join('');
+  document.getElementById('m-count').textContent = `(${mechanics.length} records)`;
+}
+function addMechanic() {
+  const name = val('m-name');
+  if (!name) { showMsg('Error: Name is required.'); return; }
+  mechanics.push({ id: mechanicNextId++, name, contact: val('m-contact'), depot: val('m-depot'), spec: val('m-spec'), hire: val('m-date') });
+  setVal('m-name', ''); setVal('m-contact', ''); setVal('m-spec', ''); setVal('m-date', '');
+  showMsg(`Mechanic "${name}" added as M-${String(mechanicNextId-1).padStart(4,'0')}.`);
+  renderMechanics();
+}
+function editMech(i) {
+  const m = mechanics[i];
+  setVal('me-id', 'M-' + String(m.id).padStart(4,'0'));
+  setVal('me-name', m.name); setVal('me-contact', m.contact);
+  setVal('me-depot', m.depot); setVal('me-spec', m.spec); setVal('me-date', m.hire);
+  document.getElementById('m-edit').style.display = 'block';
+  document.getElementById('m-edit').dataset.idx = i;
+}
+function saveMechEdit() {
+  const i = parseInt(document.getElementById('m-edit').dataset.idx);
+  mechanics[i] = { id: mechanics[i].id, name: val('me-name'), contact: val('me-contact'), depot: val('me-depot'), spec: val('me-spec'), hire: val('me-date') };
+  cancelEdit('m-edit');
+  showMsg(`Mechanic M-${String(mechanics[i].id).padStart(4,'0')} updated.`);
+  renderMechanics();
+}
+function deleteMech(i) {
+  if (!confirm('Delete mechanic ' + mechanics[i].name + '?')) return;
+  mechanics.splice(i, 1);
+  showMsg('Mechanic deleted.');
+  renderMechanics();
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+renderVehicles();
+renderDrivers();
+renderDepots();
+renderMechanics();
+</script>
+</body>
+</html>
