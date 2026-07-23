@@ -82,6 +82,7 @@ tbody tr:hover{background:#ffffcc}
     <button class="tab-btn" data-tab="drivers">Drivers</button>
     <button class="tab-btn" data-tab="depots">Depots</button>
     <button class="tab-btn" data-tab="mechanics">Mechanics</button>
+    <button class="tab-btn" data-tab="incidents">Incidents</button>
   </div>
 
   <!-- =================== VEHICLES =================== -->
@@ -260,6 +261,83 @@ tbody tr:hover{background:#ffffcc}
     </div>
   </div>
 
+  <!-- =================== INCIDENTS =================== -->
+  <div class="entity-tab" id="tab-incidents">
+    <div class="form-section">
+      <h2>Report Incident</h2>
+      <div class="form-row">
+        <div class="form-group"><label>Date:</label><input type="date" id="ir-date"></div>
+        <div class="form-group">
+          <label>Type:</label>
+          <select id="ir-type"><option>Collision</option><option>Breakdown</option><option>Fire</option><option> Theft</option><option>Injury</option><option>Load Spill</option><option>Mechanical Failure</option></select>
+        </div>
+        <div class="form-group">
+          <label>Severity:</label>
+          <select id="ir-sev"><option>Minor</option><option>Major</option><option>Critical</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Vehicle:</label>
+          <select id="ir-vin"></select>
+        </div>
+        <div class="form-group">
+          <label>Driver:</label>
+          <select id="ir-driver"></select>
+        </div>
+        <div class="form-group">
+          <label>Depot:</label>
+          <select id="ir-depot"><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Description:</label><input type="text" id="ir-desc" style="width:350px" placeholder="Brief description of the incident"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Damage Cost:</label><input type="number" id="ir-cost" value="0" min="0" style="width:100px"> <span style="font-size:12px;color:#666">VND</span></div>
+        <div class="form-group">
+          <label>Status:</label>
+          <select id="ir-status"><option>Open</option><option>Under Investigation</option><option>Closed</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <button class="form-btn primary" onclick="addIncident()">Report Incident</button>
+      </div>
+    </div>
+
+    <div class="inline-edit" id="ir-edit">
+      <h3>Edit Incident Report</h3>
+      <div class="form-row">
+        <div class="form-group"><label>ID:</label><input type="text" id="ire-id" readonly style="width:60px;background:#eee"></div>
+        <div class="form-group"><label>Date:</label><input type="date" id="ire-date"></div>
+        <div class="form-group"><label>Type:</label><select id="ire-type"><option>Collision</option><option>Breakdown</option><option>Fire</option><option> Theft</option><option>Injury</option><option>Load Spill</option><option>Mechanical Failure</option></select></div>
+        <div class="form-group"><label>Severity:</label><select id="ire-sev"><option>Minor</option><option>Major</option><option>Critical</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Vehicle:</label><select id="ire-vin"></select></div>
+        <div class="form-group"><label>Driver:</label><select id="ire-driver"></select></div>
+        <div class="form-group"><label>Depot:</label><select id="ire-depot"><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Description:</label><input type="text" id="ire-desc" style="width:350px"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Damage Cost:</label><input type="number" id="ire-cost" min="0" style="width:100px"> <span style="font-size:12px;color:#666">VND</span></div>
+        <div class="form-group"><label>Status:</label><select id="ire-status"><option>Open</option><option>Under Investigation</option><option>Closed</option></select></div>
+      </div>
+      <div class="form-row">
+        <button class="form-btn primary" onclick="saveIncidentEdit()">Save</button>
+        <button class="form-btn" onclick="cancelEdit('ir-edit')">Cancel</button>
+      </div>
+    </div>
+
+    <div class="table-section">
+      <h2>Incident Reports <span id="ir-count" style="font-weight:normal;font-size:12px;color:#888"></span></h2>
+      <table><thead><tr><th>ID</th><th>Date</th><th>Type</th><th>Vehicle</th><th>Driver</th><th>Depot</th><th>Severity</th><th>Status</th><th>Cost (VND)</th><th>Action</th></tr></thead>
+      <tbody id="ir-body"></tbody></table>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -311,9 +389,28 @@ let mechanics = [
   {id:6,name:"Le Quoc Bao",contact:"+84 936 000 666",depot:"Hai Phong",spec:"Hydraulics",hire:"2021-05-22"},
 ];
 
+let incidents = [
+  {id:1001,date:"2026-07-15",type:"Collision",vin:"3AKJGBDC5SCLA1234",driver:"Le Van Cuong",depot:"Da Nang",sev:"Major",desc:"Rear-ended at traffic light, bumper and tail lights damaged",cost:8500000,status:"Closed"},
+  {id:1002,date:"2026-07-18",type:"Breakdown",vin:"4V4NC9EJXNN345678",driver:"Tran Thi Binh",depot:"HCMC",sev:"Major",desc:"Engine overheated on highway, required tow to depot",cost:15200000,status:"Under Investigation"},
+  {id:1003,date:"2026-07-20",type:"Load Spill",vin:"5J6YH1F37NL012345",driver:"Nguyen Thi Hien",depot:"Hai Phong",sev:"Minor",desc:"Unsecured cargo shifted during turn, partial load loss",cost:2100000,status:"Open"},
+  {id:1004,date:"2026-07-21",type:"Mechanical Failure",vin:"CDE345FGH67890123",driver:"Bui Van Huy",depot:"Hanoi Main",sev:"Major",desc:"Transmission failed mid-route, vehicle stranded",cost:22000000,status:"Open"},
+  {id:1005,date:"2026-07-22",type:"Collision",vin:"8BCDE123456789012",driver:"Vu Van Phong",depot:"HCMC",sev:"Critical",desc:"Side collision at intersection, driver minor injury",cost:35000000,status:"Under Investigation"},
+  {id:1006,date:"2026-07-22",type:"Injury",vin:"2FZHAZCVX5AB12345",driver:"Nguyen Van An",depot:"Hanoi Main",sev:"Minor",desc:"Driver slipped while inspecting cargo, minor sprain",cost:500000,status:"Closed"},
+];
+let incidentNextId = 1007;
+
 let driverNextId = 11;
 let mechanicNextId = 7;
 let depotNextId = 5;
+let incidentNextId = 1;
+
+let incidents = [
+  {id:incidentNextId++,date:"2026-07-15",type:"Collision",severity:"Major",vin:"2FZHAZCVX5AB12345",driver:"Nguyen Van An",depot:"Hanoi Main",desc:"Rear-ended at traffic light, bumper damage",cost:15000000,status:"Under Investigation"},
+  {id:incidentNextId++,date:"2026-07-18",type:"Breakdown",severity:"Minor",vin:"CDE345FGH67890123",driver:"Bui Van Huy",depot:"Hanoi Main",desc:"Engine overheating, towed to depot",cost:3500000,status:"Closed"},
+  {id:incidentNextId++,date:"2026-07-20",type:"Mechanical Failure",severity:"Major",vin:"4V4NC9EJXNN345678",driver:"Le Van Cuong",depot:"HCMC",desc:"Transmission failure on highway",cost:28000000,status:"Open"},
+  {id:incidentNextId++,date:"2026-07-21",type:"Theft",severity:"Critical",vin:"9XYZ9876543210ABC",driver:"Pham Van Dung",depot:"Hai Phong",desc:"Cargo theft at rest stop",cost:45000000,status:"Under Investigation"},
+  {id:incidentNextId++,date:"2026-07-22",type:"Load Spill",severity:"Minor",vin:"8BCDE123456789012",driver:"Tran Van Khoa",depot:"HCMC",desc:"Spill during sharp turn",cost:5000000,status:"Open"},
+];
 
 /* ============================================================
    MESSAGE BAR
@@ -549,12 +646,84 @@ function deleteMech(i) {
 }
 
 /* ============================================================
+   INCIDENTS CRUD
+   ============================================================ */
+function populateIncidentSelects() {
+  const vSel1 = document.getElementById('ir-vin');
+  const vSel2 = document.getElementById('ire-vin');
+  const dSel1 = document.getElementById('ir-driver');
+  const dSel2 = document.getElementById('ire-driver');
+  const vOpts = vehicles.map(v => `<option value="${escapeHtml(v.vin)}">${escapeHtml(v.vin)} — ${escapeHtml(v.model)}</option>`).join('');
+  const dOpts = drivers.map(d => `<option value="${escapeHtml(d.name)}">${escapeHtml(d.name)} (D-${String(d.id).padStart(4,'0')})</option>`).join('');
+  vSel1.innerHTML = vOpts; vSel2.innerHTML = vOpts;
+  dSel1.innerHTML = dOpts; dSel2.innerHTML = dOpts;
+}
+
+function renderIncidents() {
+  const tbody = document.getElementById('ir-body');
+  tbody.innerHTML = incidents.map((r, i) =>
+    `<tr>
+      <td>${r.id}</td>
+      <td>${escapeHtml(r.date)}</td>
+      <td>${escapeHtml(r.type)}</td>
+      <td><code>${escapeHtml(r.vin)}</code></td>
+      <td>${escapeHtml(r.driver)}</td>
+      <td>${escapeHtml(r.depot)}</td>
+      <td>${escapeHtml(r.severity)}</td>
+      <td>${escapeHtml(r.status)}</td>
+      <td style="text-align:right">${r.cost ? r.cost.toLocaleString('vi-VN') : '—'}</td>
+      <td>
+        <button class="action-btn" onclick="editIncident(${i})">Edit</button>
+        <button class="action-btn del" onclick="deleteIncident(${i})">Delete</button>
+      </td>
+    </tr>`
+  ).join('');
+  document.getElementById('ir-count').textContent = `(${incidents.length} records)`;
+}
+
+function addIncident() {
+  const date = val('ir-date'), type = val('ir-type'), vin = val('ir-vin'), driver = val('ir-driver');
+  if (!date) { showMsg('Error: Date is required.'); return; }
+  incidents.push({ id: incidentNextId++, date, type, severity: val('ir-sev'), vin, driver, depot: val('ir-depot'), desc: val('ir-desc'), cost: parseInt(val('ir-cost')) || 0, status: val('ir-status') });
+  setVal('ir-desc', '');
+  showMsg(`Incident #${incidentNextId-1} reported.`);
+  renderIncidents();
+}
+
+function editIncident(i) {
+  const r = incidents[i];
+  setVal('ire-id', r.id); setVal('ire-date', r.date); setVal('ire-type', r.type);
+  setVal('ire-sev', r.severity); setVal('ire-vin', r.vin); setVal('ire-driver', r.driver);
+  setVal('ire-depot', r.depot); setVal('ire-desc', r.desc); setVal('ire-cost', r.cost);
+  setVal('ire-status', r.status);
+  document.getElementById('ir-edit').style.display = 'block';
+  document.getElementById('ir-edit').dataset.idx = i;
+}
+
+function saveIncidentEdit() {
+  const i = parseInt(document.getElementById('ir-edit').dataset.idx);
+  incidents[i] = { id: incidents[i].id, date: val('ire-date'), type: val('ire-type'), severity: val('ire-sev'), vin: val('ire-vin'), driver: val('ire-driver'), depot: val('ire-depot'), desc: val('ire-desc'), cost: parseInt(val('ire-cost')) || 0, status: val('ire-status') };
+  cancelEdit('ir-edit');
+  showMsg(`Incident #${incidents[i].id} updated.`);
+  renderIncidents();
+}
+
+function deleteIncident(i) {
+  if (!confirm('Delete incident #' + incidents[i].id + '?')) return;
+  incidents.splice(i, 1);
+  showMsg('Incident deleted.');
+  renderIncidents();
+}
+
+/* ============================================================
    INIT
    ============================================================ */
 renderVehicles();
 renderDrivers();
 renderDepots();
 renderMechanics();
+populateIncidentSelects();
+renderIncidents();
 </script>
 </body>
 </html>
