@@ -200,5 +200,156 @@ SELECT * FROM Drivers;
 SELECT * FROM Mechanics;
 SELECT * FROM Vehicle_categories;
 SELECT * FROM Vehicles;
-
+------------------------------------------
+INSERT INTO Vehicle_Requirement_Matrix
+(cert_id,category_id)
+VALUES
+(1,1),
+(2,1),
+(2,2),
+(3,2),
+(3,3),
+(4,4),
+(5,5),
+(6,5);
+------------------------------------------
+INSERT INTO Driver_Certifications
+(driver_id,cert_id,expiration_date)
+SELECT driver_id,
+1+MOD(driver_id,6),
+DATE_ADD(CURDATE(),
+INTERVAL 365 DAY)
+FROM Drivers;
 SHOW TABLES;
+------------------------------------------
+INSERT INTO Driver_Certifications (driver_id,cert_id,expiration_date)
+SELECT driver_id,
+1+MOD(driver_id+2,6),
+DATE_ADD(CURDATE(),
+INTERVAL 600 DAY)
+FROM Drivers
+WHERE driver_id<=40;
+------------------------------------------
+INSERT INTO Mechanic_Certifications(mechanic_id,cert_id,expiration_date)
+SELECT mechanic_id,
+1+MOD(mechanic_id,6),
+DATE_ADD(CURDATE(),
+INTERVAL 500 DAY)
+FROM Mechanics;
+------------------------------------------
+INSERT INTO Vehicle_Assignments (vin, driver_id, is_permanent, assigned_at)
+SELECT v.vin, d.driver_id,
+       TRUE,
+       NOW() - INTERVAL MOD(d.driver_id,300) DAY
+FROM Vehicles v
+JOIN Drivers d ON v.current_depot_id = d.current_depot_id
+WHERE v.operational_status NOT IN ('Under Maintenance','Out of Service','Retired')
+  AND d.employment_status = 'Active'
+LIMIT 80;
+------------------------------------------
+INSERT INTO Predictive_Alerts
+(vin,alert_type, severity_level, generated_at, status, alert_threshold_snapshot)
+SELECT vin,
+'Brake Wear',
+'Medium',
+NOW()-INTERVAL FLOOR(RAND()*200) DAY,
+'Open',
+80
+FROM Vehicles
+LIMIT 20;
+------------------------------------------
+INSERT INTO Predictive_Alerts
+(vin, alert_type, severity_level, generated_at, status, alert_threshold_snapshot)
+SELECT
+vin,
+'Engine Temperature',
+'High',
+NOW()-INTERVAL FLOOR(RAND()*100) DAY,
+'Monitoring',
+90
+FROM Vehicles
+LIMIT 15;
+------------------------------------------
+INSERT INTO Maintenance_Jobs
+(depot_id, vin, date_opened, date_closed, downtime_hours, total_cost, linked_alert_id)
+SELECT
+    v.current_depot_id,
+    p.vin,
+    p.generated_at,
+    p.generated_at + INTERVAL 12 HOUR,
+    12,
+    3500000,
+    p.alert_id
+FROM Predictive_Alerts p
+JOIN Vehicles v ON p.vin = v.vin;
+------------------------------------------
+INSERT INTO Job_Activities
+(
+job_id,
+activity_type,
+diagnostic_result,
+repeat_fault_indicator,
+warranty_indicator
+)
+SELECT
+job_id,
+'Inspection',
+'Brake pads worn',
+FALSE,
+FALSE
+FROM Maintenance_Jobs;
+------------------------------------------
+INSERT INTO Activity_Labor_Logs
+(
+activity_id,
+mechanic_id,
+labour_hours
+)
+SELECT
+activity_id,
+1+MOD(activity_id,25),
+2.5
+FROM Job_Activities;
+------------------------------------------
+INSERT INTO Telematics_Events
+(depot_id, driver_id, vin, event_timestamp, event_type, severity_level, snapshot_odometer)
+SELECT
+    d.current_depot_id,
+    d.driver_id,
+    vn.vin,
+    NOW() - INTERVAL FLOOR(RAND()*365) DAY,
+    'Speeding',
+    'Medium',
+    25000
+FROM Drivers d
+JOIN (
+    SELECT vin, ROW_NUMBER() OVER (ORDER BY vin) AS rn
+    FROM Vehicles
+) vn ON vn.rn = 1 + MOD(d.driver_id, 120);
+
+INSERT INTO Monthly_Safety_Scores
+(driver_id,score_month,base_score,event_penalty,repeat_penalty,total_penalty,final_score,coaching_required,grounded
+)
+SELECT
+driver_id,
+'2026-07-01',
+100,
+12,
+3,
+15,
+85,
+FALSE,
+FALSE
+FROM Drivers;
+
+INSERT INTO Vehicle_Requirement_Matrix
+(cert_id,category_id)
+VALUES
+(1,1),
+(2,1),
+(2,2),
+(3,2),
+(3,3),
+(4,4),
+(5,5),
+(6,5);
