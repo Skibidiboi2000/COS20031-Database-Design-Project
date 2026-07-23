@@ -101,16 +101,16 @@ tbody tr:hover{background:#ffffcc}
   <div class="form-section">
     <h2>Add Vehicle</h2>
     <div class="form-row">
-      <div class="form-group"><label>VIN:</label><input type="text" style="width:160px" readonly disabled></div>
-      <div class="form-group"><label>Reg:</label><input type="text" style="width:90px" readonly disabled></div>
-      <div class="form-group"><label>Model:</label><input type="text" style="width:140px" readonly disabled></div>
+      <div class="form-group"><label>VIN:</label><input type="text" style="width:160px" disabled></div>
+      <div class="form-group"><label>Reg:</label><input type="text" style="width:90px" disabled></div>
+      <div class="form-group"><label>Model:</label><input type="text" style="width:140px" disabled></div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label>Category:</label>
         <select disabled><option>Heavy Truck</option><option>Medium Truck</option><option>Light Truck</option></select>
       </div>
-      <div class="form-group"><label>Year:</label><input type="number" value="2024" style="width:70px" readonly disabled></div>
+      <div class="form-group"><label>Year:</label><input type="number" value="2024" style="width:70px" disabled></div>
       <div class="form-group">
         <label>Depot:</label>
         <select disabled><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select>
@@ -156,14 +156,14 @@ tbody tr:hover{background:#ffffcc}
   <div class="form-section">
     <h2>Add Driver</h2>
     <div class="form-row">
-      <div class="form-group"><label>Name:</label><input type="text" style="width:160px" readonly disabled></div>
+      <div class="form-group"><label>Name:</label><input type="text" style="width:160px" disabled></div>
       <div class="form-group"><label>Licence:</label><select disabled><option>Class C</option><option>Class D</option><option>Class E</option></select></div>
-      <div class="form-group"><label>Contact:</label><input type="text" style="width:130px" readonly disabled></div>
+      <div class="form-group"><label>Contact:</label><input type="text" style="width:130px" disabled></div>
     </div>
     <div class="form-row">
       <div class="form-group"><label>Depot:</label><select disabled><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select></div>
       <div class="form-group"><label>Status:</label><select disabled><option>Active</option><option>Suspended</option><option>On Leave</option></select></div>
-      <div class="form-group"><label>Score:</label><input type="number" value="100" min="0" max="100" style="width:60px" readonly disabled></div>
+      <div class="form-group"><label>Score:</label><input type="number" value="100" min="0" max="100" style="width:60px" disabled></div>
     </div>
     <div class="form-row"><button class="form-btn primary" disabled>Add Driver</button></div>
   </div>
@@ -193,8 +193,8 @@ tbody tr:hover{background:#ffffcc}
   <div class="form-section">
     <h2>Add Depot</h2>
     <div class="form-row">
-      <div class="form-group"><label>Name:</label><input type="text" style="width:160px" readonly disabled></div>
-      <div class="form-group"><label>Location:</label><input type="text" style="width:200px" readonly disabled></div>
+      <div class="form-group"><label>Name:</label><input type="text" style="width:160px" disabled></div>
+      <div class="form-group"><label>Location:</label><input type="text" style="width:200px" disabled></div>
     </div>
     <div class="form-row"><button class="form-btn primary" disabled>Add Depot</button></div>
   </div>
@@ -218,13 +218,13 @@ tbody tr:hover{background:#ffffcc}
   <div class="form-section">
     <h2>Add Mechanic</h2>
     <div class="form-row">
-      <div class="form-group"><label>Name:</label><input type="text" style="width:160px" readonly disabled></div>
-      <div class="form-group"><label>Contact:</label><input type="text" style="width:130px" readonly disabled></div>
+      <div class="form-group"><label>Name:</label><input type="text" style="width:160px" disabled></div>
+      <div class="form-group"><label>Contact:</label><input type="text" style="width:130px" disabled></div>
       <div class="form-group"><label>Depot:</label><select disabled><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>Specialization:</label><input type="text" style="width:140px" readonly disabled></div>
-      <div class="form-group"><label>Hire Date:</label><input type="date" readonly disabled></div>
+      <div class="form-group"><label>Specialization:</label><input type="text" style="width:140px" disabled></div>
+      <div class="form-group"><label>Hire Date:</label><input type="date" disabled></div>
     </div>
     <div class="form-row"><button class="form-btn primary" disabled>Add Mechanic</button></div>
   </div>
@@ -250,7 +250,7 @@ tbody tr:hover{background:#ffffcc}
   <div class="form-section">
     <h2>Report Incident</h2>
     <div class="form-row">
-      <div class="form-group"><label>Date:</label><input type="date" readonly disabled></div>
+      <div class="form-group"><label>Date:</label><input type="date" disabled></div>
       <div class="form-group">
         <label>Type:</label>
         <select disabled><option>Collision</option><option>Breakdown</option><option>Fire</option><option>Theft</option><option>Injury</option><option>Load Spill</option><option>Mechanical Failure</option></select>
@@ -267,6 +267,19 @@ tbody tr:hover{background:#ffffcc}
           <option>1HGBH41JXMN109186 — Kenworth T680</option>
           <option>2FZHAZCVX5AB12345 — Volvo FH16</option>
           <option>3AKJGBDC5SCLA1234 — Scania R500</option>
+          <option>4V4NC9EJXNN345678 — Freightliner Cascadia</option>
+          <option>5J6YH1F37NL012345 — Isuzu FVR</option>
+          <option>6F1FA6E86NG456789 — Hino 700</option>
+          <option>7MTAZ33C0NT012345 — Mercedes Actros</option>
+          <option>8BCDE123456789012 — Hyundai Xcient</option>
+          <option>9XYZ9876543210ABC — Dongfeng KL</option>
+          <option>ABC123DEF45678901 — Kenworth C500</option>
+          <option>BCD234EFG56789012 — Volvo FMX</option>
+          <option>CDE345FGH67890123 — Scania G460</option>
+          <option>DEF456GHI78901234 — Isuzu Giga</option>
+          <option>EFG567HIJ89012345 — Hino Profia</option>
+          <option>FGH678IJK90123456 — Mitsubishi Fuso</option>
+          <option>GHI789JKL01234567 — Mercedes Arocs</option>
         </select>
       </div>
       <div class="form-group">
@@ -275,6 +288,13 @@ tbody tr:hover{background:#ffffcc}
           <option>Nguyen Van An (D-0001)</option>
           <option>Tran Thi Binh (D-0002)</option>
           <option>Le Van Cuong (D-0003)</option>
+          <option>Pham Van Dung (D-0004)</option>
+          <option>Hoang Thi Em (D-0005)</option>
+          <option>Vu Van Phong (D-0006)</option>
+          <option>Dang Thi Gam (D-0007)</option>
+          <option>Bui Van Huy (D-0008)</option>
+          <option>Nguyen Thi Hien (D-0009)</option>
+          <option>Tran Van Khoa (D-0010)</option>
         </select>
       </div>
       <div class="form-group">
@@ -283,10 +303,10 @@ tbody tr:hover{background:#ffffcc}
       </div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>Description:</label><input type="text" style="width:350px" readonly disabled></div>
+      <div class="form-group"><label>Description:</label><input type="text" style="width:350px" disabled></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>Damage Cost:</label><input type="number" value="0" min="0" style="width:100px" readonly disabled> <span style="font-size:12px;color:#666">VND</span></div>
+      <div class="form-group"><label>Damage Cost:</label><input type="number" value="0" min="0" style="width:100px" disabled> <span style="font-size:12px;color:#666">VND</span></div>
       <div class="form-group">
         <label>Status:</label>
         <select disabled><option>Open</option><option>Under Investigation</option><option>Closed</option></select>
