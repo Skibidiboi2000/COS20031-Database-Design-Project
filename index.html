@@ -2,29 +2,46 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>CRUD — Fleet Management</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,Helvetica,sans-serif;font-size:13px;background:#f0f0f0;color:#333}
-
-/* Header */
 .header{background:#444;color:#fff;padding:16px 24px}
-.header h1{font-size:22px;font-weight:bold}
-.msg{background:#e8e8b0;border-bottom:1px solid #ccc;padding:8px 24px;font-size:13px;color:#555}
-
-/* Layout */
+.header h1{font-size:22px}
 .wrap{max-width:960px;margin:0 auto;padding:20px 24px}
 
-/* Form */
+/* Tabs using radio + :checked */
+.tab-input{display:none}
+.tabs{display:flex;gap:0;margin-bottom:0;border-bottom:2px solid #444}
+.tabs label{
+  padding:7px 16px;border:1px solid #999;border-bottom:none;background:#ddd;
+  font-size:12px;font-weight:bold;cursor:pointer;font-family:Arial,sans-serif;
+  margin-bottom:-2px;display:block;
+}
+.tabs label:hover{background:#eee}
+.tab-content{display:none;padding:0;margin-top:0}
+
+#tab1:checked~.tabs label[for="tab1"],
+#tab2:checked~.tabs label[for="tab2"],
+#tab3:checked~.tabs label[for="tab3"],
+#tab4:checked~.tabs label[for="tab4"],
+#tab5:checked~.tabs label[for="tab5"]{background:#f5f5f5;border-bottom:2px solid #f5f5f5}
+
+#tab1:checked~#content1,
+#tab2:checked~#content2,
+#tab3:checked~#content3,
+#tab4:checked~#content4,
+#tab5:checked~#content5{display:block}
+
+/* Form section */
 .form-section{background:#f5f5f5;border:1px solid #ddd;padding:16px 20px;margin-bottom:24px}
 .form-section h2{font-size:16px;margin-bottom:10px;color:#333}
 .form-row{display:flex;flex-wrap:wrap;gap:8px 16px;margin-bottom:10px}
 .form-group{display:flex;align-items:center;gap:6px}
 .form-group label{font-weight:bold;font-size:13px;min-width:50px}
 .form-group input,.form-group select{
-  padding:4px 6px;border:1px solid #999;font-size:13px;font-family:Arial,sans-serif;
-  background:#fff;
+  padding:4px 6px;border:1px solid #999;font-size:13px;font-family:Arial,sans-serif;background:#fff;
 }
 .form-group input:focus,.form-group select:focus{outline:1px solid #4477aa}
 .form-btn{
@@ -49,681 +66,250 @@ tbody tr:hover{background:#ffffcc}
 .action-btn:hover{background:#ddd}
 .action-btn.del{color:#c33}
 .action-btn.del:hover{background:#fdd}
-
-/* Tabs */
-.tabs{display:flex;gap:0;margin-bottom:0;border-bottom:2px solid #444}
-.tab-btn{
-  padding:7px 16px;border:1px solid #999;border-bottom:none;background:#ddd;
-  font-size:12px;font-weight:bold;cursor:pointer;font-family:Arial,sans-serif;
-  margin-bottom:-2px;
-}
-.tab-btn.active{background:#f5f5f5;border-bottom:2px solid #f5f5f5}
-.tab-btn:hover{background:#eee}
-
-.entity-tab{display:none}
-.entity-tab.active{display:block}
-
-/* Inline edit */
-.inline-edit{background:#ffe;border:1px solid #cc0;padding:10px 16px;margin-bottom:16px;display:none}
-.inline-edit h3{font-size:14px;margin-bottom:8px}
-.inline-edit .form-row{margin-bottom:8px}
+.badge{display:inline-block;padding:1px 6px;border-radius:2px;font-size:11px;font-weight:bold}
+.badge.avail{background:#d4edda;color:#155724}
+.badge.road{background:#cce5ff;color:#004085}
+.badge.shop{background:#fff3cd;color:#856404}
+.badge.oos{background:#f8d7da;color:#721c24}
+.badge.good{background:#d4edda;color:#155724}
+.badge.fair{background:#fff3cd;color:#856404}
+.badge.poor{background:#f8d7da;color:#721c24}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <h1>CRUD</h1>
-</div>
-<div class="msg" id="msg-bar"></div>
+<div class="header"><h1>CRUD</h1></div>
 
 <div class="wrap">
-  <div class="tabs" id="tabs">
-    <button class="tab-btn active" data-tab="vehicles">Vehicles</button>
-    <button class="tab-btn" data-tab="drivers">Drivers</button>
-    <button class="tab-btn" data-tab="depots">Depots</button>
-    <button class="tab-btn" data-tab="mechanics">Mechanics</button>
-    <button class="tab-btn" data-tab="incidents">Incidents</button>
-  </div>
 
-  <!-- =================== VEHICLES =================== -->
-  <div class="entity-tab active" id="tab-vehicles">
-    <div class="form-section">
-      <h2>Add Vehicle</h2>
-      <div class="form-row">
-        <div class="form-group"><label>VIN:</label><input type="text" id="v-vin" maxlength="17" style="width:160px"></div>
-        <div class="form-group"><label>Reg:</label><input type="text" id="v-reg" style="width:90px"></div>
-        <div class="form-group"><label>Model:</label><input type="text" id="v-model" style="width:140px"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Category:</label>
-          <select id="v-cat"><option>Heavy Truck</option><option>Medium Truck</option><option>Light Truck</option></select>
-        </div>
-        <div class="form-group"><label>Year:</label><input type="number" id="v-year" value="2024" style="width:70px"></div>
-        <div class="form-group">
-          <label>Depot:</label>
-          <select id="v-depot"><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select>
-        </div>
-        <div class="form-group">
-          <label>Status:</label>
-          <select id="v-status"><option>Available</option><option>On Road</option><option>In Shop</option><option>Out of Service</option></select>
-        </div>
-      </div>
-      <div class="form-row">
-        <button class="form-btn primary" onclick="addVehicle()">Add Vehicle</button>
-      </div>
-    </div>
+<input type="radio" name="tab" id="tab1" class="tab-input" checked>
+<input type="radio" name="tab" id="tab2" class="tab-input">
+<input type="radio" name="tab" id="tab3" class="tab-input">
+<input type="radio" name="tab" id="tab4" class="tab-input">
+<input type="radio" name="tab" id="tab5" class="tab-input">
 
-    <div class="inline-edit" id="v-edit">
-      <h3>Edit Vehicle</h3>
-      <div class="form-row">
-        <div class="form-group"><label>VIN:</label><input type="text" id="ve-vin" readonly style="width:160px;background:#eee"></div>
-        <div class="form-group"><label>Reg:</label><input type="text" id="ve-reg" style="width:90px"></div>
-        <div class="form-group"><label>Model:</label><input type="text" id="ve-model" style="width:140px"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Category:</label><select id="ve-cat"><option>Heavy Truck</option><option>Medium Truck</option><option>Light Truck</option></select></div>
-        <div class="form-group"><label>Year:</label><input type="number" id="ve-year" style="width:70px"></div>
-        <div class="form-group"><label>Depot:</label><select id="ve-depot"><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select></div>
-        <div class="form-group"><label>Status:</label><select id="ve-status"><option>Available</option><option>On Road</option><option>In Shop</option><option>Out of Service</option></select></div>
-      </div>
-      <div class="form-row">
-        <button class="form-btn primary" onclick="saveVehicleEdit()">Save</button>
-        <button class="form-btn" onclick="cancelEdit('v-edit')">Cancel</button>
-      </div>
-    </div>
-
-    <div class="table-section">
-      <h2>Vehicles <span id="v-count" style="font-weight:normal;font-size:12px;color:#888"></span></h2>
-      <table><thead><tr><th>VIN</th><th>Reg</th><th>Model</th><th>Category</th><th>Year</th><th>Status</th><th>Depot</th><th>Action</th></tr></thead>
-      <tbody id="v-body"></tbody></table>
-    </div>
-  </div>
-
-  <!-- =================== DRIVERS =================== -->
-  <div class="entity-tab" id="tab-drivers">
-    <div class="form-section">
-      <h2>Add Driver</h2>
-      <div class="form-row">
-        <div class="form-group"><label>Name:</label><input type="text" id="d-name" style="width:160px"></div>
-        <div class="form-group"><label>Licence:</label><select id="d-lic"><option>Class C</option><option>Class D</option><option>Class E</option></select></div>
-        <div class="form-group"><label>Contact:</label><input type="text" id="d-contact" style="width:130px"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Depot:</label><select id="d-depot"><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select></div>
-        <div class="form-group"><label>Status:</label><select id="d-status"><option>Active</option><option>Suspended</option><option>On Leave</option></select></div>
-        <div class="form-group"><label>Score:</label><input type="number" id="d-score" value="100" min="0" max="100" style="width:60px"></div>
-      </div>
-      <div class="form-row">
-        <button class="form-btn primary" onclick="addDriver()">Add Driver</button>
-      </div>
-    </div>
-
-    <div class="inline-edit" id="d-edit">
-      <h3>Edit Driver</h3>
-      <div class="form-row">
-        <div class="form-group"><label>ID:</label><input type="text" id="de-id" readonly style="width:70px;background:#eee"></div>
-        <div class="form-group"><label>Name:</label><input type="text" id="de-name" style="width:160px"></div>
-        <div class="form-group"><label>Licence:</label><select id="de-lic"><option>Class C</option><option>Class D</option><option>Class E</option></select></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Contact:</label><input type="text" id="de-contact" style="width:130px"></div>
-        <div class="form-group"><label>Depot:</label><select id="de-depot"><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select></div>
-        <div class="form-group"><label>Status:</label><select id="de-status"><option>Active</option><option>Suspended</option><option>On Leave</option></select></div>
-        <div class="form-group"><label>Score:</label><input type="number" id="de-score" min="0" max="100" style="width:60px"></div>
-      </div>
-      <div class="form-row">
-        <button class="form-btn primary" onclick="saveDriverEdit()">Save</button>
-        <button class="form-btn" onclick="cancelEdit('d-edit')">Cancel</button>
-      </div>
-    </div>
-
-    <div class="table-section">
-      <h2>Drivers <span id="d-count" style="font-weight:normal;font-size:12px;color:#888"></span></h2>
-      <table><thead><tr><th>ID</th><th>Name</th><th>Licence</th><th>Contact</th><th>Depot</th><th>Status</th><th>Score</th><th>Action</th></tr></thead>
-      <tbody id="d-body"></tbody></table>
-    </div>
-  </div>
-
-  <!-- =================== DEPOTS =================== -->
-  <div class="entity-tab" id="tab-depots">
-    <div class="form-section">
-      <h2>Add Depot</h2>
-      <div class="form-row">
-        <div class="form-group"><label>Name:</label><input type="text" id="dp-name" style="width:160px"></div>
-        <div class="form-group"><label>Location:</label><input type="text" id="dp-loc" style="width:200px"></div>
-      </div>
-      <div class="form-row">
-        <button class="form-btn primary" onclick="addDepot()">Add Depot</button>
-      </div>
-    </div>
-
-    <div class="inline-edit" id="dp-edit">
-      <h3>Edit Depot</h3>
-      <div class="form-row">
-        <div class="form-group"><label>ID:</label><input type="text" id="dpe-id" readonly style="width:50px;background:#eee"></div>
-        <div class="form-group"><label>Name:</label><input type="text" id="dpe-name" style="width:160px"></div>
-        <div class="form-group"><label>Location:</label><input type="text" id="dpe-loc" style="width:200px"></div>
-      </div>
-      <div class="form-row">
-        <button class="form-btn primary" onclick="saveDepotEdit()">Save</button>
-        <button class="form-btn" onclick="cancelEdit('dp-edit')">Cancel</button>
-      </div>
-    </div>
-
-    <div class="table-section">
-      <h2>Depots <span id="dp-count" style="font-weight:normal;font-size:12px;color:#888"></span></h2>
-      <table><thead><tr><th>ID</th><th>Name</th><th>Location</th><th>Vehicles</th><th>Drivers</th><th>Mechanics</th><th>Action</th></tr></thead>
-      <tbody id="dp-body"></tbody></table>
-    </div>
-  </div>
-
-  <!-- =================== MECHANICS =================== -->
-  <div class="entity-tab" id="tab-mechanics">
-    <div class="form-section">
-      <h2>Add Mechanic</h2>
-      <div class="form-row">
-        <div class="form-group"><label>Name:</label><input type="text" id="m-name" style="width:160px"></div>
-        <div class="form-group"><label>Contact:</label><input type="text" id="m-contact" style="width:130px"></div>
-        <div class="form-group"><label>Depot:</label><select id="m-depot"><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Specialization:</label><input type="text" id="m-spec" style="width:140px" placeholder="e.g. Engine, Transmission"></div>
-        <div class="form-group"><label>Hire Date:</label><input type="date" id="m-date"></div>
-      </div>
-      <div class="form-row">
-        <button class="form-btn primary" onclick="addMechanic()">Add Mechanic</button>
-      </div>
-    </div>
-
-    <div class="inline-edit" id="m-edit">
-      <h3>Edit Mechanic</h3>
-      <div class="form-row">
-        <div class="form-group"><label>ID:</label><input type="text" id="me-id" readonly style="width:50px;background:#eee"></div>
-        <div class="form-group"><label>Name:</label><input type="text" id="me-name" style="width:160px"></div>
-        <div class="form-group"><label>Contact:</label><input type="text" id="me-contact" style="width:130px"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Depot:</label><select id="me-depot"><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select></div>
-        <div class="form-group"><label>Specialization:</label><input type="text" id="me-spec" style="width:140px"></div>
-        <div class="form-group"><label>Hire Date:</label><input type="date" id="me-date"></div>
-      </div>
-      <div class="form-row">
-        <button class="form-btn primary" onclick="saveMechEdit()">Save</button>
-        <button class="form-btn" onclick="cancelEdit('m-edit')">Cancel</button>
-      </div>
-    </div>
-
-    <div class="table-section">
-      <h2>Mechanics <span id="m-count" style="font-weight:normal;font-size:12px;color:#888"></span></h2>
-      <table><thead><tr><th>ID</th><th>Name</th><th>Contact</th><th>Depot</th><th>Specialization</th><th>Hire Date</th><th>Action</th></tr></thead>
-      <tbody id="m-body"></tbody></table>
-    </div>
-  </div>
-
-  <!-- =================== INCIDENTS =================== -->
-  <div class="entity-tab" id="tab-incidents">
-    <div class="form-section">
-      <h2>Report Incident</h2>
-      <div class="form-row">
-        <div class="form-group"><label>Date:</label><input type="date" id="ir-date"></div>
-        <div class="form-group">
-          <label>Type:</label>
-          <select id="ir-type"><option>Collision</option><option>Breakdown</option><option>Fire</option><option> Theft</option><option>Injury</option><option>Load Spill</option><option>Mechanical Failure</option></select>
-        </div>
-        <div class="form-group">
-          <label>Severity:</label>
-          <select id="ir-sev"><option>Minor</option><option>Major</option><option>Critical</option></select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Vehicle:</label>
-          <select id="ir-vin"></select>
-        </div>
-        <div class="form-group">
-          <label>Driver:</label>
-          <select id="ir-driver"></select>
-        </div>
-        <div class="form-group">
-          <label>Depot:</label>
-          <select id="ir-depot"><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Description:</label><input type="text" id="ir-desc" style="width:350px" placeholder="Brief description of the incident"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Damage Cost:</label><input type="number" id="ir-cost" value="0" min="0" style="width:100px"> <span style="font-size:12px;color:#666">VND</span></div>
-        <div class="form-group">
-          <label>Status:</label>
-          <select id="ir-status"><option>Open</option><option>Under Investigation</option><option>Closed</option></select>
-        </div>
-      </div>
-      <div class="form-row">
-        <button class="form-btn primary" onclick="addIncident()">Report Incident</button>
-      </div>
-    </div>
-
-    <div class="inline-edit" id="ir-edit">
-      <h3>Edit Incident Report</h3>
-      <div class="form-row">
-        <div class="form-group"><label>ID:</label><input type="text" id="ire-id" readonly style="width:60px;background:#eee"></div>
-        <div class="form-group"><label>Date:</label><input type="date" id="ire-date"></div>
-        <div class="form-group"><label>Type:</label><select id="ire-type"><option>Collision</option><option>Breakdown</option><option>Fire</option><option> Theft</option><option>Injury</option><option>Load Spill</option><option>Mechanical Failure</option></select></div>
-        <div class="form-group"><label>Severity:</label><select id="ire-sev"><option>Minor</option><option>Major</option><option>Critical</option></select></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Vehicle:</label><select id="ire-vin"></select></div>
-        <div class="form-group"><label>Driver:</label><select id="ire-driver"></select></div>
-        <div class="form-group"><label>Depot:</label><select id="ire-depot"><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Description:</label><input type="text" id="ire-desc" style="width:350px"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Damage Cost:</label><input type="number" id="ire-cost" min="0" style="width:100px"> <span style="font-size:12px;color:#666">VND</span></div>
-        <div class="form-group"><label>Status:</label><select id="ire-status"><option>Open</option><option>Under Investigation</option><option>Closed</option></select></div>
-      </div>
-      <div class="form-row">
-        <button class="form-btn primary" onclick="saveIncidentEdit()">Save</button>
-        <button class="form-btn" onclick="cancelEdit('ir-edit')">Cancel</button>
-      </div>
-    </div>
-
-    <div class="table-section">
-      <h2>Incident Reports <span id="ir-count" style="font-weight:normal;font-size:12px;color:#888"></span></h2>
-      <table><thead><tr><th>ID</th><th>Date</th><th>Type</th><th>Vehicle</th><th>Driver</th><th>Depot</th><th>Severity</th><th>Status</th><th>Cost (VND)</th><th>Action</th></tr></thead>
-      <tbody id="ir-body"></tbody></table>
-    </div>
-  </div>
-
+<div class="tabs">
+  <label for="tab1">Vehicles</label>
+  <label for="tab2">Drivers</label>
+  <label for="tab3">Depots</label>
+  <label for="tab4">Mechanics</label>
+  <label for="tab5">Incidents</label>
 </div>
 
-<script>
-/* ============================================================
-   DATA — seed from CSV files
-   ============================================================ */
-let vehicles = [
-  {vin:"1HGBH41JXMN109186",reg:"71C-12345",model:"Kenworth T680",cat:"Heavy Truck",year:2021,status:"Available",depot:"Hanoi Main"},
-  {vin:"2FZHAZCVX5AB12345",reg:"51F-67890",model:"Volvo FH16",cat:"Heavy Truck",year:2022,status:"On Road",depot:"Hanoi Main"},
-  {vin:"3AKJGBDC5SCLA1234",reg:"30A-11111",model:"Scania R500",cat:"Heavy Truck",year:2020,status:"On Road",depot:"Da Nang"},
-  {vin:"4V4NC9EJXNN345678",reg:"29B-22222",model:"Freightliner Cascadia",cat:"Heavy Truck",year:2019,status:"In Shop",depot:"HCMC"},
-  {vin:"5J6YH1F37NL012345",reg:"72C-33333",model:"Isuzu FVR",cat:"Medium Truck",year:2022,status:"Available",depot:"Hai Phong"},
-  {vin:"6F1FA6E86NG456789",reg:"52F-44444",model:"Hino 700",cat:"Heavy Truck",year:2021,status:"On Road",depot:"Da Nang"},
-  {vin:"7MTAZ33C0NT012345",reg:"30B-55555",model:"Mercedes Actros",cat:"Heavy Truck",year:2023,status:"Available",depot:"Hanoi Main"},
-  {vin:"8BCDE123456789012",reg:"71D-66666",model:"Hyundai Xcient",cat:"Heavy Truck",year:2022,status:"On Road",depot:"HCMC"},
-  {vin:"9XYZ9876543210ABC",reg:"29A-77777",model:"Dongfeng KL",cat:"Light Truck",year:2020,status:"Out of Service",depot:"Hai Phong"},
-  {vin:"ABC123DEF45678901",reg:"51A-88888",model:"Kenworth C500",cat:"Heavy Truck",year:2023,status:"Available",depot:"Da Nang"},
-  {vin:"BCD234EFG56789012",reg:"72D-99999",model:"Volvo FMX",cat:"Heavy Truck",year:2021,status:"On Road",depot:"HCMC"},
-  {vin:"CDE345FGH67890123",reg:"30C-10101",model:"Scania G460",cat:"Heavy Truck",year:2022,status:"In Shop",depot:"Hanoi Main"},
-  {vin:"DEF456GHI78901234",reg:"52A-20202",model:"Isuzu Giga",cat:"Medium Truck",year:2020,status:"Available",depot:"Hai Phong"},
-  {vin:"EFG567HIJ89012345",reg:"71B-30303",model:"Hino Profia",cat:"Heavy Truck",year:2023,status:"On Road",depot:"Da Nang"},
-  {vin:"FGH678IJK90123456",reg:"29C-40404",model:"Mitsubishi Fuso",cat:"Medium Truck",year:2021,status:"Available",depot:"HCMC"},
-  {vin:"GHI789JKL01234567",reg:"51B-50505",model:"Mercedes Arocs",cat:"Heavy Truck",year:2022,status:"On Road",depot:"Hanoi Main"},
-];
-let drivers = [
-  {id:1,name:"Nguyen Van An",lic:"Class E",contact:"+84 912 345 678",depot:"Hanoi Main",status:"Active",score:94},
-  {id:2,name:"Tran Thi Binh",lic:"Class E",contact:"+84 913 456 789",depot:"HCMC",status:"Active",score:88},
-  {id:3,name:"Le Van Cuong",lic:"Class D",contact:"+84 914 567 890",depot:"Da Nang",status:"Active",score:76},
-  {id:4,name:"Pham Van Dung",lic:"Class E",contact:"+84 915 678 901",depot:"Hai Phong",status:"Suspended",score:45},
-  {id:5,name:"Hoang Thi Em",lic:"Class C",contact:"+84 916 789 012",depot:"Hanoi Main",status:"Active",score:97},
-  {id:6,name:"Vu Van Phong",lic:"Class E",contact:"+84 917 890 123",depot:"HCMC",status:"Active",score:82},
-  {id:7,name:"Dang Thi Gam",lic:"Class D",contact:"+84 918 901 234",depot:"Da Nang",status:"On Leave",score:70},
-  {id:8,name:"Bui Van Huy",lic:"Class E",contact:"+84 919 012 345",depot:"Hanoi Main",status:"Active",score:91},
-  {id:9,name:"Nguyen Thi Hien",lic:"Class C",contact:"+84 920 123 456",depot:"Hai Phong",status:"Active",score:85},
-  {id:10,name:"Tran Van Khoa",lic:"Class E",contact:"+84 921 234 567",depot:"HCMC",status:"Active",score:79},
-];
-let depots = [
-  {id:1,name:"Hanoi Main",loc:"Long Bien, Hanoi",vehicles:42,drivers:28,mechanics:8},
-  {id:2,name:"HCMC",loc:"Binh Tan, Ho Chi Minh City",vehicles:36,drivers:24,mechanics:6},
-  {id:3,name:"Da Nang",loc:"Lien Chieu, Da Nang",vehicles:24,drivers:16,mechanics:5},
-  {id:4,name:"Hai Phong",loc:"Ngo Quyen, Hai Phong",vehicles:18,drivers:12,mechanics:6},
-];
-let mechanics = [
-  {id:1,name:"Tran Minh Tu",contact:"+84 931 000 111",depot:"Hanoi Main",spec:"Engine",hire:"2020-03-15"},
-  {id:2,name:"Nguyen Duc Thang",contact:"+84 932 000 222",depot:"Hanoi Main",spec:"Transmission",hire:"2019-06-20"},
-  {id:3,name:"Pham Hong Son",contact:"+84 933 000 333",depot:"HCMC",spec:"Electrical",hire:"2021-01-10"},
-  {id:4,name:"Vo Thanh Nam",contact:"+84 934 000 444",depot:"HCMC",spec:"Brake System",hire:"2020-08-05"},
-  {id:5,name:"Hoang Duc Long",contact:"+84 935 000 555",depot:"Da Nang",spec:"Engine",hire:"2022-02-14"},
-  {id:6,name:"Le Quoc Bao",contact:"+84 936 000 666",depot:"Hai Phong",spec:"Hydraulics",hire:"2021-05-22"},
-];
+<!-- ==================== VEHICLES ==================== -->
+<div id="content1" class="tab-content">
+  <div class="form-section">
+    <h2>Add Vehicle</h2>
+    <div class="form-row">
+      <div class="form-group"><label>VIN:</label><input type="text" style="width:160px" readonly disabled></div>
+      <div class="form-group"><label>Reg:</label><input type="text" style="width:90px" readonly disabled></div>
+      <div class="form-group"><label>Model:</label><input type="text" style="width:140px" readonly disabled></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Category:</label>
+        <select disabled><option>Heavy Truck</option><option>Medium Truck</option><option>Light Truck</option></select>
+      </div>
+      <div class="form-group"><label>Year:</label><input type="number" value="2024" style="width:70px" readonly disabled></div>
+      <div class="form-group">
+        <label>Depot:</label>
+        <select disabled><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select>
+      </div>
+      <div class="form-group">
+        <label>Status:</label>
+        <select disabled><option>Available</option><option>On Road</option><option>In Shop</option><option>Out of Service</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <button class="form-btn primary" disabled>Add Vehicle</button>
+    </div>
+  </div>
 
-let incidents = [
-  {id:1001,date:"2026-07-15",type:"Collision",vin:"3AKJGBDC5SCLA1234",driver:"Le Van Cuong",depot:"Da Nang",sev:"Major",desc:"Rear-ended at traffic light, bumper and tail lights damaged",cost:8500000,status:"Closed"},
-  {id:1002,date:"2026-07-18",type:"Breakdown",vin:"4V4NC9EJXNN345678",driver:"Tran Thi Binh",depot:"HCMC",sev:"Major",desc:"Engine overheated on highway, required tow to depot",cost:15200000,status:"Under Investigation"},
-  {id:1003,date:"2026-07-20",type:"Load Spill",vin:"5J6YH1F37NL012345",driver:"Nguyen Thi Hien",depot:"Hai Phong",sev:"Minor",desc:"Unsecured cargo shifted during turn, partial load loss",cost:2100000,status:"Open"},
-  {id:1004,date:"2026-07-21",type:"Mechanical Failure",vin:"CDE345FGH67890123",driver:"Bui Van Huy",depot:"Hanoi Main",sev:"Major",desc:"Transmission failed mid-route, vehicle stranded",cost:22000000,status:"Open"},
-  {id:1005,date:"2026-07-22",type:"Collision",vin:"8BCDE123456789012",driver:"Vu Van Phong",depot:"HCMC",sev:"Critical",desc:"Side collision at intersection, driver minor injury",cost:35000000,status:"Under Investigation"},
-  {id:1006,date:"2026-07-22",type:"Injury",vin:"2FZHAZCVX5AB12345",driver:"Nguyen Van An",depot:"Hanoi Main",sev:"Minor",desc:"Driver slipped while inspecting cargo, minor sprain",cost:500000,status:"Closed"},
-];
-let incidentNextId = 1007;
+  <div class="table-section">
+    <h2>Vehicles (16 records)</h2>
+    <table>
+      <thead><tr><th>VIN</th><th>Reg</th><th>Model</th><th>Category</th><th>Year</th><th>Status</th><th>Depot</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>1HGBH41JXMN109186</td><td>71C-12345</td><td>Kenworth T680</td><td>Heavy Truck</td><td>2021</td><td><span class="badge avail">Available</span></td><td>Hanoi Main</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>2FZHAZCVX5AB12345</td><td>51F-67890</td><td>Volvo FH16</td><td>Heavy Truck</td><td>2022</td><td><span class="badge road">On Road</span></td><td>Hanoi Main</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>3AKJGBDC5SCLA1234</td><td>30A-11111</td><td>Scania R500</td><td>Heavy Truck</td><td>2020</td><td><span class="badge road">On Road</span></td><td>Da Nang</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>4V4NC9EJXNN345678</td><td>29B-22222</td><td>Freightliner Cascadia</td><td>Heavy Truck</td><td>2019</td><td><span class="badge shop">In Shop</span></td><td>HCMC</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>5J6YH1F37NL012345</td><td>72C-33333</td><td>Isuzu FVR</td><td>Medium Truck</td><td>2022</td><td><span class="badge avail">Available</span></td><td>Hai Phong</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>6F1FA6E86NG456789</td><td>52F-44444</td><td>Hino 700</td><td>Heavy Truck</td><td>2021</td><td><span class="badge road">On Road</span></td><td>Da Nang</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>7MTAZ33C0NT012345</td><td>30B-55555</td><td>Mercedes Actros</td><td>Heavy Truck</td><td>2023</td><td><span class="badge avail">Available</span></td><td>Hanoi Main</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>8BCDE123456789012</td><td>71D-66666</td><td>Hyundai Xcient</td><td>Heavy Truck</td><td>2022</td><td><span class="badge road">On Road</span></td><td>HCMC</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>9XYZ9876543210ABC</td><td>29A-77777</td><td>Dongfeng KL</td><td>Light Truck</td><td>2020</td><td><span class="badge oos">Out of Service</span></td><td>Hai Phong</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>ABC123DEF45678901</td><td>51A-88888</td><td>Kenworth C500</td><td>Heavy Truck</td><td>2023</td><td><span class="badge avail">Available</span></td><td>Da Nang</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>BCD234EFG56789012</td><td>72D-99999</td><td>Volvo FMX</td><td>Heavy Truck</td><td>2021</td><td><span class="badge road">On Road</span></td><td>HCMC</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>CDE345FGH67890123</td><td>30C-10101</td><td>Scania G460</td><td>Heavy Truck</td><td>2022</td><td><span class="badge shop">In Shop</span></td><td>Hanoi Main</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>DEF456GHI78901234</td><td>52A-20202</td><td>Isuzu Giga</td><td>Medium Truck</td><td>2020</td><td><span class="badge avail">Available</span></td><td>Hai Phong</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>EFG567HIJ89012345</td><td>71B-30303</td><td>Hino Profia</td><td>Heavy Truck</td><td>2023</td><td><span class="badge road">On Road</span></td><td>Da Nang</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>FGH678IJK90123456</td><td>29C-40404</td><td>Mitsubishi Fuso</td><td>Medium Truck</td><td>2021</td><td><span class="badge avail">Available</span></td><td>HCMC</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>GHI789JKL01234567</td><td>51B-50505</td><td>Mercedes Arocs</td><td>Heavy Truck</td><td>2022</td><td><span class="badge road">On Road</span></td><td>Hanoi Main</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-let driverNextId = 11;
-let mechanicNextId = 7;
-let depotNextId = 5;
-let incidentNextId = 1;
+<!-- ==================== DRIVERS ==================== -->
+<div id="content2" class="tab-content">
+  <div class="form-section">
+    <h2>Add Driver</h2>
+    <div class="form-row">
+      <div class="form-group"><label>Name:</label><input type="text" style="width:160px" readonly disabled></div>
+      <div class="form-group"><label>Licence:</label><select disabled><option>Class C</option><option>Class D</option><option>Class E</option></select></div>
+      <div class="form-group"><label>Contact:</label><input type="text" style="width:130px" readonly disabled></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Depot:</label><select disabled><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select></div>
+      <div class="form-group"><label>Status:</label><select disabled><option>Active</option><option>Suspended</option><option>On Leave</option></select></div>
+      <div class="form-group"><label>Score:</label><input type="number" value="100" min="0" max="100" style="width:60px" readonly disabled></div>
+    </div>
+    <div class="form-row"><button class="form-btn primary" disabled>Add Driver</button></div>
+  </div>
 
-let incidents = [
-  {id:incidentNextId++,date:"2026-07-15",type:"Collision",severity:"Major",vin:"2FZHAZCVX5AB12345",driver:"Nguyen Van An",depot:"Hanoi Main",desc:"Rear-ended at traffic light, bumper damage",cost:15000000,status:"Under Investigation"},
-  {id:incidentNextId++,date:"2026-07-18",type:"Breakdown",severity:"Minor",vin:"CDE345FGH67890123",driver:"Bui Van Huy",depot:"Hanoi Main",desc:"Engine overheating, towed to depot",cost:3500000,status:"Closed"},
-  {id:incidentNextId++,date:"2026-07-20",type:"Mechanical Failure",severity:"Major",vin:"4V4NC9EJXNN345678",driver:"Le Van Cuong",depot:"HCMC",desc:"Transmission failure on highway",cost:28000000,status:"Open"},
-  {id:incidentNextId++,date:"2026-07-21",type:"Theft",severity:"Critical",vin:"9XYZ9876543210ABC",driver:"Pham Van Dung",depot:"Hai Phong",desc:"Cargo theft at rest stop",cost:45000000,status:"Under Investigation"},
-  {id:incidentNextId++,date:"2026-07-22",type:"Load Spill",severity:"Minor",vin:"8BCDE123456789012",driver:"Tran Van Khoa",depot:"HCMC",desc:"Spill during sharp turn",cost:5000000,status:"Open"},
-];
+  <div class="table-section">
+    <h2>Drivers (10 records)</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Name</th><th>Licence</th><th>Contact</th><th>Depot</th><th>Status</th><th>Score</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>D-0001</td><td>Nguyen Van An</td><td>Class E</td><td>+84 912 345 678</td><td>Hanoi Main</td><td>Active</td><td><span class="badge good">94</span></td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>D-0002</td><td>Tran Thi Binh</td><td>Class E</td><td>+84 913 456 789</td><td>HCMC</td><td>Active</td><td><span class="badge good">88</span></td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>D-0003</td><td>Le Van Cuong</td><td>Class D</td><td>+84 914 567 890</td><td>Da Nang</td><td>Active</td><td><span class="badge fair">76</span></td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>D-0004</td><td>Pham Van Dung</td><td>Class E</td><td>+84 915 678 901</td><td>Hai Phong</td><td>Suspended</td><td><span class="badge poor">45</span></td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>D-0005</td><td>Hoang Thi Em</td><td>Class C</td><td>+84 916 789 012</td><td>Hanoi Main</td><td>Active</td><td><span class="badge good">97</span></td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>D-0006</td><td>Vu Van Phong</td><td>Class E</td><td>+84 917 890 123</td><td>HCMC</td><td>Active</td><td><span class="badge fair">82</span></td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>D-0007</td><td>Dang Thi Gam</td><td>Class D</td><td>+84 918 901 234</td><td>Da Nang</td><td>On Leave</td><td><span class="badge fair">70</span></td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>D-0008</td><td>Bui Van Huy</td><td>Class E</td><td>+84 919 012 345</td><td>Hanoi Main</td><td>Active</td><td><span class="badge good">91</span></td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>D-0009</td><td>Nguyen Thi Hien</td><td>Class C</td><td>+84 920 123 456</td><td>Hai Phong</td><td>Active</td><td><span class="badge good">85</span></td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>D-0010</td><td>Tran Van Khoa</td><td>Class E</td><td>+84 921 234 567</td><td>HCMC</td><td>Active</td><td><span class="badge fair">79</span></td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-/* ============================================================
-   MESSAGE BAR
-   ============================================================ */
-function showMsg(text) {
-  const bar = document.getElementById('msg-bar');
-  bar.textContent = text;
-  bar.style.display = 'block';
-  setTimeout(() => { bar.style.display = 'none'; }, 3000);
-}
+<!-- ==================== DEPOTS ==================== -->
+<div id="content3" class="tab-content">
+  <div class="form-section">
+    <h2>Add Depot</h2>
+    <div class="form-row">
+      <div class="form-group"><label>Name:</label><input type="text" style="width:160px" readonly disabled></div>
+      <div class="form-group"><label>Location:</label><input type="text" style="width:200px" readonly disabled></div>
+    </div>
+    <div class="form-row"><button class="form-btn primary" disabled>Add Depot</button></div>
+  </div>
 
-/* ============================================================
-   TABS
-   ============================================================ */
-document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', function() {
-  document.querySelectorAll('.tab-btn,.entity-tab').forEach(e => e.classList.remove('active'));
-  this.classList.add('active');
-  document.getElementById('tab-' + this.dataset.tab).classList.add('active');
-}));
+  <div class="table-section">
+    <h2>Depots (4 records)</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Name</th><th>Location</th><th>Vehicles</th><th>Drivers</th><th>Mechanics</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Hanoi Main</td><td>Long Bien, Hanoi</td><td>42</td><td>28</td><td>8</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>2</td><td>HCMC</td><td>Binh Tan, Ho Chi Minh City</td><td>36</td><td>24</td><td>6</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>3</td><td>Da Nang</td><td>Lien Chieu, Da Nang</td><td>24</td><td>16</td><td>5</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>4</td><td>Hai Phong</td><td>Ngo Quyen, Hai Phong</td><td>18</td><td>12</td><td>6</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-/* ============================================================
-   HELPERS
-   ============================================================ */
-function val(id) { return document.getElementById(id).value.trim(); }
-function setVal(id, v) { document.getElementById(id).value = v; }
-function cancelEdit(id) { document.getElementById(id).style.display = 'none'; }
-function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+<!-- ==================== MECHANICS ==================== -->
+<div id="content4" class="tab-content">
+  <div class="form-section">
+    <h2>Add Mechanic</h2>
+    <div class="form-row">
+      <div class="form-group"><label>Name:</label><input type="text" style="width:160px" readonly disabled></div>
+      <div class="form-group"><label>Contact:</label><input type="text" style="width:130px" readonly disabled></div>
+      <div class="form-group"><label>Depot:</label><select disabled><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Specialization:</label><input type="text" style="width:140px" readonly disabled></div>
+      <div class="form-group"><label>Hire Date:</label><input type="date" readonly disabled></div>
+    </div>
+    <div class="form-row"><button class="form-btn primary" disabled>Add Mechanic</button></div>
+  </div>
 
-/* ============================================================
-   VEHICLES CRUD
-   ============================================================ */
-function renderVehicles() {
-  const tbody = document.getElementById('v-body');
-  tbody.innerHTML = vehicles.map((v, i) =>
-    `<tr>
-      <td><code>${escapeHtml(v.vin)}</code></td>
-      <td>${escapeHtml(v.reg)}</td>
-      <td>${escapeHtml(v.model)}</td>
-      <td>${escapeHtml(v.cat)}</td>
-      <td>${v.year}</td>
-      <td>${escapeHtml(v.status)}</td>
-      <td>${escapeHtml(v.depot)}</td>
-      <td>
-        <button class="action-btn" onclick="editVehicle(${i})">Edit</button>
-        <button class="action-btn del" onclick="deleteVehicle(${i})">Delete</button>
-      </td>
-    </tr>`
-  ).join('');
-  document.getElementById('v-count').textContent = `(${vehicles.length} records)`;
-}
-function addVehicle() {
-  const vin = val('v-vin'), reg = val('v-reg'), model = val('v-model');
-  if (!vin || !reg || !model) { showMsg('Error: VIN, Registration, and Model are required.'); return; }
-  if (vehicles.find(v => v.vin === vin)) { showMsg('Error: VIN already exists.'); return; }
-  vehicles.push({ vin, reg, model, cat: val('v-cat'), year: parseInt(val('v-year')) || 2024, status: val('v-status'), depot: val('v-depot') });
-  ['v-vin','v-reg','v-model'].forEach(id => setVal(id, ''));
-  showMsg(`Vehicle ${vin} added successfully.`);
-  renderVehicles();
-}
-function editVehicle(i) {
-  const v = vehicles[i];
-  setVal('ve-vin', v.vin); setVal('ve-reg', v.reg); setVal('ve-model', v.model);
-  setVal('ve-cat', v.cat); setVal('ve-year', v.year); setVal('ve-depot', v.depot); setVal('ve-status', v.status);
-  document.getElementById('v-edit').style.display = 'block';
-  document.getElementById('v-edit').dataset.idx = i;
-}
-function saveVehicleEdit() {
-  const i = parseInt(document.getElementById('v-edit').dataset.idx);
-  vehicles[i] = { vin: val('ve-vin'), reg: val('ve-reg'), model: val('ve-model'), cat: val('ve-cat'), year: parseInt(val('ve-year')), depot: val('ve-depot'), status: val('ve-status') };
-  cancelEdit('v-edit');
-  showMsg(`Vehicle ${vehicles[i].vin} updated.`);
-  renderVehicles();
-}
-function deleteVehicle(i) {
-  if (!confirm('Delete vehicle ' + vehicles[i].vin + '?')) return;
-  const vin = vehicles[i].vin;
-  vehicles.splice(i, 1);
-  showMsg(`Vehicle ${vin} deleted.`);
-  renderVehicles();
-}
+  <div class="table-section">
+    <h2>Mechanics (6 records)</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Name</th><th>Contact</th><th>Depot</th><th>Specialization</th><th>Hire Date</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>M-0001</td><td>Tran Minh Tu</td><td>+84 931 000 111</td><td>Hanoi Main</td><td>Engine</td><td>2020-03-15</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>M-0002</td><td>Nguyen Duc Thang</td><td>+84 932 000 222</td><td>Hanoi Main</td><td>Transmission</td><td>2019-06-20</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>M-0003</td><td>Pham Hong Son</td><td>+84 933 000 333</td><td>HCMC</td><td>Electrical</td><td>2021-01-10</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>M-0004</td><td>Vo Thanh Nam</td><td>+84 934 000 444</td><td>HCMC</td><td>Brake System</td><td>2020-08-05</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>M-0005</td><td>Hoang Duc Long</td><td>+84 935 000 555</td><td>Da Nang</td><td>Engine</td><td>2022-02-14</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>M-0006</td><td>Le Quoc Bao</td><td>+84 936 000 666</td><td>Hai Phong</td><td>Hydraulics</td><td>2021-05-22</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-/* ============================================================
-   DRIVERS CRUD
-   ============================================================ */
-function renderDrivers() {
-  const tbody = document.getElementById('d-body');
-  tbody.innerHTML = drivers.map((d, i) =>
-    `<tr>
-      <td>D-${String(d.id).padStart(4,'0')}</td>
-      <td>${escapeHtml(d.name)}</td>
-      <td>${escapeHtml(d.lic)}</td>
-      <td>${escapeHtml(d.contact)}</td>
-      <td>${escapeHtml(d.depot)}</td>
-      <td>${escapeHtml(d.status)}</td>
-      <td>${d.score}</td>
-      <td>
-        <button class="action-btn" onclick="editDriver(${i})">Edit</button>
-        <button class="action-btn del" onclick="deleteDriver(${i})">Delete</button>
-      </td>
-    </tr>`
-  ).join('');
-  document.getElementById('d-count').textContent = `(${drivers.length} records)`;
-}
-function addDriver() {
-  const name = val('d-name');
-  if (!name) { showMsg('Error: Name is required.'); return; }
-  drivers.push({ id: driverNextId++, name, lic: val('d-lic'), contact: val('d-contact'), depot: val('d-depot'), status: val('d-status'), score: parseInt(val('d-score')) || 100 });
-  setVal('d-name', ''); setVal('d-contact', '');
-  showMsg(`Driver "${name}" added as D-${String(driverNextId-1).padStart(4,'0')}.`);
-  renderDrivers();
-}
-function editDriver(i) {
-  const d = drivers[i];
-  setVal('de-id', 'D-' + String(d.id).padStart(4,'0'));
-  setVal('de-name', d.name); setVal('de-lic', d.lic);
-  setVal('de-contact', d.contact); setVal('de-depot', d.depot);
-  setVal('de-status', d.status); setVal('de-score', d.score);
-  document.getElementById('d-edit').style.display = 'block';
-  document.getElementById('d-edit').dataset.idx = i;
-}
-function saveDriverEdit() {
-  const i = parseInt(document.getElementById('d-edit').dataset.idx);
-  drivers[i] = { id: drivers[i].id, name: val('de-name'), lic: val('de-lic'), contact: val('de-contact'), depot: val('de-depot'), status: val('de-status'), score: parseInt(val('de-score')) };
-  cancelEdit('d-edit');
-  showMsg(`Driver D-${String(drivers[i].id).padStart(4,'0')} updated.`);
-  renderDrivers();
-}
-function deleteDriver(i) {
-  if (!confirm('Delete driver ' + drivers[i].name + '?')) return;
-  drivers.splice(i, 1);
-  showMsg('Driver deleted.');
-  renderDrivers();
-}
+<!-- ==================== INCIDENTS ==================== -->
+<div id="content5" class="tab-content">
+  <div class="form-section">
+    <h2>Report Incident</h2>
+    <div class="form-row">
+      <div class="form-group"><label>Date:</label><input type="date" readonly disabled></div>
+      <div class="form-group">
+        <label>Type:</label>
+        <select disabled><option>Collision</option><option>Breakdown</option><option>Fire</option><option>Theft</option><option>Injury</option><option>Load Spill</option><option>Mechanical Failure</option></select>
+      </div>
+      <div class="form-group">
+        <label>Severity:</label>
+        <select disabled><option>Minor</option><option>Major</option><option>Critical</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Vehicle:</label>
+        <select disabled>
+          <option>1HGBH41JXMN109186 — Kenworth T680</option>
+          <option>2FZHAZCVX5AB12345 — Volvo FH16</option>
+          <option>3AKJGBDC5SCLA1234 — Scania R500</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Driver:</label>
+        <select disabled>
+          <option>Nguyen Van An (D-0001)</option>
+          <option>Tran Thi Binh (D-0002)</option>
+          <option>Le Van Cuong (D-0003)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Depot:</label>
+        <select disabled><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Description:</label><input type="text" style="width:350px" readonly disabled></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Damage Cost:</label><input type="number" value="0" min="0" style="width:100px" readonly disabled> <span style="font-size:12px;color:#666">VND</span></div>
+      <div class="form-group">
+        <label>Status:</label>
+        <select disabled><option>Open</option><option>Under Investigation</option><option>Closed</option></select>
+      </div>
+    </div>
+    <div class="form-row"><button class="form-btn primary" disabled>Report Incident</button></div>
+  </div>
 
-/* ============================================================
-   DEPOTS CRUD
-   ============================================================ */
-function renderDepots() {
-  const tbody = document.getElementById('dp-body');
-  tbody.innerHTML = depots.map((d, i) =>
-    `<tr>
-      <td>${d.id}</td>
-      <td>${escapeHtml(d.name)}</td>
-      <td>${escapeHtml(d.loc)}</td>
-      <td>${d.vehicles}</td>
-      <td>${d.drivers}</td>
-      <td>${d.mechanics}</td>
-      <td>
-        <button class="action-btn" onclick="editDepot(${i})">Edit</button>
-        <button class="action-btn del" onclick="deleteDepot(${i})">Delete</button>
-      </td>
-    </tr>`
-  ).join('');
-  document.getElementById('dp-count').textContent = `(${depots.length} records)`;
-}
-function addDepot() {
-  const name = val('dp-name'), loc = val('dp-loc');
-  if (!name || !loc) { showMsg('Error: Name and Location are required.'); return; }
-  depots.push({ id: depotNextId++, name, loc, vehicles: 0, drivers: 0, mechanics: 0 });
-  setVal('dp-name', ''); setVal('dp-loc', '');
-  showMsg(`Depot "${name}" added.`);
-  renderDepots();
-}
-function editDepot(i) {
-  const d = depots[i];
-  setVal('dpe-id', d.id); setVal('dpe-name', d.name); setVal('dpe-loc', d.loc);
-  document.getElementById('dp-edit').style.display = 'block';
-  document.getElementById('dp-edit').dataset.idx = i;
-}
-function saveDepotEdit() {
-  const i = parseInt(document.getElementById('dp-edit').dataset.idx);
-  depots[i] = { id: depots[i].id, name: val('dpe-name'), loc: val('dpe-loc'), vehicles: depots[i].vehicles, drivers: depots[i].drivers, mechanics: depots[i].mechanics };
-  cancelEdit('dp-edit');
-  showMsg(`Depot "${depots[i].name}" updated.`);
-  renderDepots();
-}
-function deleteDepot(i) {
-  if (!confirm('Delete depot ' + depots[i].name + '?')) return;
-  depots.splice(i, 1);
-  showMsg('Depot deleted.');
-  renderDepots();
-}
+  <div class="table-section">
+    <h2>Incident Reports (5 records)</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Date</th><th>Type</th><th>Vehicle</th><th>Driver</th><th>Depot</th><th>Severity</th><th>Status</th><th>Cost (VND)</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>2026-07-15</td><td>Collision</td><td>2FZHAZCVX5AB12345</td><td>Nguyen Van An</td><td>Hanoi Main</td><td>Major</td><td>Under Investigation</td><td style="text-align:right">15,000,000</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>2</td><td>2026-07-18</td><td>Breakdown</td><td>CDE345FGH67890123</td><td>Bui Van Huy</td><td>Hanoi Main</td><td>Minor</td><td>Closed</td><td style="text-align:right">3,500,000</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>3</td><td>2026-07-20</td><td>Mechanical Failure</td><td>4V4NC9EJXNN345678</td><td>Le Van Cuong</td><td>HCMC</td><td>Major</td><td>Open</td><td style="text-align:right">28,000,000</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>4</td><td>2026-07-21</td><td>Theft</td><td>9XYZ9876543210ABC</td><td>Pham Van Dung</td><td>Hai Phong</td><td>Critical</td><td>Under Investigation</td><td style="text-align:right">45,000,000</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>5</td><td>2026-07-22</td><td>Load Spill</td><td>8BCDE123456789012</td><td>Tran Van Khoa</td><td>HCMC</td><td>Minor</td><td>Open</td><td style="text-align:right">5,000,000</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-/* ============================================================
-   MECHANICS CRUD
-   ============================================================ */
-function renderMechanics() {
-  const tbody = document.getElementById('m-body');
-  tbody.innerHTML = mechanics.map((m, i) =>
-    `<tr>
-      <td>M-${String(m.id).padStart(4,'0')}</td>
-      <td>${escapeHtml(m.name)}</td>
-      <td>${escapeHtml(m.contact)}</td>
-      <td>${escapeHtml(m.depot)}</td>
-      <td>${escapeHtml(m.spec)}</td>
-      <td>${m.hire}</td>
-      <td>
-        <button class="action-btn" onclick="editMech(${i})">Edit</button>
-        <button class="action-btn del" onclick="deleteMech(${i})">Delete</button>
-      </td>
-    </tr>`
-  ).join('');
-  document.getElementById('m-count').textContent = `(${mechanics.length} records)`;
-}
-function addMechanic() {
-  const name = val('m-name');
-  if (!name) { showMsg('Error: Name is required.'); return; }
-  mechanics.push({ id: mechanicNextId++, name, contact: val('m-contact'), depot: val('m-depot'), spec: val('m-spec'), hire: val('m-date') });
-  setVal('m-name', ''); setVal('m-contact', ''); setVal('m-spec', ''); setVal('m-date', '');
-  showMsg(`Mechanic "${name}" added as M-${String(mechanicNextId-1).padStart(4,'0')}.`);
-  renderMechanics();
-}
-function editMech(i) {
-  const m = mechanics[i];
-  setVal('me-id', 'M-' + String(m.id).padStart(4,'0'));
-  setVal('me-name', m.name); setVal('me-contact', m.contact);
-  setVal('me-depot', m.depot); setVal('me-spec', m.spec); setVal('me-date', m.hire);
-  document.getElementById('m-edit').style.display = 'block';
-  document.getElementById('m-edit').dataset.idx = i;
-}
-function saveMechEdit() {
-  const i = parseInt(document.getElementById('m-edit').dataset.idx);
-  mechanics[i] = { id: mechanics[i].id, name: val('me-name'), contact: val('me-contact'), depot: val('me-depot'), spec: val('me-spec'), hire: val('me-date') };
-  cancelEdit('m-edit');
-  showMsg(`Mechanic M-${String(mechanics[i].id).padStart(4,'0')} updated.`);
-  renderMechanics();
-}
-function deleteMech(i) {
-  if (!confirm('Delete mechanic ' + mechanics[i].name + '?')) return;
-  mechanics.splice(i, 1);
-  showMsg('Mechanic deleted.');
-  renderMechanics();
-}
-
-/* ============================================================
-   INCIDENTS CRUD
-   ============================================================ */
-function populateIncidentSelects() {
-  const vSel1 = document.getElementById('ir-vin');
-  const vSel2 = document.getElementById('ire-vin');
-  const dSel1 = document.getElementById('ir-driver');
-  const dSel2 = document.getElementById('ire-driver');
-  const vOpts = vehicles.map(v => `<option value="${escapeHtml(v.vin)}">${escapeHtml(v.vin)} — ${escapeHtml(v.model)}</option>`).join('');
-  const dOpts = drivers.map(d => `<option value="${escapeHtml(d.name)}">${escapeHtml(d.name)} (D-${String(d.id).padStart(4,'0')})</option>`).join('');
-  vSel1.innerHTML = vOpts; vSel2.innerHTML = vOpts;
-  dSel1.innerHTML = dOpts; dSel2.innerHTML = dOpts;
-}
-
-function renderIncidents() {
-  const tbody = document.getElementById('ir-body');
-  tbody.innerHTML = incidents.map((r, i) =>
-    `<tr>
-      <td>${r.id}</td>
-      <td>${escapeHtml(r.date)}</td>
-      <td>${escapeHtml(r.type)}</td>
-      <td><code>${escapeHtml(r.vin)}</code></td>
-      <td>${escapeHtml(r.driver)}</td>
-      <td>${escapeHtml(r.depot)}</td>
-      <td>${escapeHtml(r.severity)}</td>
-      <td>${escapeHtml(r.status)}</td>
-      <td style="text-align:right">${r.cost ? r.cost.toLocaleString('vi-VN') : '—'}</td>
-      <td>
-        <button class="action-btn" onclick="editIncident(${i})">Edit</button>
-        <button class="action-btn del" onclick="deleteIncident(${i})">Delete</button>
-      </td>
-    </tr>`
-  ).join('');
-  document.getElementById('ir-count').textContent = `(${incidents.length} records)`;
-}
-
-function addIncident() {
-  const date = val('ir-date'), type = val('ir-type'), vin = val('ir-vin'), driver = val('ir-driver');
-  if (!date) { showMsg('Error: Date is required.'); return; }
-  incidents.push({ id: incidentNextId++, date, type, severity: val('ir-sev'), vin, driver, depot: val('ir-depot'), desc: val('ir-desc'), cost: parseInt(val('ir-cost')) || 0, status: val('ir-status') });
-  setVal('ir-desc', '');
-  showMsg(`Incident #${incidentNextId-1} reported.`);
-  renderIncidents();
-}
-
-function editIncident(i) {
-  const r = incidents[i];
-  setVal('ire-id', r.id); setVal('ire-date', r.date); setVal('ire-type', r.type);
-  setVal('ire-sev', r.severity); setVal('ire-vin', r.vin); setVal('ire-driver', r.driver);
-  setVal('ire-depot', r.depot); setVal('ire-desc', r.desc); setVal('ire-cost', r.cost);
-  setVal('ire-status', r.status);
-  document.getElementById('ir-edit').style.display = 'block';
-  document.getElementById('ir-edit').dataset.idx = i;
-}
-
-function saveIncidentEdit() {
-  const i = parseInt(document.getElementById('ir-edit').dataset.idx);
-  incidents[i] = { id: incidents[i].id, date: val('ire-date'), type: val('ire-type'), severity: val('ire-sev'), vin: val('ire-vin'), driver: val('ire-driver'), depot: val('ire-depot'), desc: val('ire-desc'), cost: parseInt(val('ire-cost')) || 0, status: val('ire-status') };
-  cancelEdit('ir-edit');
-  showMsg(`Incident #${incidents[i].id} updated.`);
-  renderIncidents();
-}
-
-function deleteIncident(i) {
-  if (!confirm('Delete incident #' + incidents[i].id + '?')) return;
-  incidents.splice(i, 1);
-  showMsg('Incident deleted.');
-  renderIncidents();
-}
-
-/* ============================================================
-   INIT
-   ============================================================ */
-renderVehicles();
-renderDrivers();
-renderDepots();
-renderMechanics();
-populateIncidentSelects();
-renderIncidents();
-</script>
+</div>
 </body>
 </html>
