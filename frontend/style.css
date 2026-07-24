@@ -88,8 +88,8 @@ tbody tr:hover{background:#ffffcc}
 #role3:checked~#login3{display:block}
 .login-box h2{font-size:16px;margin-bottom:16px;color:#4477aa;text-align:center}
 .login-box .icon{font-size:36px;display:block;text-align:center;margin-bottom:8px;color:#666}
-.login-box .form-group{margin-bottom:12px}
-.login-box .form-group label{display:block;font-weight:bold;font-size:12px;margin-bottom:4px;color:#555;min-width:0}
+.login-box .form-group{margin-bottom:12px;display:block}
+.login-box .form-group label{display:block;font-weight:bold;font-size:12px;margin-bottom:4px;color:#555;min-width:0;white-space:nowrap}
 .login-box .form-group input{width:100%;padding:8px 10px}
 .login-box .form-btn{width:100%;padding:8px;margin-top:8px;border-radius:3px}
 .login-box .hint{margin-top:14px;font-size:11px;color:#888;text-align:center;line-height:1.6}
