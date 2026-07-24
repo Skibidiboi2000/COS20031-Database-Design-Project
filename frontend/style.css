@@ -1,6 +1,6 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,Helvetica,sans-serif;font-size:13px;background:#f0f0f0;color:#333}
-.header{background:#444;color:#fff;padding:16px 24px}
+.header{background:#444;color:#fff;padding:16px 24px;display:flex;align-items:center;gap:12px}
 .header h1{font-size:22px}
 .wrap{max-width:960px;margin:0 auto;padding:20px 24px}
 
@@ -70,7 +70,7 @@ tbody tr:hover{background:#ffffcc}
 
 /* Login page */
 .login-body{min-height:100vh;display:flex;flex-direction:column}
-.header .back{float:right;color:#ccc;text-decoration:none;font-size:12px;padding:4px 10px;border:1px solid #666;border-radius:3px}
+.header .back{color:#ccc;text-decoration:none;font-size:12px;padding:4px 10px;border:1px solid #666;border-radius:3px}
 .header .back:hover{color:#fff;border-color:#999}
 .login-wrap{max-width:400px;margin:auto;padding:20px 24px;width:100%}
 .role-tabs{display:flex;gap:0;border-bottom:2px solid #4477aa;margin-bottom:20px}

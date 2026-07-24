@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin Panel — Fleet Management</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="header"><h1>Admin Panel</h1><a href="login.html" class="back">&larr; Back</a></div>
+
+<div class="wrap">
+
+<input type="radio" name="tab" id="tab1" class="tab-input" checked>
+<input type="radio" name="tab" id="tab2" class="tab-input">
+<input type="radio" name="tab" id="tab3" class="tab-input">
+<input type="radio" name="tab" id="tab4" class="tab-input">
+<input type="radio" name="tab" id="tab5" class="tab-input">
+
+<div class="tabs">
+  <label for="tab1">Vehicles</label>
+  <label for="tab2">Drivers</label>
+  <label for="tab3">Depots</label>
+  <label for="tab4">Mechanics</label>
+  <label for="tab5">Incidents</label>
+</div>
+
+<!-- ==================== VEHICLES ==================== -->
+<div id="content1" class="tab-content">
+  <div class="form-section">
+    <h2>Add Vehicle</h2>
+    <div class="form-row">
+      <div class="form-group"><label>VIN:</label><input type="text" style="width:160px" disabled></div>
+      <div class="form-group"><label>Reg:</label><input type="text" style="width:90px" disabled></div>
+      <div class="form-group"><label>Model:</label><input type="text" style="width:140px" disabled></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Category:</label>
+        <select disabled><option>Heavy Truck</option><option>Medium Truck</option><option>Light Truck</option></select>
+      </div>
+      <div class="form-group"><label>Year:</label><input type="number" value="2024" style="width:70px" disabled></div>
+      <div class="form-group">
+        <label>Depot:</label>
+        <select disabled><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select>
+      </div>
+      <div class="form-group">
+        <label>Status:</label>
+        <select disabled><option>Available</option><option>On Road</option><option>In Shop</option><option>Out of Service</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <button class="form-btn primary" disabled>Add Vehicle</button>
+    </div>
+  </div>
+
+  <div class="table-section">
+    <h2>Vehicles (16 records)</h2>
+    <table>
+      <thead><tr><th>VIN</th><th>Reg</th><th>Model</th><th>Category</th><th>Year</th><th>Status</th><th>Depot</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>1HGBH41JXMN109186</td><td>71C-12345</td><td>Kenworth T680</td><td>Heavy Truck</td><td>2021</td><td><span class="badge avail">Available</span></td><td>Hanoi Main</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>2FZHAZCVX5AB12345</td><td>51F-67890</td><td>Volvo FH16</td><td>Heavy Truck</td><td>2022</td><td><span class="badge road">On Road</span></td><td>Hanoi Main</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>3AKJGBDC5SCLA1234</td><td>30A-11111</td><td>Scania R500</td><td>Heavy Truck</td><td>2020</td><td><span class="badge road">On Road</span></td><td>Da Nang</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>4V4NC9EJXNN345678</td><td>29B-22222</td><td>Freightliner Cascadia</td><td>Heavy Truck</td><td>2019</td><td><span class="badge shop">In Shop</span></td><td>HCMC</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>5J6YH1F37NL012345</td><td>72C-33333</td><td>Isuzu FVR</td><td>Medium Truck</td><td>2022</td><td><span class="badge avail">Available</span></td><td>Hai Phong</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>6F1FA6E86NG456789</td><td>52F-44444</td><td>Hino 700</td><td>Heavy Truck</td><td>2021</td><td><span class="badge road">On Road</span></td><td>Da Nang</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>7MTAZ33C0NT012345</td><td>30B-55555</td><td>Mercedes Actros</td><td>Heavy Truck</td><td>2023</td><td><span class="badge avail">Available</span></td><td>Hanoi Main</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>8BCDE123456789012</td><td>71D-66666</td><td>Hyundai Xcient</td><td>Heavy Truck</td><td>2022</td><td><span class="badge road">On Road</span></td><td>HCMC</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>9XYZ9876543210ABC</td><td>29A-77777</td><td>Dongfeng KL</td><td>Light Truck</td><td>2020</td><td><span class="badge oos">Out of Service</span></td><td>Hai Phong</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>ABC123DEF45678901</td><td>51A-88888</td><td>Kenworth C500</td><td>Heavy Truck</td><td>2023</td><td><span class="badge avail">Available</span></td><td>Da Nang</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>BCD234EFG56789012</td><td>72D-99999</td><td>Volvo FMX</td><td>Heavy Truck</td><td>2021</td><td><span class="badge road">On Road</span></td><td>HCMC</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>CDE345FGH67890123</td><td>30C-10101</td><td>Scania G460</td><td>Heavy Truck</td><td>2022</td><td><span class="badge shop">In Shop</span></td><td>Hanoi Main</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>DEF456GHI78901234</td><td>52A-20202</td><td>Isuzu Giga</td><td>Medium Truck</td><td>2020</td><td><span class="badge avail">Available</span></td><td>Hai Phong</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>EFG567HIJ89012345</td><td>71B-30303</td><td>Hino Profia</td><td>Heavy Truck</td><td>2023</td><td><span class="badge road">On Road</span></td><td>Da Nang</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>FGH678IJK90123456</td><td>29C-40404</td><td>Mitsubishi Fuso</td><td>Medium Truck</td><td>2021</td><td><span class="badge avail">Available</span></td><td>HCMC</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>GHI789JKL01234567</td><td>51B-50505</td><td>Mercedes Arocs</td><td>Heavy Truck</td><td>2022</td><td><span class="badge road">On Road</span></td><td>Hanoi Main</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== DRIVERS ==================== -->
+<div id="content2" class="tab-content">
+  <div class="form-section">
+    <h2>Add Driver</h2>
+    <div class="form-row">
+      <div class="form-group"><label>Name:</label><input type="text" style="width:160px" disabled></div>
+      <div class="form-group"><label>Licence:</label><select disabled><option>Class C</option><option>Class D</option><option>Class E</option></select></div>
+      <div class="form-group"><label>Contact:</label><input type="text" style="width:130px" disabled></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Depot:</label><select disabled><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select></div>
+      <div class="form-group"><label>Status:</label><select disabled><option>Active</option><option>Suspended</option><option>On Leave</option></select></div>
+      <div class="form-group"><label>Score:</label><input type="number" value="100" min="0" max="100" style="width:60px" disabled></div>
+    </div>
+    <div class="form-row"><button class="form-btn primary" disabled>Add Driver</button></div>
+  </div>
+
+  <div class="table-section">
+    <h2>Drivers (10 records)</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Name</th><th>Licence</th><th>Contact</th><th>Depot</th><th>Status</th><th>Score</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>D-0001</td><td>Nguyen Van An</td><td>Class E</td><td>+84 912 345 678</td><td>Hanoi Main</td><td>Active</td><td><span class="badge good">94</span></td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>D-0002</td><td>Tran Thi Binh</td><td>Class E</td><td>+84 913 456 789</td><td>HCMC</td><td>Active</td><td><span class="badge good">88</span></td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>D-0003</td><td>Le Van Cuong</td><td>Class D</td><td>+84 914 567 890</td><td>Da Nang</td><td>Active</td><td><span class="badge fair">76</span></td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>D-0004</td><td>Pham Van Dung</td><td>Class E</td><td>+84 915 678 901</td><td>Hai Phong</td><td>Suspended</td><td><span class="badge poor">45</span></td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>D-0005</td><td>Hoang Thi Em</td><td>Class C</td><td>+84 916 789 012</td><td>Hanoi Main</td><td>Active</td><td><span class="badge good">97</span></td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>D-0006</td><td>Vu Van Phong</td><td>Class E</td><td>+84 917 890 123</td><td>HCMC</td><td>Active</td><td><span class="badge fair">82</span></td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>D-0007</td><td>Dang Thi Gam</td><td>Class D</td><td>+84 918 901 234</td><td>Da Nang</td><td>On Leave</td><td><span class="badge fair">70</span></td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>D-0008</td><td>Bui Van Huy</td><td>Class E</td><td>+84 919 012 345</td><td>Hanoi Main</td><td>Active</td><td><span class="badge good">91</span></td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>D-0009</td><td>Nguyen Thi Hien</td><td>Class C</td><td>+84 920 123 456</td><td>Hai Phong</td><td>Active</td><td><span class="badge good">85</span></td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>D-0010</td><td>Tran Van Khoa</td><td>Class E</td><td>+84 921 234 567</td><td>HCMC</td><td>Active</td><td><span class="badge fair">79</span></td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== DEPOTS ==================== -->
+<div id="content3" class="tab-content">
+  <div class="form-section">
+    <h2>Add Depot</h2>
+    <div class="form-row">
+      <div class="form-group"><label>Name:</label><input type="text" style="width:160px" disabled></div>
+      <div class="form-group"><label>Location:</label><input type="text" style="width:200px" disabled></div>
+    </div>
+    <div class="form-row"><button class="form-btn primary" disabled>Add Depot</button></div>
+  </div>
+
+  <div class="table-section">
+    <h2>Depots (4 records)</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Name</th><th>Location</th><th>Vehicles</th><th>Drivers</th><th>Mechanics</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Hanoi Main</td><td>Long Bien, Hanoi</td><td>42</td><td>28</td><td>8</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>2</td><td>HCMC</td><td>Binh Tan, Ho Chi Minh City</td><td>36</td><td>24</td><td>6</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>3</td><td>Da Nang</td><td>Lien Chieu, Da Nang</td><td>24</td><td>16</td><td>5</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>4</td><td>Hai Phong</td><td>Ngo Quyen, Hai Phong</td><td>18</td><td>12</td><td>6</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== MECHANICS ==================== -->
+<div id="content4" class="tab-content">
+  <div class="form-section">
+    <h2>Add Mechanic</h2>
+    <div class="form-row">
+      <div class="form-group"><label>Name:</label><input type="text" style="width:160px" disabled></div>
+      <div class="form-group"><label>Contact:</label><input type="text" style="width:130px" disabled></div>
+      <div class="form-group"><label>Depot:</label><select disabled><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Specialization:</label><input type="text" style="width:140px" disabled></div>
+      <div class="form-group"><label>Hire Date:</label><input type="date" disabled></div>
+    </div>
+    <div class="form-row"><button class="form-btn primary" disabled>Add Mechanic</button></div>
+  </div>
+
+  <div class="table-section">
+    <h2>Mechanics (6 records)</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Name</th><th>Contact</th><th>Depot</th><th>Specialization</th><th>Hire Date</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>M-0001</td><td>Tran Minh Tu</td><td>+84 931 000 111</td><td>Hanoi Main</td><td>Engine</td><td>2020-03-15</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>M-0002</td><td>Nguyen Duc Thang</td><td>+84 932 000 222</td><td>Hanoi Main</td><td>Transmission</td><td>2019-06-20</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>M-0003</td><td>Pham Hong Son</td><td>+84 933 000 333</td><td>HCMC</td><td>Electrical</td><td>2021-01-10</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>M-0004</td><td>Vo Thanh Nam</td><td>+84 934 000 444</td><td>HCMC</td><td>Brake System</td><td>2020-08-05</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>M-0005</td><td>Hoang Duc Long</td><td>+84 935 000 555</td><td>Da Nang</td><td>Engine</td><td>2022-02-14</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>M-0006</td><td>Le Quoc Bao</td><td>+84 936 000 666</td><td>Hai Phong</td><td>Hydraulics</td><td>2021-05-22</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== INCIDENTS ==================== -->
+<div id="content5" class="tab-content">
+  <div class="form-section">
+    <h2>Report Incident</h2>
+    <div class="form-row">
+      <div class="form-group"><label>Date:</label><input type="date" disabled></div>
+      <div class="form-group">
+        <label>Type:</label>
+        <select disabled><option>Collision</option><option>Breakdown</option><option>Fire</option><option>Theft</option><option>Injury</option><option>Load Spill</option><option>Mechanical Failure</option></select>
+      </div>
+      <div class="form-group">
+        <label>Severity:</label>
+        <select disabled><option>Minor</option><option>Major</option><option>Critical</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Vehicle:</label>
+        <select disabled>
+          <option>1HGBH41JXMN109186 — Kenworth T680</option>
+          <option>2FZHAZCVX5AB12345 — Volvo FH16</option>
+          <option>3AKJGBDC5SCLA1234 — Scania R500</option>
+          <option>4V4NC9EJXNN345678 — Freightliner Cascadia</option>
+          <option>5J6YH1F37NL012345 — Isuzu FVR</option>
+          <option>6F1FA6E86NG456789 — Hino 700</option>
+          <option>7MTAZ33C0NT012345 — Mercedes Actros</option>
+          <option>8BCDE123456789012 — Hyundai Xcient</option>
+          <option>9XYZ9876543210ABC — Dongfeng KL</option>
+          <option>ABC123DEF45678901 — Kenworth C500</option>
+          <option>BCD234EFG56789012 — Volvo FMX</option>
+          <option>CDE345FGH67890123 — Scania G460</option>
+          <option>DEF456GHI78901234 — Isuzu Giga</option>
+          <option>EFG567HIJ89012345 — Hino Profia</option>
+          <option>FGH678IJK90123456 — Mitsubishi Fuso</option>
+          <option>GHI789JKL01234567 — Mercedes Arocs</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Driver:</label>
+        <select disabled>
+          <option>Nguyen Van An (D-0001)</option>
+          <option>Tran Thi Binh (D-0002)</option>
+          <option>Le Van Cuong (D-0003)</option>
+          <option>Pham Van Dung (D-0004)</option>
+          <option>Hoang Thi Em (D-0005)</option>
+          <option>Vu Van Phong (D-0006)</option>
+          <option>Dang Thi Gam (D-0007)</option>
+          <option>Bui Van Huy (D-0008)</option>
+          <option>Nguyen Thi Hien (D-0009)</option>
+          <option>Tran Van Khoa (D-0010)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Depot:</label>
+        <select disabled><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Description:</label><input type="text" style="width:350px" disabled></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Damage Cost:</label><input type="number" value="0" min="0" style="width:100px" disabled> <span style="font-size:12px;color:#666">VND</span></div>
+      <div class="form-group">
+        <label>Status:</label>
+        <select disabled><option>Open</option><option>Under Investigation</option><option>Closed</option></select>
+      </div>
+    </div>
+    <div class="form-row"><button class="form-btn primary" disabled>Report Incident</button></div>
+  </div>
+
+  <div class="table-section">
+    <h2>Incident Reports (5 records)</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Date</th><th>Type</th><th>Vehicle</th><th>Driver</th><th>Depot</th><th>Severity</th><th>Status</th><th>Cost (VND)</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>2026-07-15</td><td>Collision</td><td>2FZHAZCVX5AB12345</td><td>Nguyen Van An</td><td>Hanoi Main</td><td>Major</td><td>Under Investigation</td><td style="text-align:right">15,000,000</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>2</td><td>2026-07-18</td><td>Breakdown</td><td>CDE345FGH67890123</td><td>Bui Van Huy</td><td>Hanoi Main</td><td>Minor</td><td>Closed</td><td style="text-align:right">3,500,000</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>3</td><td>2026-07-20</td><td>Mechanical Failure</td><td>4V4NC9EJXNN345678</td><td>Le Van Cuong</td><td>HCMC</td><td>Major</td><td>Open</td><td style="text-align:right">28,000,000</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>4</td><td>2026-07-21</td><td>Theft</td><td>9XYZ9876543210ABC</td><td>Pham Van Dung</td><td>Hai Phong</td><td>Critical</td><td>Under Investigation</td><td style="text-align:right">45,000,000</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+        <tr><td>5</td><td>2026-07-22</td><td>Load Spill</td><td>8BCDE123456789012</td><td>Tran Van Khoa</td><td>HCMC</td><td>Minor</td><td>Open</td><td style="text-align:right">5,000,000</td><td><button class="action-btn">Edit</button><button class="action-btn del">Delete</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Customer Portal — Fleet Management</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="header"><h1>Customer Portal</h1><a href="login.html" class="back">&larr; Back</a></div>
+
+<div class="wrap">
+
+<input type="radio" name="tab" id="tab1" class="tab-input" checked>
+<input type="radio" name="tab" id="tab2" class="tab-input">
+
+<div class="tabs">
+  <label for="tab1">Vehicles</label>
+  <label for="tab2">Incidents</label>
+</div>
+
+<!-- ==================== VEHICLES ==================== -->
+<div id="content1" class="tab-content">
+  <div class="table-section">
+    <h2>Vehicle Tracking</h2>
+    <table>
+      <thead><tr><th>VIN</th><th>Reg</th><th>Model</th><th>Category</th><th>Year</th><th>Status</th><th>Depot</th></tr></thead>
+      <tbody>
+        <tr><td>1HGBH41JXMN109186</td><td>71C-12345</td><td>Kenworth T680</td><td>Heavy Truck</td><td>2021</td><td><span class="badge avail">Available</span></td><td>Hanoi Main</td></tr>
+        <tr><td>2FZHAZCVX5AB12345</td><td>51F-67890</td><td>Volvo FH16</td><td>Heavy Truck</td><td>2022</td><td><span class="badge road">On Road</span></td><td>Hanoi Main</td></tr>
+        <tr><td>3AKJGBDC5SCLA1234</td><td>30A-11111</td><td>Scania R500</td><td>Heavy Truck</td><td>2020</td><td><span class="badge road">On Road</span></td><td>Da Nang</td></tr>
+        <tr><td>4V4NC9EJXNN345678</td><td>29B-22222</td><td>Freightliner Cascadia</td><td>Heavy Truck</td><td>2019</td><td><span class="badge shop">In Shop</span></td><td>HCMC</td></tr>
+        <tr><td>5J6YH1F37NL012345</td><td>72C-33333</td><td>Isuzu FVR</td><td>Medium Truck</td><td>2022</td><td><span class="badge avail">Available</span></td><td>Hai Phong</td></tr>
+        <tr><td>6F1FA6E86NG456789</td><td>52F-44444</td><td>Hino 700</td><td>Heavy Truck</td><td>2021</td><td><span class="badge road">On Road</span></td><td>Da Nang</td></tr>
+        <tr><td>7MTAZ33C0NT012345</td><td>30B-55555</td><td>Mercedes Actros</td><td>Heavy Truck</td><td>2023</td><td><span class="badge avail">Available</span></td><td>Hanoi Main</td></tr>
+        <tr><td>8BCDE123456789012</td><td>71D-66666</td><td>Hyundai Xcient</td><td>Heavy Truck</td><td>2022</td><td><span class="badge road">On Road</span></td><td>HCMC</td></tr>
+        <tr><td>9XYZ9876543210ABC</td><td>29A-77777</td><td>Dongfeng KL</td><td>Light Truck</td><td>2020</td><td><span class="badge oos">Out of Service</span></td><td>Hai Phong</td></tr>
+        <tr><td>ABC123DEF45678901</td><td>51A-88888</td><td>Kenworth C500</td><td>Heavy Truck</td><td>2023</td><td><span class="badge avail">Available</span></td><td>Da Nang</td></tr>
+        <tr><td>BCD234EFG56789012</td><td>72D-99999</td><td>Volvo FMX</td><td>Heavy Truck</td><td>2021</td><td><span class="badge road">On Road</span></td><td>HCMC</td></tr>
+        <tr><td>CDE345FGH67890123</td><td>30C-10101</td><td>Scania G460</td><td>Heavy Truck</td><td>2022</td><td><span class="badge shop">In Shop</span></td><td>Hanoi Main</td></tr>
+        <tr><td>DEF456GHI78901234</td><td>52A-20202</td><td>Isuzu Giga</td><td>Medium Truck</td><td>2020</td><td><span class="badge avail">Available</span></td><td>Hai Phong</td></tr>
+        <tr><td>EFG567HIJ89012345</td><td>71B-30303</td><td>Hino Profia</td><td>Heavy Truck</td><td>2023</td><td><span class="badge road">On Road</span></td><td>Da Nang</td></tr>
+        <tr><td>FGH678IJK90123456</td><td>29C-40404</td><td>Mitsubishi Fuso</td><td>Medium Truck</td><td>2021</td><td><span class="badge avail">Available</span></td><td>HCMC</td></tr>
+        <tr><td>GHI789JKL01234567</td><td>51B-50505</td><td>Mercedes Arocs</td><td>Heavy Truck</td><td>2022</td><td><span class="badge road">On Road</span></td><td>Hanoi Main</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== INCIDENTS ==================== -->
+<div id="content2" class="tab-content">
+  <div class="table-section">
+    <h2>Incident Reports</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Date</th><th>Type</th><th>Vehicle</th><th>Driver</th><th>Depot</th><th>Severity</th><th>Status</th><th>Cost (VND)</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>2026-07-15</td><td>Collision</td><td>2FZHAZCVX5AB12345</td><td>Nguyen Van An</td><td>Hanoi Main</td><td>Major</td><td>Under Investigation</td><td style="text-align:right">15,000,000</td></tr>
+        <tr><td>2</td><td>2026-07-18</td><td>Breakdown</td><td>CDE345FGH67890123</td><td>Bui Van Huy</td><td>Hanoi Main</td><td>Minor</td><td>Closed</td><td style="text-align:right">3,500,000</td></tr>
+        <tr><td>3</td><td>2026-07-20</td><td>Mechanical Failure</td><td>4V4NC9EJXNN345678</td><td>Le Van Cuong</td><td>HCMC</td><td>Major</td><td>Open</td><td style="text-align:right">28,000,000</td></tr>
+        <tr><td>4</td><td>2026-07-21</td><td>Theft</td><td>9XYZ9876543210ABC</td><td>Pham Van Dung</td><td>Hai Phong</td><td>Critical</td><td>Under Investigation</td><td style="text-align:right">45,000,000</td></tr>
+        <tr><td>5</td><td>2026-07-22</td><td>Load Spill</td><td>8BCDE123456789012</td><td>Tran Van Khoa</td><td>HCMC</td><td>Minor</td><td>Open</td><td style="text-align:right">5,000,000</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
