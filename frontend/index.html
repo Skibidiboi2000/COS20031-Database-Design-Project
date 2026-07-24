@@ -4,77 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>CRUD — Fleet Management</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,Helvetica,sans-serif;font-size:13px;background:#f0f0f0;color:#333}
-.header{background:#444;color:#fff;padding:16px 24px}
-.header h1{font-size:22px}
-.wrap{max-width:960px;margin:0 auto;padding:20px 24px}
-
-/* Tabs using radio + :checked */
-.tab-input{display:none}
-.tabs{display:flex;gap:0;margin-bottom:0;border-bottom:2px solid #444}
-.tabs label{
-  padding:7px 16px;border:1px solid #999;border-bottom:none;background:#ddd;
-  font-size:12px;font-weight:bold;cursor:pointer;font-family:Arial,sans-serif;
-  margin-bottom:-2px;display:block;
-}
-.tabs label:hover{background:#eee}
-.tab-content{display:none;padding:0;margin-top:0}
-
-#tab1:checked~.tabs label[for="tab1"],
-#tab2:checked~.tabs label[for="tab2"],
-#tab3:checked~.tabs label[for="tab3"],
-#tab4:checked~.tabs label[for="tab4"],
-#tab5:checked~.tabs label[for="tab5"]{background:#f5f5f5;border-bottom:2px solid #f5f5f5}
-
-#tab1:checked~#content1,
-#tab2:checked~#content2,
-#tab3:checked~#content3,
-#tab4:checked~#content4,
-#tab5:checked~#content5{display:block}
-
-/* Form section */
-.form-section{background:#f5f5f5;border:1px solid #ddd;padding:16px 20px;margin-bottom:24px}
-.form-section h2{font-size:16px;margin-bottom:10px;color:#333}
-.form-row{display:flex;flex-wrap:wrap;gap:8px 16px;margin-bottom:10px}
-.form-group{display:flex;align-items:center;gap:6px}
-.form-group label{font-weight:bold;font-size:13px;min-width:50px}
-.form-group input,.form-group select{
-  padding:4px 6px;border:1px solid #999;font-size:13px;font-family:Arial,sans-serif;background:#fff;
-}
-.form-group input:focus,.form-group select:focus{outline:1px solid #4477aa}
-.form-btn{
-  background:#ddd;border:1px solid #999;padding:5px 16px;font-size:13px;cursor:pointer;
-  font-family:Arial,sans-serif;margin-top:4px;
-}
-.form-btn:hover{background:#ccc}
-.form-btn.primary{background:#4477aa;color:#fff;border-color:#336699}
-.form-btn.primary:hover{background:#336699}
-
-/* Table */
-.table-section h2{font-size:16px;margin-bottom:8px;color:#333}
-table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #ccc;margin-bottom:20px}
-th{background:#e8e8e8;text-align:left;padding:6px 10px;border:1px solid #ccc;font-size:12px;font-weight:bold}
-td{padding:5px 10px;border:1px solid #ddd;font-size:12px}
-tbody tr:nth-child(even){background:#f7f7f7}
-tbody tr:hover{background:#ffffcc}
-.action-btn{
-  padding:2px 8px;border:1px solid #999;background:#eee;font-size:11px;cursor:pointer;
-  font-family:Arial,sans-serif;margin-right:2px;
-}
-.action-btn:hover{background:#ddd}
-.action-btn.del{color:#c33}
-.action-btn.del:hover{background:#fdd}
-.badge{display:inline-block;padding:1px 6px;border-radius:2px;font-size:11px;font-weight:bold}
-.badge.avail{background:#d4edda;color:#155724}
-.badge.road{background:#cce5ff;color:#004085}
-.badge.shop{background:#fff3cd;color:#856404}
-.badge.oos{background:#f8d7da;color:#721c24}
-.badge.good{background:#d4edda;color:#155724}
-.badge.fair{background:#fff3cd;color:#856404}
-.badge.poor{background:#f8d7da;color:#721c24}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
