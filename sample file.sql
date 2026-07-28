@@ -210,7 +210,7 @@ ON Drivers(employment_status);
 CREATE INDEX idx_vehicle_status
 ON Vehicles(operational_status);
 
-SELECT * FROM Depots;
+
 SELECT * FROM Vehicle_Categories;
 SELECT * FROM Depots;
 SELECT * FROM Drivers;
