@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Smart Fleet Customer Portal</title>
+<link rel="stylesheet" href="style.css?v=5">
+</head>
+<body>
+
+<div class="header">
+  <div class="mark">
+    <span class="plate">FF&middot;01</span>
+    <div class="titlewrap">
+      <h1>Smart Fleet</h1>
+      <span class="sub">Customer &middot; Shipment Tracking</span>
+    </div>
+  </div>
+  <div class="meta">
+    <span>4 Depots</span>
+    <span>16 Units</span>
+    <span class="live">Online</span>
+  </div>
+  <a href="login.html" class="back">Sign out</a>
+</div>
+
+<div class="wrap">
+
+<input type="radio" name="tab" id="tab1" class="tab-input" checked>
+<input type="radio" name="tab" id="tab2" class="tab-input">
+
+<div class="tabs">
+  <label for="tab1">Tracking</label>
+  <label for="tab2">Incidents</label>
+</div>
+
+<!-- ==================== VEHICLE TRACKING ==================== -->
+<div id="content1" class="tab-content">
+  <div class="manifest">
+    <span class="seg count"><span class="k">Live fleet</span><span class="v">16 units</span></span>
+    <div class="tally">
+      <span class="t"><span class="dot road"></span>5 In transit</span>
+      <span class="t"><span class="dot go"></span>8 Ready</span>
+      <span class="t"><span class="dot hold"></span>2 In shop</span>
+    </div>
+  </div>
+
+  <div class="ledger">
+    <div class="ledger-head"><h2>Vehicle tracking</h2><span class="no">Live status</span></div>
+    <div class="table-scroll">
+    <table>
+      <thead><tr><th>VIN</th><th>Plate</th><th>Model</th><th>Category</th><th>Year</th><th>Status</th><th>Depot</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">1HGBH41JXMN109186</td><td class="mono">71C-12345</td><td>Kenworth T680</td><td>Heavy Truck</td><td class="num">2021</td><td><span class="mk avail">Available</span></td><td>Hanoi Main</td></tr>
+        <tr><td class="mono">2FZHAZCVX5AB12345</td><td class="mono">51F-67890</td><td>Volvo FH16</td><td>Heavy Truck</td><td class="num">2022</td><td><span class="mk road">On Road</span></td><td>Hanoi Main</td></tr>
+        <tr><td class="mono">3AKJGBDC5SCLA1234</td><td class="mono">30A-11111</td><td>Scania R500</td><td>Heavy Truck</td><td class="num">2020</td><td><span class="mk road">On Road</span></td><td>Da Nang</td></tr>
+        <tr><td class="mono">4V4NC9EJXNN345678</td><td class="mono">29B-22222</td><td>Freightliner Cascadia</td><td>Heavy Truck</td><td class="num">2019</td><td><span class="mk shop">In Shop</span></td><td>HCMC</td></tr>
+        <tr><td class="mono">5J6YH1F37NL012345</td><td class="mono">72C-33333</td><td>Isuzu FVR</td><td>Medium Truck</td><td class="num">2022</td><td><span class="mk avail">Available</span></td><td>Hai Phong</td></tr>
+        <tr><td class="mono">6F1FA6E86NG456789</td><td class="mono">52F-44444</td><td>Hino 700</td><td>Heavy Truck</td><td class="num">2021</td><td><span class="mk road">On Road</span></td><td>Da Nang</td></tr>
+        <tr><td class="mono">7MTAZ33C0NT012345</td><td class="mono">30B-55555</td><td>Mercedes Actros</td><td>Heavy Truck</td><td class="num">2023</td><td><span class="mk avail">Available</span></td><td>Hanoi Main</td></tr>
+        <tr><td class="mono">8BCDE123456789012</td><td class="mono">71D-66666</td><td>Hyundai Xcient</td><td>Heavy Truck</td><td class="num">2022</td><td><span class="mk road">On Road</span></td><td>HCMC</td></tr>
+        <tr><td class="mono">9XYZ9876543210ABC</td><td class="mono">29A-77777</td><td>Dongfeng KL</td><td>Light Truck</td><td class="num">2020</td><td><span class="mk oos">Out of Service</span></td><td>Hai Phong</td></tr>
+        <tr><td class="mono">ABC123DEF45678901</td><td class="mono">51A-88888</td><td>Kenworth C500</td><td>Heavy Truck</td><td class="num">2023</td><td><span class="mk avail">Available</span></td><td>Da Nang</td></tr>
+        <tr><td class="mono">BCD234EFG56789012</td><td class="mono">72D-99999</td><td>Volvo FMX</td><td>Heavy Truck</td><td class="num">2021</td><td><span class="mk road">On Road</span></td><td>HCMC</td></tr>
+        <tr><td class="mono">CDE345FGH67890123</td><td class="mono">30C-10101</td><td>Scania G460</td><td>Heavy Truck</td><td class="num">2022</td><td><span class="mk shop">In Shop</span></td><td>Hanoi Main</td></tr>
+        <tr><td class="mono">DEF456GHI78901234</td><td class="mono">52A-20202</td><td>Isuzu Giga</td><td>Medium Truck</td><td class="num">2020</td><td><span class="mk avail">Available</span></td><td>Hai Phong</td></tr>
+        <tr><td class="mono">EFG567HIJ89012345</td><td class="mono">71B-30303</td><td>Hino Profia</td><td>Heavy Truck</td><td class="num">2023</td><td><span class="mk road">On Road</span></td><td>Da Nang</td></tr>
+        <tr><td class="mono">FGH678IJK90123456</td><td class="mono">29C-40404</td><td>Mitsubishi Fuso</td><td>Medium Truck</td><td class="num">2021</td><td><span class="mk avail">Available</span></td><td>HCMC</td></tr>
+        <tr><td class="mono">GHI789JKL01234567</td><td class="mono">51B-50505</td><td>Mercedes Arocs</td><td>Heavy Truck</td><td class="num">2022</td><td><span class="mk road">On Road</span></td><td>Hanoi Main</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== INCIDENTS (read-only) ==================== -->
+<div id="content2" class="tab-content">
+  <div class="manifest">
+    <span class="seg count"><span class="k">Log</span><span class="v">5 incidents</span></span>
+    <div class="tally">
+      <span class="t"><span class="dot road"></span>2 Open</span>
+      <span class="t"><span class="dot hold"></span>2 Investigating</span>
+      <span class="t"><span class="dot go"></span>1 Closed</span>
+    </div>
+  </div>
+
+  <div class="ledger">
+    <div class="ledger-head"><h2>Incident log</h2><span class="no">View only</span></div>
+    <div class="table-scroll">
+    <table>
+      <thead><tr><th>ID</th><th>Date</th><th>Type</th><th>Vehicle</th><th>Driver</th><th>Depot</th><th>Severity</th><th>Status</th><th>Cost (VND)</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">1</td><td class="mono">2026-07-15</td><td>Collision</td><td class="mono">2FZHAZCVX5AB12345</td><td>Nguyen Van An</td><td>Hanoi Main</td><td><span class="mk fair">Major</span></td><td><span class="mk shop">Investigating</span></td><td class="num">15,000,000</td></tr>
+        <tr><td class="mono">2</td><td class="mono">2026-07-18</td><td>Breakdown</td><td class="mono">CDE345FGH67890123</td><td>Bui Van Huy</td><td>Hanoi Main</td><td><span class="mk good">Minor</span></td><td><span class="mk avail">Closed</span></td><td class="num">3,500,000</td></tr>
+        <tr><td class="mono">3</td><td class="mono">2026-07-20</td><td>Mechanical Failure</td><td class="mono">4V4NC9EJXNN345678</td><td>Le Van Cuong</td><td>HCMC</td><td><span class="mk fair">Major</span></td><td><span class="mk road">Open</span></td><td class="num">28,000,000</td></tr>
+        <tr><td class="mono">4</td><td class="mono">2026-07-21</td><td>Theft</td><td class="mono">9XYZ9876543210ABC</td><td>Pham Van Dung</td><td>Hai Phong</td><td><span class="mk oos">Critical</span></td><td><span class="mk shop">Investigating</span></td><td class="num">45,000,000</td></tr>
+        <tr><td class="mono">5</td><td class="mono">2026-07-22</td><td>Load Spill</td><td class="mono">8BCDE123456789012</td><td>Tran Van Khoa</td><td>HCMC</td><td><span class="mk good">Minor</span></td><td><span class="mk road">Open</span></td><td class="num">5,000,000</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

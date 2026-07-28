@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Smart Fleet Driver Terminal</title>
+<link rel="stylesheet" href="style.css?v=5">
+</head>
+<body>
+
+<div class="header">
+  <div class="mark">
+    <span class="plate">D&middot;0001</span>
+    <div class="titlewrap">
+      <h1>Smart Fleet</h1>
+      <span class="sub">Driver &middot; Nguyen Van An</span>
+    </div>
+  </div>
+  <div class="meta">
+    <span>Depot &middot; Hanoi Main</span>
+    <span>Score &middot; 94</span>
+    <span class="live">On duty</span>
+  </div>
+  <a href="login.html" class="back">End shift</a>
+</div>
+
+<div class="wrap">
+
+<input type="radio" name="tab" id="tab1" class="tab-input" checked>
+<input type="radio" name="tab" id="tab2" class="tab-input">
+<input type="radio" name="tab" id="tab3" class="tab-input">
+
+<div class="tabs">
+  <label for="tab1">Fleet</label>
+  <label for="tab2">Depots</label>
+  <label for="tab3">Incidents</label>
+</div>
+
+<!-- ==================== VEHICLES (read-only) ==================== -->
+<div id="content1" class="tab-content">
+  <div class="manifest">
+    <span class="seg count"><span class="k">Fleet</span><span class="v">16 units</span></span>
+    <div class="tally">
+      <span class="t"><span class="dot go"></span>8 Available</span>
+      <span class="t"><span class="dot road"></span>5 On road</span>
+      <span class="t"><span class="dot hold"></span>2 In shop</span>
+      <span class="t"><span class="dot stop"></span>1 Out of service</span>
+    </div>
+  </div>
+
+  <div class="ledger">
+    <div class="ledger-head"><h2>Fleet register</h2><span class="no">View only</span></div>
+    <div class="table-scroll">
+    <table>
+      <thead><tr><th>VIN</th><th>Plate</th><th>Model</th><th>Category</th><th>Year</th><th>Status</th><th>Depot</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">1HGBH41JXMN109186</td><td class="mono">71C-12345</td><td>Kenworth T680</td><td>Heavy Truck</td><td class="num">2021</td><td><span class="mk avail">Available</span></td><td>Hanoi Main</td></tr>
+        <tr><td class="mono">2FZHAZCVX5AB12345</td><td class="mono">51F-67890</td><td>Volvo FH16</td><td>Heavy Truck</td><td class="num">2022</td><td><span class="mk road">On Road</span></td><td>Hanoi Main</td></tr>
+        <tr><td class="mono">3AKJGBDC5SCLA1234</td><td class="mono">30A-11111</td><td>Scania R500</td><td>Heavy Truck</td><td class="num">2020</td><td><span class="mk road">On Road</span></td><td>Da Nang</td></tr>
+        <tr><td class="mono">4V4NC9EJXNN345678</td><td class="mono">29B-22222</td><td>Freightliner Cascadia</td><td>Heavy Truck</td><td class="num">2019</td><td><span class="mk shop">In Shop</span></td><td>HCMC</td></tr>
+        <tr><td class="mono">5J6YH1F37NL012345</td><td class="mono">72C-33333</td><td>Isuzu FVR</td><td>Medium Truck</td><td class="num">2022</td><td><span class="mk avail">Available</span></td><td>Hai Phong</td></tr>
+        <tr><td class="mono">6F1FA6E86NG456789</td><td class="mono">52F-44444</td><td>Hino 700</td><td>Heavy Truck</td><td class="num">2021</td><td><span class="mk road">On Road</span></td><td>Da Nang</td></tr>
+        <tr><td class="mono">7MTAZ33C0NT012345</td><td class="mono">30B-55555</td><td>Mercedes Actros</td><td>Heavy Truck</td><td class="num">2023</td><td><span class="mk avail">Available</span></td><td>Hanoi Main</td></tr>
+        <tr><td class="mono">8BCDE123456789012</td><td class="mono">71D-66666</td><td>Hyundai Xcient</td><td>Heavy Truck</td><td class="num">2022</td><td><span class="mk road">On Road</span></td><td>HCMC</td></tr>
+        <tr><td class="mono">9XYZ9876543210ABC</td><td class="mono">29A-77777</td><td>Dongfeng KL</td><td>Light Truck</td><td class="num">2020</td><td><span class="mk oos">Out of Service</span></td><td>Hai Phong</td></tr>
+        <tr><td class="mono">ABC123DEF45678901</td><td class="mono">51A-88888</td><td>Kenworth C500</td><td>Heavy Truck</td><td class="num">2023</td><td><span class="mk avail">Available</span></td><td>Da Nang</td></tr>
+        <tr><td class="mono">BCD234EFG56789012</td><td class="mono">72D-99999</td><td>Volvo FMX</td><td>Heavy Truck</td><td class="num">2021</td><td><span class="mk road">On Road</span></td><td>HCMC</td></tr>
+        <tr><td class="mono">CDE345FGH67890123</td><td class="mono">30C-10101</td><td>Scania G460</td><td>Heavy Truck</td><td class="num">2022</td><td><span class="mk shop">In Shop</span></td><td>Hanoi Main</td></tr>
+        <tr><td class="mono">DEF456GHI78901234</td><td class="mono">52A-20202</td><td>Isuzu Giga</td><td>Medium Truck</td><td class="num">2020</td><td><span class="mk avail">Available</span></td><td>Hai Phong</td></tr>
+        <tr><td class="mono">EFG567HIJ89012345</td><td class="mono">71B-30303</td><td>Hino Profia</td><td>Heavy Truck</td><td class="num">2023</td><td><span class="mk road">On Road</span></td><td>Da Nang</td></tr>
+        <tr><td class="mono">FGH678IJK90123456</td><td class="mono">29C-40404</td><td>Mitsubishi Fuso</td><td>Medium Truck</td><td class="num">2021</td><td><span class="mk avail">Available</span></td><td>HCMC</td></tr>
+        <tr><td class="mono">GHI789JKL01234567</td><td class="mono">51B-50505</td><td>Mercedes Arocs</td><td>Heavy Truck</td><td class="num">2022</td><td><span class="mk road">On Road</span></td><td>Hanoi Main</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== DEPOTS (read-only) ==================== -->
+<div id="content2" class="tab-content">
+  <div class="manifest">
+    <span class="seg count"><span class="k">Network</span><span class="v">4 depots</span></span>
+    <span class="seg"><span class="k">Units</span><span class="v">120</span></span>
+    <span class="seg"><span class="k">Drivers</span><span class="v">80</span></span>
+    <span class="seg"><span class="k">Mechanics</span><span class="v">25</span></span>
+  </div>
+
+  <div class="ledger">
+    <div class="ledger-head"><h2>Depot network</h2><span class="no">View only</span></div>
+    <div class="table-scroll">
+    <table>
+      <thead><tr><th>ID</th><th>Name</th><th>Location</th><th>Units</th><th>Drivers</th><th>Mechanics</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">1</td><td>Hanoi Main</td><td>Long Bien, Hanoi</td><td class="num">42</td><td class="num">28</td><td class="num">8</td></tr>
+        <tr><td class="mono">2</td><td>HCMC</td><td>Binh Tan, Ho Chi Minh City</td><td class="num">36</td><td class="num">24</td><td class="num">6</td></tr>
+        <tr><td class="mono">3</td><td>Da Nang</td><td>Lien Chieu, Da Nang</td><td class="num">24</td><td class="num">16</td><td class="num">5</td></tr>
+        <tr><td class="mono">4</td><td>Hai Phong</td><td>Ngo Quyen, Hai Phong</td><td class="num">18</td><td class="num">12</td><td class="num">6</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== INCIDENTS ==================== -->
+<div id="content3" class="tab-content">
+  <div class="manifest">
+    <span class="seg count"><span class="k">My log</span><span class="v">3 incidents</span></span>
+    <div class="tally">
+      <span class="t"><span class="dot road"></span>1 Open</span>
+      <span class="t"><span class="dot hold"></span>1 Investigating</span>
+      <span class="t"><span class="dot go"></span>1 Closed</span>
+    </div>
+  </div>
+
+  <div class="docket">
+    <div class="docket-head"><h2>Log an incident</h2><span class="no">Reporting as D-0001</span></div>
+    <div class="form-row">
+      <div class="form-group"><label>Date</label><input type="date"></div>
+      <div class="form-group"><label>Type</label><select><option>Collision</option><option>Breakdown</option><option>Fire</option><option>Theft</option><option>Injury</option><option>Load Spill</option><option>Mechanical Failure</option></select></div>
+      <div class="form-group"><label>Severity</label><select><option>Minor</option><option>Major</option><option>Critical</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Vehicle</label>
+        <select>
+          <option>1HGBH41JXMN109186 &middot; Kenworth T680</option>
+          <option>2FZHAZCVX5AB12345 &middot; Volvo FH16</option>
+          <option>3AKJGBDC5SCLA1234 &middot; Scania R500</option>
+          <option>4V4NC9EJXNN345678 &middot; Freightliner Cascadia</option>
+          <option>5J6YH1F37NL012345 &middot; Isuzu FVR</option>
+          <option>6F1FA6E86NG456789 &middot; Hino 700</option>
+          <option>7MTAZ33C0NT012345 &middot; Mercedes Actros</option>
+          <option>8BCDE123456789012 &middot; Hyundai Xcient</option>
+          <option>9XYZ9876543210ABC &middot; Dongfeng KL</option>
+          <option>ABC123DEF45678901 &middot; Kenworth C500</option>
+          <option>BCD234EFG56789012 &middot; Volvo FMX</option>
+          <option>CDE345FGH67890123 &middot; Scania G460</option>
+          <option>DEF456GHI78901234 &middot; Isuzu Giga</option>
+          <option>EFG567HIJ89012345 &middot; Hino Profia</option>
+          <option>FGH678IJK90123456 &middot; Mitsubishi Fuso</option>
+          <option>GHI789JKL01234567 &middot; Mercedes Arocs</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Depot</label><select><option>Hanoi Main</option><option>HCMC</option><option>Da Nang</option><option>Hai Phong</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>What happened</label><input type="text" placeholder="Short description" style="width:380px"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Damage cost (VND)</label><input type="number" value="0" min="0" style="width:130px"></div>
+      <div class="form-group"><label>Status</label><select><option>Open</option><option>Under Investigation</option><option>Closed</option></select></div>
+    </div>
+    <div class="form-row"><button class="form-btn primary">File report</button></div>
+  </div>
+
+  <div class="ledger">
+    <div class="ledger-head"><h2>My incident log</h2><span class="no">3 reports on file</span></div>
+    <div class="table-scroll">
+    <table>
+      <thead><tr><th>ID</th><th>Date</th><th>Type</th><th>Vehicle</th><th>Severity</th><th>Status</th><th>Cost (VND)</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">1</td><td class="mono">2026-07-15</td><td>Collision</td><td class="mono">2FZHAZCVX5AB12345</td><td><span class="mk fair">Major</span></td><td><span class="mk shop">Investigating</span></td><td class="num">15,000,000</td></tr>
+        <tr><td class="mono">2</td><td class="mono">2026-07-18</td><td>Breakdown</td><td class="mono">CDE345FGH67890123</td><td><span class="mk good">Minor</span></td><td><span class="mk avail">Closed</span></td><td class="num">3,500,000</td></tr>
+        <tr><td class="mono">3</td><td class="mono">2026-07-20</td><td>Mechanical Failure</td><td class="mono">4V4NC9EJXNN345678</td><td><span class="mk fair">Major</span></td><td><span class="mk road">Open</span></td><td class="num">28,000,000</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
