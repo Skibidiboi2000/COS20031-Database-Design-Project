@@ -1,4 +1,4 @@
-DROP DATABASE IF EXISTS smart_fleet;
+-- DROP DATABASE IF EXISTS smart_fleet;
 CREATE DATABASE smart_fleet;
 USE smart_fleet;
 
@@ -227,18 +227,6 @@ SELECT * FROM Mechanic_Certifications;
 SELECT * FROM Activity_Labor_Logs;
 SELECT * FROM Telematics_Events;
 SELECT * FROM Safety_Reviews;
-------------------------------------------
-INSERT INTO Vehicle_Requirement_Matrix
-(cert_id,category_id)
-VALUES
-(1,1),
-(2,1),
-(2,2),
-(3,2),
-(3,3),
-(4,4),
-(5,5),
-(6,5);
 ------------------------------------------
 INSERT INTO Driver_Certifications
 (driver_id,cert_id,expiration_date)
