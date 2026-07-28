@@ -1,4 +1,4 @@
-DROP DATABASE IF EXISTS smart_fleet;
+-- DROP DATABASE IF EXISTS smart_fleet;
 CREATE DATABASE smart_fleet;
 USE smart_fleet;
 
@@ -34,7 +34,7 @@ CREATE TABLE Drivers (
 
 CREATE TABLE Driver_Certifications (
     driver_id INT,
-    cert_id INT,
+    cert_id INT, 
     expiration_date DATE,
     PRIMARY KEY(driver_id,cert_id),
     FOREIGN KEY(driver_id) REFERENCES Drivers(driver_id),
@@ -192,13 +192,25 @@ CREATE TABLE Safety_Reviews (
 CREATE INDEX idx_vehicle_depot ON Vehicles(current_depot_id);
 CREATE INDEX idx_vehicle_category ON Vehicles(category_id);
 CREATE INDEX idx_driver_depot ON Drivers(current_depot_id);
+CREATE INDEX idx_event_time ON Telematics_Events(event_timestamp);
 
-SELECT * FROM certifications;
+SELECT * FROM Depots;
+SELECT * FROM Vehicle_Categories;
 SELECT * FROM Depots;
 SELECT * FROM Drivers;
-SELECT * FROM Mechanics;
-SELECT * FROM Vehicle_categories;
+SELECT * FROM Driver_Certifications;
+SELECT * FROM Vehicle_Requirement_Matrix;
 SELECT * FROM Vehicles;
+SELECT * FROM Predictive_Alerts;
+SELECT * FROM Vehicle_Assignments;
+SELECT * FROM Monthly_Safety_Scores;
+SELECT * FROM Maintenance_Jobs;
+SELECT * FROM Job_Activities;
+SELECT * FROM Mechanics;
+SELECT * FROM Mechanic_Certifications;
+SELECT * FROM Activity_Labor_Logs;
+SELECT * FROM Telematics_Events;
+SELECT * FROM Safety_Reviews;
 ------------------------------------------
 INSERT INTO Vehicle_Requirement_Matrix
 (cert_id,category_id)
@@ -352,3 +364,13 @@ VALUES
 (4,4),
 (5,5),
 (6,5);
+
+-- check their is enough data. 
+SELECT 'Depots', COUNT(*) FROM Depots
+UNION ALL SELECT 'Vehicle_Categories', COUNT(*) FROM Vehicle_Categories
+UNION ALL SELECT 'Certifications', COUNT(*) FROM Certifications
+UNION ALL SELECT 'Drivers', COUNT(*) FROM Drivers
+UNION ALL SELECT 'Mechanics', COUNT(*) FROM Mechanics
+UNION ALL SELECT 'Vehicles', COUNT(*) FROM Vehicles;
+
+-- Show structure (columns, types, keys, nullability) of each table
