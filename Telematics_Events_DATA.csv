@@ -1,0 +1,1001 @@
+event_id,depot_id,event_timestamp,event_type,severity_level,snapshot_odometer
+1,Can Tho,1/4/2026,Overspeed,Low,349579
+2,Da Nang,2/9/2026,Fuel Consumption,Medium,322883
+3,Ha Noi,11/10/2025,Fuel Consumption,High,301969
+4,Ho Chi Minh City,5/16/2026,Normal Driving,Medium,362486
+5,Ho Chi Minh City,2/27/2026,Rapid Acceleration,High,355975
+6,Can Tho,9/12/2025,Fuel Consumption,Low,225120
+7,Da Nang,1/1/2026,Overspeed,Medium,387853
+8,Ha Noi,2/22/2026,Fuel Consumption,Low,303923
+9,Da Nang,3/20/2026,Overspeed,Low,20975
+10,Ho Chi Minh City,1/12/2026,Normal Driving,Low,397550
+11,Ho Chi Minh City,7/4/2026,Fuel Consumption,High,99191
+12,Ho Chi Minh City,3/10/2026,Engine Warning,Medium,127331
+13,Ha Noi,8/15/2025,Fuel Consumption,High,341742
+14,Da Nang,7/8/2026,Engine Warning,Low,138538
+15,Da Nang,7/23/2026,Fuel Consumption,Medium,144580
+16,Da Nang,3/31/2026,Overspeed,High,196550
+17,Ho Chi Minh City,6/15/2026,Idle Time,Medium,308395
+18,Can Tho,1/14/2026,Fuel Consumption,Critical,233268
+19,Ho Chi Minh City,11/2/2025,Rapid Acceleration,Medium,97153
+20,Ha Noi,10/8/2025,Rapid Acceleration,High,345081
+21,Da Nang,11/30/2025,Fuel Consumption,Medium,31879
+22,Can Tho,10/25/2025,Harsh Braking,Medium,89815
+23,Ho Chi Minh City,10/23/2025,Rapid Acceleration,Critical,244794
+24,Ho Chi Minh City,9/20/2025,Overspeed,Low,98942
+25,Ha Noi,4/25/2026,Fuel Consumption,Low,54854
+26,Can Tho,4/20/2026,Normal Driving,Low,177810
+27,Ho Chi Minh City,5/18/2026,Overspeed,Medium,347002
+28,Da Nang,4/6/2026,Rapid Acceleration,Low,301761
+29,Ho Chi Minh City,10/7/2025,Harsh Braking,Critical,102832
+30,Da Nang,10/27/2025,Overspeed,Critical,309142
+31,Can Tho,8/4/2025,Harsh Braking,Critical,182247
+32,Can Tho,10/6/2025,Engine Warning,Medium,198875
+33,Can Tho,7/3/2026,Fuel Consumption,Critical,41666
+34,Da Nang,12/25/2025,Rapid Acceleration,Medium,356697
+35,Ho Chi Minh City,11/9/2025,Harsh Braking,Low,109634
+36,Ho Chi Minh City,12/27/2025,Rapid Acceleration,Medium,13011
+37,Can Tho,5/21/2026,Harsh Braking,Critical,40380
+38,Can Tho,5/11/2026,Fuel Consumption,High,347313
+39,Can Tho,6/25/2026,Normal Driving,Critical,240146
+40,Ha Noi,7/3/2026,Rapid Acceleration,Low,196760
+41,Ho Chi Minh City,2/7/2026,Fuel Consumption,Medium,230639
+42,Ho Chi Minh City,8/25/2025,Idle Time,Medium,58951
+43,Ho Chi Minh City,1/20/2026,Harsh Braking,High,227211
+44,Can Tho,8/9/2025,Harsh Braking,Critical,365707
+45,Ha Noi,12/13/2025,Idle Time,Medium,297980
+46,Da Nang,10/2/2025,Overspeed,Medium,394735
+47,Ho Chi Minh City,5/6/2026,Engine Warning,High,28177
+48,Ho Chi Minh City,10/12/2025,Engine Warning,Low,255637
+49,Da Nang,7/18/2026,Engine Warning,Low,59403
+50,Can Tho,12/2/2025,Fuel Consumption,Low,209854
+51,Ho Chi Minh City,10/13/2025,Engine Warning,High,307365
+52,Ha Noi,5/12/2026,Fuel Consumption,Low,385326
+53,Da Nang,3/24/2026,Overspeed,High,148870
+54,Ha Noi,10/9/2025,Idle Time,High,338194
+55,Ho Chi Minh City,12/21/2025,Harsh Braking,High,56406
+56,Ho Chi Minh City,11/22/2025,Harsh Braking,High,299180
+57,Can Tho,3/20/2026,Rapid Acceleration,Critical,259245
+58,Ha Noi,10/22/2025,Rapid Acceleration,High,109188
+59,Da Nang,5/28/2026,Idle Time,Medium,359212
+60,Can Tho,3/2/2026,Idle Time,High,183154
+61,Ho Chi Minh City,7/20/2026,Idle Time,High,207723
+62,Can Tho,9/29/2025,Engine Warning,High,326388
+63,Da Nang,8/7/2025,Engine Warning,Critical,79477
+64,Ho Chi Minh City,8/6/2025,Engine Warning,Medium,69040
+65,Ha Noi,5/8/2026,Fuel Consumption,Low,27690
+66,Ho Chi Minh City,4/23/2026,Harsh Braking,Critical,168606
+67,Ha Noi,12/28/2025,Normal Driving,Low,349601
+68,Can Tho,11/12/2025,Overspeed,Low,23509
+69,Ha Noi,1/28/2026,Rapid Acceleration,Low,71063
+70,Ho Chi Minh City,11/28/2025,Fuel Consumption,Critical,67898
+71,Da Nang,6/17/2026,Fuel Consumption,Critical,74107
+72,Ha Noi,11/4/2025,Overspeed,High,398669
+73,Can Tho,12/31/2025,Harsh Braking,Medium,310009
+74,Ha Noi,10/8/2025,Rapid Acceleration,High,112083
+75,Da Nang,7/19/2026,Harsh Braking,High,291442
+76,Ha Noi,12/30/2025,Idle Time,Medium,149867
+77,Da Nang,7/26/2026,Normal Driving,Low,137042
+78,Ho Chi Minh City,2/12/2026,Overspeed,Medium,131673
+79,Ha Noi,5/8/2026,Fuel Consumption,Medium,379080
+80,Ha Noi,4/27/2026,Idle Time,High,71347
+81,Ho Chi Minh City,8/25/2025,Rapid Acceleration,Low,51080
+82,Ha Noi,4/25/2026,Fuel Consumption,Medium,51299
+83,Ho Chi Minh City,11/15/2025,Harsh Braking,High,110586
+84,Ha Noi,11/4/2025,Engine Warning,Low,104304
+85,Ho Chi Minh City,2/24/2026,Normal Driving,Critical,268578
+86,Ha Noi,8/15/2025,Idle Time,Low,396259
+87,Ho Chi Minh City,7/30/2025,Fuel Consumption,High,357619
+88,Ha Noi,11/14/2025,Rapid Acceleration,Medium,97748
+89,Ha Noi,7/13/2026,Normal Driving,High,317356
+90,Can Tho,10/6/2025,Normal Driving,Low,219613
+91,Da Nang,7/16/2026,Rapid Acceleration,Medium,327537
+92,Da Nang,5/22/2026,Rapid Acceleration,Low,371119
+93,Ha Noi,11/18/2025,Harsh Braking,Critical,368976
+94,Ho Chi Minh City,12/28/2025,Overspeed,Medium,36781
+95,Da Nang,8/26/2025,Normal Driving,Low,382200
+96,Da Nang,9/23/2025,Rapid Acceleration,Medium,218550
+97,Can Tho,3/13/2026,Harsh Braking,Critical,384873
+98,Can Tho,7/23/2026,Rapid Acceleration,Low,50069
+99,Ho Chi Minh City,1/18/2026,Normal Driving,Critical,305514
+100,Da Nang,3/28/2026,Overspeed,Low,211024
+101,Ha Noi,9/11/2025,Engine Warning,Low,214411
+102,Ho Chi Minh City,3/27/2026,Overspeed,Low,29343
+103,Ha Noi,8/10/2025,Fuel Consumption,Critical,158660
+104,Da Nang,8/12/2025,Overspeed,High,45544
+105,Ho Chi Minh City,9/22/2025,Rapid Acceleration,High,87135
+106,Can Tho,7/16/2026,Idle Time,Medium,67843
+107,Ho Chi Minh City,7/14/2026,Rapid Acceleration,Low,186914
+108,Ha Noi,5/13/2026,Harsh Braking,Medium,21852
+109,Ha Noi,5/4/2026,Idle Time,Medium,259348
+110,Da Nang,7/12/2026,Normal Driving,Low,310077
+111,Can Tho,5/28/2026,Harsh Braking,Medium,124902
+112,Ho Chi Minh City,8/24/2025,Fuel Consumption,Low,20982
+113,Ho Chi Minh City,8/29/2025,Overspeed,Medium,163195
+114,Da Nang,7/10/2026,Overspeed,Low,299805
+115,Da Nang,9/6/2025,Rapid Acceleration,Medium,311285
+116,Da Nang,12/10/2025,Fuel Consumption,Low,384450
+117,Ho Chi Minh City,11/8/2025,Harsh Braking,High,34592
+118,Ha Noi,8/26/2025,Harsh Braking,Critical,361285
+119,Da Nang,3/27/2026,Fuel Consumption,Low,271438
+120,Ha Noi,7/24/2026,Fuel Consumption,Critical,315765
+121,Ho Chi Minh City,5/1/2026,Overspeed,Critical,273638
+122,Can Tho,11/19/2025,Normal Driving,Medium,280061
+123,Ha Noi,6/7/2026,Engine Warning,High,94091
+124,Da Nang,6/22/2026,Fuel Consumption,Medium,163108
+125,Can Tho,8/17/2025,Harsh Braking,High,367736
+126,Da Nang,8/28/2025,Harsh Braking,Low,136066
+127,Ho Chi Minh City,2/27/2026,Engine Warning,High,312723
+128,Can Tho,4/25/2026,Overspeed,High,342295
+129,Can Tho,1/13/2026,Idle Time,Medium,65067
+130,Ha Noi,11/23/2025,Fuel Consumption,Critical,290064
+131,Da Nang,3/6/2026,Rapid Acceleration,Medium,244068
+132,Can Tho,6/23/2026,Engine Warning,Critical,84963
+133,Ho Chi Minh City,5/27/2026,Idle Time,Critical,399874
+134,Ha Noi,3/26/2026,Overspeed,Critical,151651
+135,Ha Noi,6/7/2026,Fuel Consumption,Critical,224001
+136,Da Nang,4/25/2026,Overspeed,Medium,223164
+137,Ho Chi Minh City,11/8/2025,Engine Warning,Low,248233
+138,Can Tho,9/30/2025,Fuel Consumption,Medium,25731
+139,Ha Noi,8/14/2025,Idle Time,Low,108316
+140,Da Nang,1/19/2026,Harsh Braking,Medium,193750
+141,Da Nang,2/21/2026,Idle Time,Medium,34048
+142,Da Nang,2/20/2026,Normal Driving,Low,224310
+143,Can Tho,6/24/2026,Idle Time,Low,247241
+144,Can Tho,9/25/2025,Idle Time,Low,243353
+145,Ha Noi,12/14/2025,Harsh Braking,High,85378
+146,Can Tho,5/18/2026,Engine Warning,Medium,136495
+147,Can Tho,12/9/2025,Normal Driving,Low,286855
+148,Da Nang,6/2/2026,Rapid Acceleration,High,318820
+149,Ho Chi Minh City,4/6/2026,Normal Driving,Critical,47815
+150,Ho Chi Minh City,12/26/2025,Rapid Acceleration,Critical,10603
+151,Ha Noi,8/22/2025,Rapid Acceleration,Critical,305427
+152,Da Nang,4/11/2026,Engine Warning,Low,185699
+153,Can Tho,9/11/2025,Idle Time,Critical,328441
+154,Da Nang,5/8/2026,Normal Driving,High,66790
+155,Can Tho,11/13/2025,Engine Warning,Medium,194002
+156,Da Nang,5/28/2026,Engine Warning,High,101997
+157,Da Nang,6/22/2026,Engine Warning,Critical,125894
+158,Ho Chi Minh City,8/9/2025,Engine Warning,Critical,213143
+159,Can Tho,6/9/2026,Normal Driving,Low,289695
+160,Ho Chi Minh City,9/26/2025,Idle Time,Low,38632
+161,Can Tho,6/2/2026,Overspeed,High,301975
+162,Da Nang,9/8/2025,Fuel Consumption,Medium,261235
+163,Ho Chi Minh City,12/5/2025,Overspeed,High,122351
+164,Da Nang,6/19/2026,Normal Driving,High,64971
+165,Can Tho,8/17/2025,Engine Warning,Medium,287911
+166,Ha Noi,6/20/2026,Overspeed,Low,172470
+167,Ho Chi Minh City,8/26/2025,Fuel Consumption,Low,258940
+168,Ha Noi,5/3/2026,Normal Driving,Medium,28708
+169,Da Nang,1/18/2026,Fuel Consumption,High,236552
+170,Da Nang,3/15/2026,Rapid Acceleration,High,258383
+171,Ho Chi Minh City,4/14/2026,Engine Warning,High,256439
+172,Can Tho,9/6/2025,Rapid Acceleration,High,155686
+173,Da Nang,6/13/2026,Normal Driving,Medium,66304
+174,Da Nang,3/24/2026,Normal Driving,Low,369940
+175,Ha Noi,9/11/2025,Idle Time,High,198077
+176,Can Tho,9/2/2025,Fuel Consumption,Critical,134580
+177,Ho Chi Minh City,3/14/2026,Idle Time,Medium,352021
+178,Ho Chi Minh City,6/26/2026,Rapid Acceleration,Critical,361343
+179,Can Tho,7/18/2026,Harsh Braking,High,229305
+180,Can Tho,10/24/2025,Normal Driving,High,95304
+181,Ha Noi,3/21/2026,Engine Warning,Low,74815
+182,Ha Noi,7/28/2025,Idle Time,Low,90606
+183,Da Nang,3/29/2026,Idle Time,High,339005
+184,Da Nang,5/4/2026,Idle Time,Critical,94404
+185,Ha Noi,10/20/2025,Idle Time,Medium,217481
+186,Ho Chi Minh City,6/1/2026,Fuel Consumption,High,291214
+187,Ho Chi Minh City,3/19/2026,Rapid Acceleration,High,327308
+188,Can Tho,7/29/2025,Normal Driving,High,161090
+189,Ho Chi Minh City,7/26/2026,Harsh Braking,High,26683
+190,Can Tho,7/15/2026,Engine Warning,Medium,232735
+191,Da Nang,7/4/2026,Harsh Braking,Low,59112
+192,Ha Noi,5/30/2026,Harsh Braking,Critical,272272
+193,Ha Noi,11/25/2025,Idle Time,Low,250422
+194,Ha Noi,6/7/2026,Overspeed,Low,44961
+195,Da Nang,7/31/2025,Engine Warning,High,319874
+196,Ha Noi,1/23/2026,Engine Warning,Critical,108558
+197,Ho Chi Minh City,11/29/2025,Engine Warning,High,42675
+198,Ha Noi,8/19/2025,Harsh Braking,Critical,209956
+199,Ho Chi Minh City,3/20/2026,Idle Time,Critical,290882
+200,Da Nang,5/12/2026,Rapid Acceleration,Medium,193978
+201,Ho Chi Minh City,5/5/2026,Harsh Braking,Low,163662
+202,Can Tho,1/9/2026,Idle Time,Low,228767
+203,Ha Noi,1/16/2026,Fuel Consumption,High,141536
+204,Da Nang,12/17/2025,Overspeed,High,329397
+205,Da Nang,5/9/2026,Engine Warning,Critical,37719
+206,Ho Chi Minh City,8/7/2025,Harsh Braking,Critical,158660
+207,Da Nang,9/26/2025,Overspeed,Critical,60295
+208,Can Tho,6/7/2026,Fuel Consumption,Critical,133629
+209,Da Nang,12/23/2025,Normal Driving,Low,364860
+210,Da Nang,2/24/2026,Idle Time,High,249931
+211,Can Tho,1/31/2026,Normal Driving,High,322858
+212,Da Nang,11/23/2025,Fuel Consumption,Critical,213512
+213,Ho Chi Minh City,10/1/2025,Fuel Consumption,Medium,63506
+214,Ho Chi Minh City,12/1/2025,Idle Time,High,281802
+215,Ho Chi Minh City,1/1/2026,Engine Warning,Medium,332437
+216,Ha Noi,11/19/2025,Normal Driving,Critical,185456
+217,Ha Noi,12/2/2025,Harsh Braking,High,55892
+218,Ha Noi,11/28/2025,Overspeed,High,212766
+219,Da Nang,9/5/2025,Idle Time,Medium,284517
+220,Ho Chi Minh City,1/19/2026,Engine Warning,Low,99520
+221,Ha Noi,1/31/2026,Fuel Consumption,Medium,89468
+222,Ho Chi Minh City,12/29/2025,Overspeed,Low,309885
+223,Ho Chi Minh City,12/30/2025,Rapid Acceleration,Medium,126180
+224,Can Tho,10/28/2025,Idle Time,Medium,295907
+225,Ho Chi Minh City,2/3/2026,Normal Driving,Low,265822
+226,Ho Chi Minh City,8/9/2025,Idle Time,Low,223036
+227,Can Tho,6/11/2026,Engine Warning,High,225804
+228,Ha Noi,6/16/2026,Rapid Acceleration,Medium,302847
+229,Ho Chi Minh City,5/26/2026,Engine Warning,Low,97454
+230,Ha Noi,5/13/2026,Idle Time,High,13802
+231,Ho Chi Minh City,5/22/2026,Normal Driving,Critical,163639
+232,Ho Chi Minh City,11/17/2025,Fuel Consumption,Medium,349391
+233,Can Tho,3/8/2026,Fuel Consumption,Critical,260927
+234,Can Tho,6/18/2026,Rapid Acceleration,Critical,182489
+235,Ho Chi Minh City,12/16/2025,Engine Warning,Critical,295810
+236,Can Tho,3/8/2026,Idle Time,Medium,100796
+237,Ha Noi,7/4/2026,Normal Driving,Medium,284872
+238,Ho Chi Minh City,2/25/2026,Rapid Acceleration,High,103947
+239,Can Tho,3/26/2026,Overspeed,Low,207556
+240,Can Tho,8/19/2025,Harsh Braking,High,389759
+241,Da Nang,10/14/2025,Harsh Braking,Low,394999
+242,Can Tho,5/30/2026,Rapid Acceleration,High,294857
+243,Ha Noi,6/13/2026,Harsh Braking,Low,49797
+244,Ho Chi Minh City,7/24/2026,Idle Time,High,351534
+245,Ho Chi Minh City,12/30/2025,Normal Driving,Critical,283851
+246,Da Nang,6/26/2026,Engine Warning,Critical,105641
+247,Da Nang,2/14/2026,Idle Time,Medium,391542
+248,Ho Chi Minh City,5/10/2026,Overspeed,Critical,160114
+249,Ha Noi,3/31/2026,Harsh Braking,Critical,165360
+250,Da Nang,10/26/2025,Engine Warning,Medium,288691
+251,Ho Chi Minh City,1/23/2026,Fuel Consumption,Critical,343637
+252,Da Nang,7/13/2026,Rapid Acceleration,Low,104561
+253,Ho Chi Minh City,10/21/2025,Engine Warning,Low,312577
+254,Ha Noi,2/4/2026,Normal Driving,High,126343
+255,Can Tho,10/3/2025,Rapid Acceleration,Low,249694
+256,Da Nang,4/10/2026,Fuel Consumption,Low,269768
+257,Can Tho,8/6/2025,Harsh Braking,Critical,88244
+258,Da Nang,1/1/2026,Engine Warning,Medium,341060
+259,Da Nang,9/23/2025,Overspeed,Medium,370894
+260,Ha Noi,11/27/2025,Overspeed,Low,153862
+261,Ho Chi Minh City,5/12/2026,Idle Time,Critical,52175
+262,Can Tho,9/12/2025,Engine Warning,Medium,343919
+263,Ha Noi,7/7/2026,Rapid Acceleration,Critical,164233
+264,Ho Chi Minh City,11/2/2025,Harsh Braking,High,187548
+265,Da Nang,12/3/2025,Overspeed,Low,208143
+266,Ho Chi Minh City,10/9/2025,Harsh Braking,Low,14850
+267,Ho Chi Minh City,12/10/2025,Engine Warning,Low,101394
+268,Da Nang,12/9/2025,Harsh Braking,Low,301922
+269,Can Tho,9/29/2025,Harsh Braking,Low,167732
+270,Ho Chi Minh City,3/19/2026,Normal Driving,Low,107308
+271,Da Nang,4/29/2026,Idle Time,Low,305544
+272,Can Tho,2/10/2026,Engine Warning,Critical,234755
+273,Da Nang,6/5/2026,Harsh Braking,Critical,163505
+274,Ha Noi,7/9/2026,Normal Driving,Medium,392252
+275,Da Nang,5/24/2026,Normal Driving,Low,180980
+276,Ho Chi Minh City,8/5/2025,Fuel Consumption,Critical,258267
+277,Ha Noi,11/1/2025,Harsh Braking,High,390597
+278,Ho Chi Minh City,6/6/2026,Normal Driving,High,58543
+279,Ho Chi Minh City,3/16/2026,Overspeed,High,394031
+280,Ha Noi,3/20/2026,Rapid Acceleration,Critical,13617
+281,Ha Noi,5/24/2026,Normal Driving,High,339290
+282,Can Tho,1/1/2026,Engine Warning,High,62368
+283,Ho Chi Minh City,3/21/2026,Idle Time,High,119036
+284,Da Nang,1/27/2026,Rapid Acceleration,Medium,328224
+285,Can Tho,3/3/2026,Harsh Braking,Low,126441
+286,Can Tho,7/4/2026,Normal Driving,High,116509
+287,Ho Chi Minh City,12/21/2025,Idle Time,Low,275445
+288,Can Tho,6/18/2026,Fuel Consumption,Low,75727
+289,Da Nang,12/24/2025,Normal Driving,Low,315552
+290,Can Tho,7/7/2026,Harsh Braking,Critical,396024
+291,Ho Chi Minh City,8/9/2025,Rapid Acceleration,Low,239623
+292,Can Tho,1/18/2026,Engine Warning,High,57295
+293,Da Nang,12/14/2025,Normal Driving,Critical,118214
+294,Da Nang,9/21/2025,Fuel Consumption,Low,80291
+295,Can Tho,11/29/2025,Engine Warning,Low,257738
+296,Ha Noi,1/12/2026,Rapid Acceleration,Medium,257256
+297,Ha Noi,4/22/2026,Normal Driving,Medium,87303
+298,Ho Chi Minh City,10/21/2025,Engine Warning,Critical,274399
+299,Ho Chi Minh City,6/18/2026,Rapid Acceleration,Low,273979
+300,Can Tho,2/2/2026,Fuel Consumption,Critical,374108
+301,Ha Noi,5/21/2026,Harsh Braking,Critical,212608
+302,Da Nang,12/16/2025,Harsh Braking,Critical,133897
+303,Can Tho,11/22/2025,Normal Driving,Critical,270686
+304,Ho Chi Minh City,3/20/2026,Fuel Consumption,Low,332631
+305,Ho Chi Minh City,3/16/2026,Rapid Acceleration,Medium,276336
+306,Can Tho,7/9/2026,Normal Driving,Low,213425
+307,Ha Noi,11/20/2025,Rapid Acceleration,High,52401
+308,Da Nang,1/30/2026,Idle Time,Low,353367
+309,Ho Chi Minh City,6/25/2026,Fuel Consumption,High,220417
+310,Ha Noi,1/27/2026,Engine Warning,High,19044
+311,Da Nang,1/13/2026,Normal Driving,Low,379316
+312,Da Nang,4/18/2026,Normal Driving,Critical,79007
+313,Da Nang,9/4/2025,Harsh Braking,High,252335
+314,Ha Noi,2/20/2026,Engine Warning,Low,253285
+315,Da Nang,11/9/2025,Idle Time,Low,16731
+316,Ho Chi Minh City,10/23/2025,Fuel Consumption,Low,392263
+317,Ha Noi,3/14/2026,Normal Driving,Critical,336117
+318,Ha Noi,4/28/2026,Engine Warning,Critical,292013
+319,Can Tho,6/30/2026,Fuel Consumption,High,245716
+320,Ho Chi Minh City,11/20/2025,Rapid Acceleration,Low,46118
+321,Ho Chi Minh City,3/26/2026,Harsh Braking,Medium,338887
+322,Ha Noi,3/28/2026,Normal Driving,Low,17522
+323,Can Tho,10/24/2025,Harsh Braking,Critical,235104
+324,Ha Noi,2/28/2026,Harsh Braking,Low,189089
+325,Ho Chi Minh City,3/27/2026,Fuel Consumption,Critical,30712
+326,Da Nang,1/26/2026,Overspeed,Low,281977
+327,Can Tho,4/2/2026,Rapid Acceleration,High,389002
+328,Can Tho,4/21/2026,Harsh Braking,Critical,62547
+329,Da Nang,9/20/2025,Overspeed,Medium,135257
+330,Can Tho,1/9/2026,Harsh Braking,High,114466
+331,Can Tho,4/7/2026,Fuel Consumption,High,381803
+332,Can Tho,12/3/2025,Rapid Acceleration,Medium,174775
+333,Ho Chi Minh City,3/24/2026,Harsh Braking,Low,207436
+334,Ho Chi Minh City,5/21/2026,Normal Driving,Critical,338812
+335,Ho Chi Minh City,10/13/2025,Normal Driving,Low,365719
+336,Da Nang,7/7/2026,Idle Time,Low,144727
+337,Can Tho,7/8/2026,Normal Driving,Low,296822
+338,Can Tho,11/9/2025,Overspeed,Critical,234090
+339,Da Nang,12/17/2025,Fuel Consumption,Critical,68693
+340,Ho Chi Minh City,8/9/2025,Fuel Consumption,Low,60442
+341,Ho Chi Minh City,12/1/2025,Engine Warning,High,220230
+342,Ho Chi Minh City,7/7/2026,Harsh Braking,Medium,224763
+343,Ha Noi,9/16/2025,Engine Warning,Critical,143646
+344,Can Tho,9/25/2025,Overspeed,Critical,87127
+345,Ha Noi,9/8/2025,Fuel Consumption,Medium,144975
+346,Ho Chi Minh City,1/26/2026,Overspeed,Medium,260902
+347,Da Nang,5/9/2026,Rapid Acceleration,Low,275484
+348,Ha Noi,10/24/2025,Fuel Consumption,Critical,165676
+349,Can Tho,4/2/2026,Engine Warning,Medium,308192
+350,Ho Chi Minh City,11/17/2025,Idle Time,Critical,181190
+351,Da Nang,12/26/2025,Harsh Braking,Low,342880
+352,Da Nang,5/1/2026,Harsh Braking,Low,51660
+353,Da Nang,12/14/2025,Overspeed,Low,370949
+354,Ha Noi,9/8/2025,Normal Driving,Medium,17435
+355,Can Tho,8/14/2025,Harsh Braking,High,250419
+356,Da Nang,11/18/2025,Idle Time,High,363300
+357,Can Tho,8/3/2025,Idle Time,High,335083
+358,Ha Noi,9/24/2025,Fuel Consumption,Critical,332462
+359,Da Nang,8/28/2025,Overspeed,Critical,265200
+360,Da Nang,9/18/2025,Rapid Acceleration,High,333419
+361,Ha Noi,8/16/2025,Idle Time,High,11391
+362,Can Tho,6/5/2026,Normal Driving,Critical,158466
+363,Can Tho,11/29/2025,Idle Time,High,19727
+364,Ha Noi,12/31/2025,Fuel Consumption,Medium,213974
+365,Can Tho,11/10/2025,Harsh Braking,Low,373636
+366,Ha Noi,8/16/2025,Overspeed,Low,387283
+367,Ho Chi Minh City,2/20/2026,Idle Time,High,116313
+368,Ha Noi,4/22/2026,Overspeed,Medium,73625
+369,Ha Noi,7/13/2026,Rapid Acceleration,Critical,56277
+370,Ha Noi,2/15/2026,Fuel Consumption,Medium,230032
+371,Can Tho,4/15/2026,Rapid Acceleration,Critical,173331
+372,Ha Noi,4/11/2026,Normal Driving,Critical,180905
+373,Can Tho,4/13/2026,Rapid Acceleration,High,25237
+374,Can Tho,2/16/2026,Engine Warning,Low,393533
+375,Ho Chi Minh City,7/4/2026,Fuel Consumption,High,209431
+376,Can Tho,4/5/2026,Normal Driving,Low,235206
+377,Ho Chi Minh City,12/30/2025,Overspeed,Critical,98401
+378,Ho Chi Minh City,6/13/2026,Overspeed,Medium,294282
+379,Ha Noi,4/6/2026,Idle Time,Critical,137824
+380,Ha Noi,10/28/2025,Normal Driving,Low,83592
+381,Can Tho,7/21/2026,Overspeed,Low,90662
+382,Ho Chi Minh City,2/15/2026,Engine Warning,Critical,11738
+383,Can Tho,7/2/2026,Overspeed,Low,216110
+384,Ho Chi Minh City,6/16/2026,Engine Warning,Critical,207864
+385,Ho Chi Minh City,5/18/2026,Harsh Braking,Low,350927
+386,Ho Chi Minh City,1/8/2026,Fuel Consumption,Medium,257571
+387,Ha Noi,2/26/2026,Rapid Acceleration,Medium,268848
+388,Ho Chi Minh City,12/18/2025,Harsh Braking,Medium,263669
+389,Can Tho,4/11/2026,Rapid Acceleration,Critical,193765
+390,Ho Chi Minh City,2/25/2026,Fuel Consumption,Low,24355
+391,Da Nang,7/23/2026,Harsh Braking,Critical,353670
+392,Ha Noi,11/3/2025,Rapid Acceleration,Critical,205234
+393,Ho Chi Minh City,7/2/2026,Idle Time,Low,140217
+394,Da Nang,4/15/2026,Overspeed,High,149753
+395,Ha Noi,8/31/2025,Overspeed,Medium,184868
+396,Da Nang,8/4/2025,Fuel Consumption,Critical,324037
+397,Da Nang,7/24/2026,Rapid Acceleration,Critical,365479
+398,Ho Chi Minh City,2/15/2026,Idle Time,Low,298147
+399,Da Nang,7/28/2025,Overspeed,Critical,163774
+400,Can Tho,3/1/2026,Fuel Consumption,High,199830
+401,Can Tho,6/10/2026,Engine Warning,Medium,107801
+402,Can Tho,1/29/2026,Rapid Acceleration,Critical,345946
+403,Da Nang,8/16/2025,Rapid Acceleration,Critical,331156
+404,Ho Chi Minh City,3/20/2026,Harsh Braking,Low,22962
+405,Da Nang,1/25/2026,Idle Time,Medium,70966
+406,Da Nang,12/18/2025,Rapid Acceleration,Low,328645
+407,Da Nang,3/1/2026,Normal Driving,Medium,53751
+408,Ha Noi,1/1/2026,Fuel Consumption,Low,125029
+409,Ho Chi Minh City,6/7/2026,Rapid Acceleration,Medium,191645
+410,Ha Noi,9/16/2025,Harsh Braking,Critical,337072
+411,Ho Chi Minh City,11/27/2025,Normal Driving,Medium,127669
+412,Ho Chi Minh City,3/6/2026,Idle Time,High,275964
+413,Can Tho,7/10/2026,Idle Time,Medium,179378
+414,Da Nang,3/8/2026,Normal Driving,Low,188918
+415,Can Tho,9/21/2025,Harsh Braking,Critical,164691
+416,Da Nang,2/8/2026,Harsh Braking,Critical,391038
+417,Da Nang,5/9/2026,Idle Time,High,186826
+418,Ha Noi,9/22/2025,Idle Time,Medium,77742
+419,Ha Noi,7/23/2026,Rapid Acceleration,Medium,25723
+420,Can Tho,12/8/2025,Fuel Consumption,Low,125920
+421,Da Nang,4/5/2026,Fuel Consumption,Medium,63551
+422,Ho Chi Minh City,2/11/2026,Normal Driving,High,255680
+423,Ho Chi Minh City,7/17/2026,Fuel Consumption,Low,83667
+424,Da Nang,6/9/2026,Fuel Consumption,High,298324
+425,Ha Noi,5/1/2026,Fuel Consumption,Low,177671
+426,Ho Chi Minh City,7/20/2026,Rapid Acceleration,High,31066
+427,Ha Noi,9/30/2025,Overspeed,Critical,41708
+428,Ho Chi Minh City,4/28/2026,Fuel Consumption,Low,317518
+429,Da Nang,12/1/2025,Overspeed,High,221392
+430,Ha Noi,6/2/2026,Harsh Braking,Low,96118
+431,Da Nang,10/2/2025,Engine Warning,High,49648
+432,Can Tho,3/15/2026,Normal Driving,Low,101901
+433,Ho Chi Minh City,8/22/2025,Harsh Braking,High,14265
+434,Ho Chi Minh City,11/16/2025,Harsh Braking,High,98110
+435,Can Tho,6/29/2026,Rapid Acceleration,Critical,219546
+436,Da Nang,5/2/2026,Harsh Braking,High,128487
+437,Ho Chi Minh City,7/25/2026,Harsh Braking,High,325017
+438,Ho Chi Minh City,2/22/2026,Idle Time,Medium,352041
+439,Ho Chi Minh City,7/28/2025,Fuel Consumption,Critical,393661
+440,Can Tho,3/22/2026,Engine Warning,Critical,179186
+441,Can Tho,8/26/2025,Idle Time,High,196698
+442,Da Nang,6/1/2026,Overspeed,Low,350021
+443,Ho Chi Minh City,7/2/2026,Engine Warning,Low,20759
+444,Ho Chi Minh City,5/13/2026,Normal Driving,High,33667
+445,Da Nang,1/16/2026,Overspeed,Critical,117970
+446,Ho Chi Minh City,4/19/2026,Engine Warning,Low,92865
+447,Ho Chi Minh City,11/26/2025,Normal Driving,Medium,231201
+448,Ho Chi Minh City,12/16/2025,Engine Warning,Low,240739
+449,Da Nang,12/25/2025,Harsh Braking,Critical,184405
+450,Da Nang,3/11/2026,Harsh Braking,Low,55045
+451,Ho Chi Minh City,12/10/2025,Engine Warning,High,111635
+452,Da Nang,12/25/2025,Normal Driving,Medium,373189
+453,Ho Chi Minh City,4/21/2026,Rapid Acceleration,Medium,348513
+454,Ha Noi,12/2/2025,Idle Time,High,144554
+455,Ha Noi,1/31/2026,Engine Warning,Medium,114243
+456,Can Tho,10/21/2025,Idle Time,Medium,167148
+457,Ha Noi,3/18/2026,Engine Warning,High,376737
+458,Ha Noi,8/6/2025,Idle Time,High,19268
+459,Ha Noi,8/9/2025,Normal Driving,Critical,169963
+460,Ho Chi Minh City,8/4/2025,Harsh Braking,Medium,114953
+461,Ho Chi Minh City,2/15/2026,Harsh Braking,High,13416
+462,Ha Noi,3/11/2026,Overspeed,Low,346370
+463,Ha Noi,12/27/2025,Rapid Acceleration,High,71345
+464,Ho Chi Minh City,6/26/2026,Normal Driving,Low,339085
+465,Can Tho,9/30/2025,Normal Driving,Low,21999
+466,Can Tho,4/22/2026,Idle Time,Critical,217871
+467,Can Tho,8/22/2025,Harsh Braking,Critical,200506
+468,Can Tho,1/19/2026,Overspeed,Critical,98955
+469,Da Nang,7/4/2026,Overspeed,Low,89780
+470,Ho Chi Minh City,12/31/2025,Rapid Acceleration,Critical,254418
+471,Da Nang,8/8/2025,Fuel Consumption,Critical,335006
+472,Can Tho,4/16/2026,Engine Warning,Critical,281923
+473,Ho Chi Minh City,3/13/2026,Rapid Acceleration,High,243878
+474,Ho Chi Minh City,5/6/2026,Engine Warning,Critical,348215
+475,Can Tho,6/22/2026,Engine Warning,Low,311615
+476,Ha Noi,5/16/2026,Fuel Consumption,Medium,49311
+477,Can Tho,2/28/2026,Idle Time,Medium,42576
+478,Can Tho,7/20/2026,Fuel Consumption,Medium,204134
+479,Ho Chi Minh City,12/10/2025,Engine Warning,Low,241481
+480,Ha Noi,10/13/2025,Normal Driving,Critical,288535
+481,Can Tho,2/20/2026,Harsh Braking,High,203822
+482,Ho Chi Minh City,3/9/2026,Harsh Braking,Critical,296253
+483,Ho Chi Minh City,6/14/2026,Overspeed,High,99837
+484,Can Tho,3/28/2026,Harsh Braking,Medium,32366
+485,Can Tho,7/24/2026,Rapid Acceleration,High,257079
+486,Can Tho,10/16/2025,Fuel Consumption,Critical,188147
+487,Ha Noi,2/1/2026,Normal Driving,Medium,396806
+488,Can Tho,8/31/2025,Harsh Braking,High,234043
+489,Ha Noi,2/9/2026,Fuel Consumption,Critical,331613
+490,Ho Chi Minh City,7/12/2026,Idle Time,Medium,10068
+491,Da Nang,12/17/2025,Engine Warning,Medium,363663
+492,Da Nang,1/4/2026,Fuel Consumption,Critical,110449
+493,Da Nang,5/26/2026,Harsh Braking,Critical,128273
+494,Da Nang,10/25/2025,Engine Warning,Critical,242474
+495,Can Tho,8/19/2025,Idle Time,Low,81658
+496,Ha Noi,4/8/2026,Engine Warning,High,71346
+497,Ha Noi,12/7/2025,Normal Driving,High,334301
+498,Ho Chi Minh City,2/4/2026,Idle Time,Low,131718
+499,Da Nang,10/9/2025,Rapid Acceleration,Medium,325659
+500,Da Nang,5/31/2026,Overspeed,Critical,308274
+501,Ha Noi,4/10/2026,Normal Driving,Medium,58936
+502,Ho Chi Minh City,8/19/2025,Fuel Consumption,Medium,257748
+503,Ho Chi Minh City,9/1/2025,Harsh Braking,Low,135170
+504,Ho Chi Minh City,8/23/2025,Fuel Consumption,Critical,75580
+505,Ha Noi,2/15/2026,Rapid Acceleration,High,339398
+506,Da Nang,1/23/2026,Fuel Consumption,Low,170721
+507,Da Nang,5/26/2026,Normal Driving,High,79373
+508,Da Nang,2/28/2026,Engine Warning,Critical,72196
+509,Da Nang,7/13/2026,Harsh Braking,High,113721
+510,Da Nang,9/10/2025,Overspeed,Low,194760
+511,Ho Chi Minh City,8/5/2025,Fuel Consumption,Medium,256718
+512,Ha Noi,11/19/2025,Fuel Consumption,Critical,157955
+513,Da Nang,3/14/2026,Rapid Acceleration,High,158947
+514,Da Nang,3/25/2026,Harsh Braking,Medium,277527
+515,Da Nang,2/10/2026,Normal Driving,Low,305972
+516,Ho Chi Minh City,6/22/2026,Harsh Braking,Low,83779
+517,Da Nang,7/4/2026,Harsh Braking,Medium,45452
+518,Da Nang,5/25/2026,Engine Warning,Critical,368430
+519,Ha Noi,9/24/2025,Engine Warning,High,30119
+520,Can Tho,1/1/2026,Rapid Acceleration,High,193710
+521,Can Tho,10/2/2025,Fuel Consumption,Critical,135905
+522,Ha Noi,4/29/2026,Overspeed,High,212068
+523,Ho Chi Minh City,4/7/2026,Harsh Braking,Medium,43993
+524,Ha Noi,4/5/2026,Fuel Consumption,Low,95297
+525,Da Nang,3/25/2026,Normal Driving,High,75822
+526,Da Nang,7/24/2026,Rapid Acceleration,Low,67723
+527,Da Nang,9/12/2025,Normal Driving,Low,137452
+528,Da Nang,2/6/2026,Overspeed,Low,310984
+529,Ho Chi Minh City,5/22/2026,Overspeed,Low,168684
+530,Can Tho,12/28/2025,Idle Time,Medium,249802
+531,Da Nang,1/15/2026,Fuel Consumption,Critical,127798
+532,Ho Chi Minh City,9/29/2025,Overspeed,Low,164906
+533,Can Tho,1/8/2026,Harsh Braking,Low,98450
+534,Ho Chi Minh City,12/9/2025,Rapid Acceleration,High,263024
+535,Ha Noi,9/7/2025,Normal Driving,High,37453
+536,Da Nang,1/13/2026,Normal Driving,Critical,361406
+537,Can Tho,2/27/2026,Rapid Acceleration,Low,101732
+538,Ha Noi,1/28/2026,Overspeed,High,210775
+539,Da Nang,8/19/2025,Normal Driving,Low,241825
+540,Da Nang,6/6/2026,Harsh Braking,Critical,372123
+541,Da Nang,1/4/2026,Normal Driving,Medium,140380
+542,Ho Chi Minh City,2/25/2026,Engine Warning,High,359559
+543,Can Tho,6/14/2026,Normal Driving,Critical,99255
+544,Ho Chi Minh City,6/16/2026,Fuel Consumption,High,167723
+545,Ha Noi,8/1/2025,Idle Time,Critical,80058
+546,Ha Noi,1/10/2026,Harsh Braking,Critical,354418
+547,Ha Noi,1/26/2026,Rapid Acceleration,Medium,157037
+548,Da Nang,8/3/2025,Rapid Acceleration,Medium,233968
+549,Da Nang,3/1/2026,Idle Time,Medium,98807
+550,Ho Chi Minh City,10/21/2025,Harsh Braking,Medium,16192
+551,Ho Chi Minh City,12/13/2025,Fuel Consumption,Medium,364931
+552,Ha Noi,7/5/2026,Idle Time,Critical,225264
+553,Can Tho,6/1/2026,Idle Time,Low,52460
+554,Ha Noi,11/24/2025,Overspeed,High,157723
+555,Ha Noi,10/26/2025,Rapid Acceleration,Critical,110687
+556,Can Tho,7/8/2026,Harsh Braking,Medium,216289
+557,Ha Noi,11/1/2025,Idle Time,Critical,298141
+558,Can Tho,10/16/2025,Fuel Consumption,Medium,115174
+559,Da Nang,5/14/2026,Fuel Consumption,Medium,175343
+560,Ha Noi,4/16/2026,Normal Driving,High,225626
+561,Can Tho,12/1/2025,Engine Warning,Critical,14482
+562,Da Nang,10/26/2025,Fuel Consumption,Critical,399341
+563,Can Tho,2/16/2026,Idle Time,Low,76535
+564,Da Nang,11/8/2025,Normal Driving,Low,185726
+565,Can Tho,11/30/2025,Fuel Consumption,Medium,321014
+566,Da Nang,12/22/2025,Idle Time,Low,339015
+567,Ha Noi,1/25/2026,Engine Warning,Medium,210624
+568,Ha Noi,7/10/2026,Idle Time,Critical,384442
+569,Can Tho,4/13/2026,Harsh Braking,Medium,244841
+570,Da Nang,11/15/2025,Rapid Acceleration,Critical,282045
+571,Da Nang,7/7/2026,Rapid Acceleration,Low,182766
+572,Can Tho,7/21/2026,Harsh Braking,Low,65215
+573,Da Nang,2/15/2026,Overspeed,High,394789
+574,Da Nang,10/11/2025,Harsh Braking,Critical,151774
+575,Ho Chi Minh City,11/19/2025,Overspeed,High,376324
+576,Ha Noi,2/9/2026,Normal Driving,Low,266165
+577,Da Nang,5/16/2026,Idle Time,Low,267560
+578,Can Tho,2/25/2026,Fuel Consumption,Medium,84457
+579,Ho Chi Minh City,5/17/2026,Harsh Braking,Medium,139194
+580,Da Nang,3/16/2026,Overspeed,High,320634
+581,Ha Noi,4/11/2026,Harsh Braking,Medium,290770
+582,Da Nang,6/25/2026,Engine Warning,Low,295079
+583,Can Tho,6/8/2026,Harsh Braking,Medium,276503
+584,Ho Chi Minh City,8/30/2025,Engine Warning,Low,63136
+585,Ho Chi Minh City,7/31/2025,Engine Warning,Critical,109182
+586,Ha Noi,2/6/2026,Idle Time,High,391843
+587,Can Tho,4/8/2026,Harsh Braking,Critical,146491
+588,Ha Noi,6/10/2026,Rapid Acceleration,Medium,172049
+589,Ho Chi Minh City,12/27/2025,Harsh Braking,High,203902
+590,Da Nang,10/17/2025,Harsh Braking,Low,124923
+591,Da Nang,8/18/2025,Idle Time,Medium,341522
+592,Ho Chi Minh City,3/17/2026,Normal Driving,Low,269747
+593,Ho Chi Minh City,11/1/2025,Idle Time,Critical,305018
+594,Ha Noi,2/21/2026,Idle Time,High,303099
+595,Can Tho,3/22/2026,Overspeed,Low,139921
+596,Can Tho,2/1/2026,Harsh Braking,Medium,224531
+597,Can Tho,7/14/2026,Overspeed,Medium,372680
+598,Da Nang,4/18/2026,Rapid Acceleration,Low,362611
+599,Can Tho,7/22/2026,Fuel Consumption,Low,276714
+600,Ha Noi,5/18/2026,Overspeed,High,169473
+601,Can Tho,6/15/2026,Harsh Braking,Medium,379055
+602,Da Nang,12/10/2025,Idle Time,High,36406
+603,Ha Noi,4/30/2026,Rapid Acceleration,Critical,107431
+604,Can Tho,7/31/2025,Idle Time,High,318643
+605,Can Tho,12/18/2025,Harsh Braking,High,202653
+606,Ha Noi,12/28/2025,Fuel Consumption,Low,380041
+607,Da Nang,1/10/2026,Engine Warning,Low,239124
+608,Ho Chi Minh City,12/1/2025,Harsh Braking,High,382831
+609,Ha Noi,4/3/2026,Overspeed,Critical,245601
+610,Ho Chi Minh City,2/6/2026,Fuel Consumption,High,215352
+611,Da Nang,7/20/2026,Harsh Braking,Medium,365346
+612,Da Nang,12/30/2025,Engine Warning,Low,180624
+613,Ha Noi,8/20/2025,Idle Time,Medium,42199
+614,Ha Noi,8/3/2025,Harsh Braking,Medium,198331
+615,Can Tho,4/9/2026,Rapid Acceleration,Medium,122217
+616,Ha Noi,3/5/2026,Overspeed,High,93069
+617,Da Nang,7/21/2026,Idle Time,Critical,245508
+618,Da Nang,6/7/2026,Normal Driving,High,188281
+619,Can Tho,1/5/2026,Rapid Acceleration,High,189693
+620,Da Nang,7/16/2026,Normal Driving,Low,270742
+621,Ha Noi,1/13/2026,Idle Time,High,100962
+622,Da Nang,3/22/2026,Harsh Braking,Low,212241
+623,Ha Noi,6/24/2026,Rapid Acceleration,Critical,23274
+624,Ho Chi Minh City,10/22/2025,Harsh Braking,High,117359
+625,Can Tho,7/15/2026,Harsh Braking,Low,121431
+626,Ha Noi,9/11/2025,Fuel Consumption,High,371068
+627,Ha Noi,11/5/2025,Harsh Braking,High,59003
+628,Ha Noi,2/24/2026,Overspeed,Medium,63244
+629,Ho Chi Minh City,8/14/2025,Rapid Acceleration,Medium,181047
+630,Ho Chi Minh City,12/12/2025,Rapid Acceleration,Medium,250343
+631,Can Tho,3/18/2026,Idle Time,Low,43252
+632,Ho Chi Minh City,10/9/2025,Normal Driving,High,327274
+633,Ho Chi Minh City,10/23/2025,Idle Time,Medium,45980
+634,Da Nang,4/11/2026,Engine Warning,Low,319924
+635,Ho Chi Minh City,9/20/2025,Overspeed,Critical,186620
+636,Ha Noi,11/30/2025,Harsh Braking,High,331322
+637,Da Nang,1/8/2026,Harsh Braking,Medium,72061
+638,Ha Noi,4/20/2026,Fuel Consumption,Low,54630
+639,Ho Chi Minh City,12/17/2025,Overspeed,High,338862
+640,Can Tho,4/8/2026,Overspeed,Low,21959
+641,Ha Noi,6/15/2026,Harsh Braking,Low,254764
+642,Ha Noi,5/15/2026,Idle Time,Medium,297474
+643,Can Tho,2/13/2026,Rapid Acceleration,Low,283712
+644,Da Nang,8/4/2025,Normal Driving,High,17393
+645,Da Nang,11/14/2025,Idle Time,High,293604
+646,Can Tho,6/27/2026,Rapid Acceleration,Critical,352960
+647,Ho Chi Minh City,1/23/2026,Harsh Braking,Medium,233717
+648,Can Tho,2/13/2026,Fuel Consumption,Medium,297000
+649,Ha Noi,7/17/2026,Overspeed,Low,242870
+650,Ha Noi,7/31/2025,Idle Time,Critical,353610
+651,Can Tho,7/22/2026,Rapid Acceleration,Medium,339143
+652,Da Nang,9/23/2025,Engine Warning,Low,132369
+653,Ha Noi,10/10/2025,Fuel Consumption,Critical,207520
+654,Can Tho,11/10/2025,Normal Driving,Critical,184896
+655,Ho Chi Minh City,11/16/2025,Idle Time,Low,61239
+656,Ha Noi,10/27/2025,Normal Driving,Critical,233561
+657,Can Tho,10/17/2025,Rapid Acceleration,Low,10872
+658,Can Tho,9/22/2025,Harsh Braking,Medium,221002
+659,Ha Noi,1/3/2026,Normal Driving,Medium,325825
+660,Ho Chi Minh City,5/13/2026,Rapid Acceleration,Low,104681
+661,Ha Noi,7/7/2026,Harsh Braking,Low,257135
+662,Can Tho,2/23/2026,Idle Time,Low,278062
+663,Ho Chi Minh City,2/1/2026,Overspeed,High,370657
+664,Ha Noi,12/10/2025,Overspeed,Low,125043
+665,Ha Noi,12/18/2025,Normal Driving,Critical,15127
+666,Ha Noi,8/15/2025,Idle Time,Medium,357117
+667,Ha Noi,10/4/2025,Rapid Acceleration,Medium,355103
+668,Can Tho,12/24/2025,Rapid Acceleration,Low,83812
+669,Ho Chi Minh City,7/30/2025,Harsh Braking,Critical,287874
+670,Ho Chi Minh City,2/23/2026,Engine Warning,High,339576
+671,Da Nang,6/8/2026,Harsh Braking,Critical,206855
+672,Ho Chi Minh City,10/17/2025,Normal Driving,Medium,147819
+673,Ho Chi Minh City,5/22/2026,Normal Driving,High,226591
+674,Da Nang,10/14/2025,Harsh Braking,Critical,298559
+675,Ho Chi Minh City,10/16/2025,Idle Time,High,389807
+676,Da Nang,7/1/2026,Overspeed,Critical,78574
+677,Ha Noi,8/19/2025,Engine Warning,Medium,264276
+678,Can Tho,12/4/2025,Fuel Consumption,Medium,186728
+679,Can Tho,6/12/2026,Fuel Consumption,Medium,234055
+680,Da Nang,10/31/2025,Idle Time,Medium,57001
+681,Can Tho,5/4/2026,Idle Time,Critical,143485
+682,Ho Chi Minh City,6/15/2026,Engine Warning,Critical,270462
+683,Can Tho,4/29/2026,Overspeed,Critical,113082
+684,Ho Chi Minh City,12/15/2025,Idle Time,Low,53372
+685,Da Nang,1/13/2026,Rapid Acceleration,Critical,59925
+686,Ha Noi,1/25/2026,Normal Driving,Medium,339212
+687,Ho Chi Minh City,10/4/2025,Overspeed,High,201516
+688,Da Nang,6/22/2026,Rapid Acceleration,Medium,396749
+689,Ha Noi,11/21/2025,Overspeed,High,239760
+690,Da Nang,8/17/2025,Normal Driving,High,396781
+691,Can Tho,10/11/2025,Rapid Acceleration,High,248057
+692,Ho Chi Minh City,12/31/2025,Idle Time,High,234406
+693,Ha Noi,10/6/2025,Harsh Braking,Critical,155726
+694,Ho Chi Minh City,4/5/2026,Normal Driving,High,68997
+695,Ha Noi,11/9/2025,Normal Driving,High,377701
+696,Da Nang,10/13/2025,Normal Driving,Medium,182269
+697,Can Tho,1/12/2026,Harsh Braking,Critical,257840
+698,Can Tho,12/7/2025,Fuel Consumption,Critical,42717
+699,Ha Noi,6/13/2026,Harsh Braking,High,173396
+700,Ha Noi,11/20/2025,Normal Driving,Critical,159583
+701,Can Tho,4/21/2026,Harsh Braking,High,122249
+702,Ha Noi,9/17/2025,Fuel Consumption,Low,196742
+703,Can Tho,5/15/2026,Rapid Acceleration,Critical,287868
+704,Ho Chi Minh City,6/30/2026,Idle Time,Critical,148682
+705,Ho Chi Minh City,9/2/2025,Rapid Acceleration,High,149256
+706,Ho Chi Minh City,4/28/2026,Overspeed,Medium,55230
+707,Can Tho,8/30/2025,Fuel Consumption,Critical,43887
+708,Da Nang,5/17/2026,Idle Time,High,305115
+709,Can Tho,6/11/2026,Overspeed,Low,35302
+710,Can Tho,3/24/2026,Rapid Acceleration,Low,256704
+711,Da Nang,4/26/2026,Rapid Acceleration,Critical,89162
+712,Can Tho,2/9/2026,Fuel Consumption,Critical,160100
+713,Can Tho,3/31/2026,Rapid Acceleration,Medium,347406
+714,Can Tho,7/16/2026,Harsh Braking,High,206423
+715,Ha Noi,10/9/2025,Fuel Consumption,Low,186153
+716,Ha Noi,8/12/2025,Overspeed,Critical,66065
+717,Ho Chi Minh City,11/1/2025,Overspeed,Critical,304746
+718,Ha Noi,1/24/2026,Harsh Braking,Medium,343570
+719,Da Nang,1/17/2026,Harsh Braking,Low,84274
+720,Can Tho,11/10/2025,Overspeed,Critical,290731
+721,Ho Chi Minh City,4/23/2026,Harsh Braking,Low,378895
+722,Ho Chi Minh City,1/25/2026,Idle Time,High,244523
+723,Ha Noi,5/3/2026,Fuel Consumption,High,288349
+724,Da Nang,2/3/2026,Overspeed,Critical,333414
+725,Ha Noi,2/26/2026,Idle Time,Critical,193102
+726,Ha Noi,6/9/2026,Overspeed,Medium,157660
+727,Ha Noi,11/30/2025,Fuel Consumption,High,177334
+728,Da Nang,9/4/2025,Idle Time,Critical,355262
+729,Ha Noi,2/20/2026,Overspeed,Low,55775
+730,Ho Chi Minh City,5/11/2026,Engine Warning,High,141519
+731,Da Nang,1/21/2026,Normal Driving,Medium,198934
+732,Can Tho,3/10/2026,Idle Time,Medium,313905
+733,Ho Chi Minh City,1/24/2026,Harsh Braking,Low,350568
+734,Da Nang,7/14/2026,Engine Warning,Medium,259848
+735,Da Nang,3/7/2026,Idle Time,Low,158484
+736,Can Tho,11/21/2025,Rapid Acceleration,High,341796
+737,Ho Chi Minh City,7/17/2026,Idle Time,High,384475
+738,Da Nang,11/12/2025,Harsh Braking,High,122155
+739,Da Nang,3/3/2026,Normal Driving,Low,235454
+740,Da Nang,3/17/2026,Engine Warning,Low,63634
+741,Da Nang,3/24/2026,Rapid Acceleration,Critical,109264
+742,Da Nang,12/29/2025,Engine Warning,Critical,112715
+743,Can Tho,11/17/2025,Engine Warning,High,394219
+744,Ho Chi Minh City,12/22/2025,Idle Time,Critical,362998
+745,Da Nang,4/18/2026,Overspeed,Medium,357759
+746,Ho Chi Minh City,3/4/2026,Rapid Acceleration,High,255269
+747,Ho Chi Minh City,11/12/2025,Rapid Acceleration,Medium,371018
+748,Can Tho,2/23/2026,Harsh Braking,High,18237
+749,Ha Noi,3/1/2026,Fuel Consumption,Low,50819
+750,Da Nang,7/18/2026,Idle Time,Low,88910
+751,Ha Noi,4/10/2026,Rapid Acceleration,High,23843
+752,Ha Noi,12/8/2025,Overspeed,Critical,361206
+753,Ho Chi Minh City,7/23/2026,Overspeed,Low,94882
+754,Da Nang,8/21/2025,Overspeed,Medium,379831
+755,Can Tho,2/10/2026,Fuel Consumption,Critical,29883
+756,Ha Noi,5/30/2026,Rapid Acceleration,Low,80322
+757,Ha Noi,7/27/2026,Normal Driving,Low,322004
+758,Da Nang,5/31/2026,Engine Warning,Critical,394543
+759,Ho Chi Minh City,4/25/2026,Overspeed,Critical,385103
+760,Can Tho,4/26/2026,Normal Driving,Low,276062
+761,Ho Chi Minh City,9/8/2025,Overspeed,Medium,220991
+762,Ha Noi,2/19/2026,Engine Warning,Low,176680
+763,Da Nang,7/5/2026,Harsh Braking,High,343757
+764,Ho Chi Minh City,11/14/2025,Fuel Consumption,High,44003
+765,Ha Noi,4/29/2026,Engine Warning,Critical,155443
+766,Ha Noi,6/19/2026,Engine Warning,Medium,63092
+767,Ho Chi Minh City,8/25/2025,Overspeed,High,298122
+768,Ho Chi Minh City,10/21/2025,Overspeed,Critical,327539
+769,Ho Chi Minh City,5/11/2026,Harsh Braking,High,100831
+770,Ho Chi Minh City,5/12/2026,Harsh Braking,High,70800
+771,Ho Chi Minh City,7/23/2026,Normal Driving,Critical,24962
+772,Ho Chi Minh City,6/11/2026,Overspeed,High,165310
+773,Ho Chi Minh City,10/13/2025,Normal Driving,High,379145
+774,Can Tho,12/5/2025,Normal Driving,Low,151538
+775,Ha Noi,3/26/2026,Engine Warning,High,218943
+776,Da Nang,11/4/2025,Rapid Acceleration,Critical,203725
+777,Ha Noi,6/11/2026,Rapid Acceleration,High,190691
+778,Da Nang,1/24/2026,Overspeed,Critical,302693
+779,Can Tho,2/9/2026,Engine Warning,Medium,81862
+780,Ho Chi Minh City,5/25/2026,Idle Time,Critical,262816
+781,Ha Noi,1/10/2026,Harsh Braking,High,107676
+782,Da Nang,7/8/2026,Engine Warning,High,235497
+783,Ho Chi Minh City,4/15/2026,Overspeed,Low,102053
+784,Ha Noi,5/9/2026,Overspeed,High,247737
+785,Da Nang,6/20/2026,Overspeed,Critical,74739
+786,Ho Chi Minh City,5/26/2026,Normal Driving,High,10254
+787,Da Nang,10/13/2025,Rapid Acceleration,High,104157
+788,Da Nang,5/31/2026,Fuel Consumption,Low,321345
+789,Ho Chi Minh City,4/29/2026,Harsh Braking,Low,174038
+790,Ha Noi,6/26/2026,Rapid Acceleration,High,137534
+791,Ho Chi Minh City,5/22/2026,Harsh Braking,Medium,377870
+792,Ho Chi Minh City,2/17/2026,Engine Warning,High,381060
+793,Ha Noi,12/9/2025,Harsh Braking,Critical,336995
+794,Ha Noi,7/28/2025,Harsh Braking,Critical,75419
+795,Da Nang,6/7/2026,Fuel Consumption,Medium,59755
+796,Can Tho,1/14/2026,Engine Warning,Medium,168519
+797,Ha Noi,11/20/2025,Fuel Consumption,Medium,67565
+798,Can Tho,12/31/2025,Idle Time,Low,285088
+799,Ho Chi Minh City,6/2/2026,Engine Warning,High,322921
+800,Da Nang,8/21/2025,Normal Driving,Low,122797
+801,Da Nang,2/12/2026,Rapid Acceleration,High,114215
+802,Ha Noi,1/20/2026,Normal Driving,Critical,179726
+803,Ha Noi,3/2/2026,Idle Time,High,275376
+804,Ha Noi,9/15/2025,Engine Warning,Low,358987
+805,Can Tho,2/7/2026,Idle Time,Medium,334735
+806,Ha Noi,5/22/2026,Overspeed,Low,47853
+807,Ha Noi,6/12/2026,Idle Time,High,372703
+808,Ho Chi Minh City,1/24/2026,Rapid Acceleration,Low,329168
+809,Can Tho,1/10/2026,Normal Driving,Critical,92148
+810,Can Tho,12/20/2025,Normal Driving,Critical,315624
+811,Ho Chi Minh City,8/8/2025,Overspeed,Low,13968
+812,Da Nang,9/10/2025,Rapid Acceleration,Medium,145570
+813,Can Tho,5/23/2026,Harsh Braking,Medium,208198
+814,Ha Noi,8/13/2025,Normal Driving,Medium,62229
+815,Da Nang,1/27/2026,Idle Time,Medium,76614
+816,Ho Chi Minh City,7/23/2026,Engine Warning,Low,113311
+817,Ha Noi,4/9/2026,Overspeed,Low,263041
+818,Ho Chi Minh City,9/28/2025,Fuel Consumption,Critical,111909
+819,Ho Chi Minh City,5/7/2026,Overspeed,Critical,280232
+820,Ho Chi Minh City,6/13/2026,Fuel Consumption,High,119369
+821,Da Nang,3/7/2026,Fuel Consumption,Critical,240791
+822,Can Tho,3/12/2026,Normal Driving,High,289025
+823,Can Tho,12/25/2025,Normal Driving,High,241327
+824,Can Tho,5/1/2026,Normal Driving,High,357328
+825,Can Tho,3/18/2026,Rapid Acceleration,Critical,349922
+826,Ho Chi Minh City,2/20/2026,Harsh Braking,Critical,59460
+827,Da Nang,8/14/2025,Engine Warning,Medium,367716
+828,Ha Noi,9/8/2025,Overspeed,Low,271830
+829,Ha Noi,7/20/2026,Overspeed,Medium,24733
+830,Can Tho,7/14/2026,Rapid Acceleration,Medium,180376
+831,Ho Chi Minh City,9/2/2025,Engine Warning,High,166107
+832,Can Tho,4/8/2026,Idle Time,Critical,367709
+833,Ha Noi,1/7/2026,Overspeed,Critical,325062
+834,Ho Chi Minh City,2/17/2026,Idle Time,Critical,82352
+835,Ha Noi,6/14/2026,Fuel Consumption,High,147323
+836,Ho Chi Minh City,8/3/2025,Fuel Consumption,Critical,164332
+837,Ho Chi Minh City,9/2/2025,Engine Warning,High,396956
+838,Da Nang,12/13/2025,Fuel Consumption,Low,165291
+839,Ho Chi Minh City,7/9/2026,Harsh Braking,Critical,384881
+840,Can Tho,12/20/2025,Fuel Consumption,Medium,330156
+841,Da Nang,10/1/2025,Rapid Acceleration,Low,111040
+842,Da Nang,9/30/2025,Idle Time,Low,79126
+843,Ho Chi Minh City,2/18/2026,Fuel Consumption,High,294473
+844,Ha Noi,1/9/2026,Engine Warning,Critical,203574
+845,Ho Chi Minh City,12/17/2025,Idle Time,Low,267903
+846,Da Nang,3/25/2026,Harsh Braking,Critical,191738
+847,Ha Noi,6/24/2026,Idle Time,High,187606
+848,Da Nang,2/19/2026,Overspeed,Low,148592
+849,Da Nang,1/5/2026,Fuel Consumption,High,51728
+850,Ho Chi Minh City,1/29/2026,Fuel Consumption,Critical,254887
+851,Ha Noi,11/5/2025,Normal Driving,Critical,29672
+852,Ho Chi Minh City,3/12/2026,Fuel Consumption,Critical,368845
+853,Ha Noi,10/13/2025,Rapid Acceleration,High,37370
+854,Ho Chi Minh City,11/18/2025,Normal Driving,High,20598
+855,Ho Chi Minh City,5/30/2026,Harsh Braking,Low,25519
+856,Ho Chi Minh City,11/14/2025,Harsh Braking,Low,353886
+857,Da Nang,7/10/2026,Fuel Consumption,High,230823
+858,Ha Noi,7/10/2026,Rapid Acceleration,Critical,362836
+859,Da Nang,11/18/2025,Engine Warning,Low,214961
+860,Ha Noi,7/17/2026,Harsh Braking,Critical,122561
+861,Can Tho,6/12/2026,Idle Time,Critical,175307
+862,Ho Chi Minh City,4/1/2026,Rapid Acceleration,High,349802
+863,Da Nang,3/31/2026,Engine Warning,Critical,151586
+864,Da Nang,7/23/2026,Idle Time,Medium,275978
+865,Da Nang,7/10/2026,Engine Warning,Low,132723
+866,Ho Chi Minh City,6/11/2026,Overspeed,Medium,284968
+867,Can Tho,1/30/2026,Idle Time,High,131370
+868,Da Nang,10/31/2025,Harsh Braking,Critical,19546
+869,Da Nang,8/31/2025,Engine Warning,Medium,136870
+870,Da Nang,3/26/2026,Rapid Acceleration,High,246235
+871,Ho Chi Minh City,7/2/2026,Engine Warning,High,302718
+872,Ho Chi Minh City,1/27/2026,Idle Time,High,59843
+873,Ho Chi Minh City,7/4/2026,Normal Driving,Low,39383
+874,Ha Noi,4/6/2026,Overspeed,Low,43808
+875,Da Nang,8/18/2025,Overspeed,High,173643
+876,Ha Noi,10/8/2025,Idle Time,Medium,276235
+877,Da Nang,10/15/2025,Engine Warning,High,235965
+878,Ho Chi Minh City,2/14/2026,Overspeed,High,85817
+879,Can Tho,5/11/2026,Idle Time,Low,272682
+880,Ha Noi,3/7/2026,Overspeed,Low,65299
+881,Da Nang,9/30/2025,Overspeed,Low,172307
+882,Can Tho,7/5/2026,Rapid Acceleration,Medium,194994
+883,Can Tho,3/4/2026,Idle Time,Critical,302684
+884,Ho Chi Minh City,1/21/2026,Engine Warning,Low,260801
+885,Ho Chi Minh City,3/13/2026,Fuel Consumption,Medium,155994
+886,Ho Chi Minh City,5/28/2026,Engine Warning,Medium,191914
+887,Can Tho,3/21/2026,Fuel Consumption,Critical,213688
+888,Da Nang,2/12/2026,Fuel Consumption,High,354699
+889,Da Nang,1/18/2026,Idle Time,Low,268449
+890,Can Tho,2/9/2026,Fuel Consumption,High,339456
+891,Can Tho,5/7/2026,Harsh Braking,High,85929
+892,Ho Chi Minh City,5/27/2026,Engine Warning,Low,40863
+893,Can Tho,6/4/2026,Fuel Consumption,Low,50091
+894,Da Nang,6/21/2026,Fuel Consumption,Low,244083
+895,Ha Noi,1/9/2026,Harsh Braking,Low,12516
+896,Can Tho,12/23/2025,Engine Warning,Critical,26799
+897,Can Tho,2/9/2026,Harsh Braking,Medium,233114
+898,Ho Chi Minh City,10/28/2025,Engine Warning,Medium,194881
+899,Can Tho,9/15/2025,Rapid Acceleration,Medium,120480
+900,Ho Chi Minh City,11/28/2025,Engine Warning,Medium,157621
+901,Da Nang,1/2/2026,Idle Time,Critical,232319
+902,Da Nang,8/20/2025,Normal Driving,Critical,192808
+903,Ha Noi,11/8/2025,Rapid Acceleration,Medium,287180
+904,Ha Noi,11/15/2025,Fuel Consumption,Critical,113108
+905,Can Tho,3/2/2026,Overspeed,Medium,103982
+906,Ha Noi,7/21/2026,Idle Time,Critical,180381
+907,Da Nang,5/30/2026,Rapid Acceleration,Medium,132825
+908,Da Nang,11/12/2025,Overspeed,Medium,286003
+909,Ho Chi Minh City,5/27/2026,Overspeed,Critical,261263
+910,Can Tho,10/31/2025,Rapid Acceleration,Low,168651
+911,Ho Chi Minh City,4/23/2026,Rapid Acceleration,Critical,375251
+912,Ho Chi Minh City,3/22/2026,Rapid Acceleration,Medium,345279
+913,Ha Noi,5/5/2026,Harsh Braking,Medium,278754
+914,Ha Noi,3/9/2026,Rapid Acceleration,High,86536
+915,Da Nang,11/28/2025,Overspeed,Low,212676
+916,Can Tho,8/23/2025,Harsh Braking,Critical,355572
+917,Da Nang,6/16/2026,Normal Driving,High,365803
+918,Ha Noi,1/27/2026,Idle Time,Critical,207204
+919,Ho Chi Minh City,3/6/2026,Idle Time,Medium,253490
+920,Ho Chi Minh City,8/14/2025,Overspeed,Low,317980
+921,Ha Noi,6/23/2026,Engine Warning,High,225368
+922,Da Nang,3/17/2026,Rapid Acceleration,Low,43509
+923,Ho Chi Minh City,5/3/2026,Idle Time,Critical,37874
+924,Ho Chi Minh City,1/2/2026,Normal Driving,High,236894
+925,Ho Chi Minh City,12/26/2025,Normal Driving,High,347879
+926,Can Tho,4/20/2026,Normal Driving,High,34090
+927,Ha Noi,8/24/2025,Harsh Braking,High,49244
+928,Ha Noi,5/12/2026,Rapid Acceleration,Medium,110508
+929,Can Tho,5/18/2026,Rapid Acceleration,Medium,158459
+930,Can Tho,3/6/2026,Rapid Acceleration,High,223853
+931,Ha Noi,3/3/2026,Overspeed,Critical,200773
+932,Da Nang,1/8/2026,Overspeed,Low,398252
+933,Can Tho,4/21/2026,Harsh Braking,Medium,149039
+934,Ho Chi Minh City,11/24/2025,Rapid Acceleration,High,273912
+935,Ho Chi Minh City,12/21/2025,Fuel Consumption,Critical,237117
+936,Da Nang,3/31/2026,Overspeed,Medium,309298
+937,Can Tho,7/20/2026,Engine Warning,High,378494
+938,Ho Chi Minh City,3/25/2026,Rapid Acceleration,Medium,260431
+939,Ha Noi,9/22/2025,Engine Warning,Critical,307826
+940,Da Nang,7/22/2026,Normal Driving,Medium,318724
+941,Da Nang,1/25/2026,Overspeed,Low,355047
+942,Ho Chi Minh City,7/28/2025,Normal Driving,Critical,330823
+943,Ha Noi,8/8/2025,Idle Time,Medium,331389
+944,Ho Chi Minh City,1/2/2026,Fuel Consumption,High,157154
+945,Ho Chi Minh City,6/19/2026,Engine Warning,Medium,358645
+946,Ha Noi,6/6/2026,Idle Time,Critical,52685
+947,Ho Chi Minh City,1/16/2026,Overspeed,Critical,17763
+948,Da Nang,11/19/2025,Overspeed,Critical,318773
+949,Can Tho,6/7/2026,Overspeed,Medium,88241
+950,Can Tho,5/26/2026,Normal Driving,Critical,268122
+951,Da Nang,3/29/2026,Idle Time,Medium,252171
+952,Ho Chi Minh City,7/28/2025,Fuel Consumption,Low,209513
+953,Can Tho,6/22/2026,Overspeed,High,208493
+954,Can Tho,6/22/2026,Harsh Braking,Low,127102
+955,Ha Noi,11/26/2025,Harsh Braking,Medium,381634
+956,Can Tho,4/9/2026,Engine Warning,Medium,131979
+957,Ho Chi Minh City,8/13/2025,Fuel Consumption,Critical,235747
+958,Can Tho,9/30/2025,Overspeed,Low,370403
+959,Ho Chi Minh City,12/7/2025,Engine Warning,Critical,30926
+960,Ha Noi,10/9/2025,Harsh Braking,Medium,373634
+961,Ha Noi,8/14/2025,Overspeed,Low,363511
+962,Ho Chi Minh City,6/26/2026,Fuel Consumption,Low,65875
+963,Ha Noi,7/8/2026,Normal Driving,Critical,235786
+964,Ha Noi,5/7/2026,Fuel Consumption,Medium,197573
+965,Can Tho,8/30/2025,Overspeed,High,217899
+966,Can Tho,4/5/2026,Harsh Braking,High,94990
+967,Ho Chi Minh City,6/2/2026,Idle Time,Critical,145554
+968,Ho Chi Minh City,1/21/2026,Normal Driving,High,333486
+969,Da Nang,2/13/2026,Fuel Consumption,Medium,319924
+970,Ho Chi Minh City,2/21/2026,Overspeed,High,168282
+971,Can Tho,9/5/2025,Engine Warning,Medium,282177
+972,Ha Noi,10/16/2025,Idle Time,Low,371378
+973,Ho Chi Minh City,11/1/2025,Fuel Consumption,High,110039
+974,Da Nang,7/7/2026,Fuel Consumption,Medium,158567
+975,Can Tho,4/3/2026,Engine Warning,Critical,280066
+976,Can Tho,4/21/2026,Rapid Acceleration,High,251408
+977,Ha Noi,6/29/2026,Fuel Consumption,Medium,314577
+978,Ha Noi,1/16/2026,Harsh Braking,Medium,175576
+979,Da Nang,7/29/2025,Fuel Consumption,Low,284444
+980,Can Tho,7/18/2026,Normal Driving,Critical,360207
+981,Da Nang,5/5/2026,Engine Warning,Low,71209
+982,Ha Noi,8/30/2025,Idle Time,Critical,180467
+983,Can Tho,7/21/2026,Normal Driving,Critical,67647
+984,Da Nang,2/11/2026,Harsh Braking,Low,326963
+985,Ha Noi,5/5/2026,Fuel Consumption,High,123656
+986,Ho Chi Minh City,3/18/2026,Engine Warning,Medium,385675
+987,Da Nang,8/12/2025,Idle Time,Critical,225725
+988,Can Tho,1/11/2026,Fuel Consumption,High,313389
+989,Ha Noi,1/20/2026,Normal Driving,Critical,154067
+990,Can Tho,12/12/2025,Engine Warning,Critical,122913
+991,Ho Chi Minh City,2/22/2026,Idle Time,Low,260765
+992,Da Nang,2/27/2026,Fuel Consumption,High,294088
+993,Can Tho,12/5/2025,Harsh Braking,Critical,398446
+994,Can Tho,2/12/2026,Harsh Braking,High,29337
+995,Can Tho,12/28/2025,Rapid Acceleration,Critical,189486
+996,Can Tho,12/16/2025,Idle Time,Medium,108702
+997,Ha Noi,10/4/2025,Engine Warning,Critical,347984
+998,Ho Chi Minh City,9/7/2025,Fuel Consumption,Medium,376195
+999,Ho Chi Minh City,2/21/2026,Fuel Consumption,High,254648
+1000,Da Nang,11/30/2025,Idle Time,Critical,279131
