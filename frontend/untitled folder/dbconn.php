@@ -1,5 +1,5 @@
 <?php
-$host = "192.168.123.69";
+$host = "127.0.0.1";
 $user = "admin";
 $pass = "1234";
 $dbname = "SmartFleetProject";
