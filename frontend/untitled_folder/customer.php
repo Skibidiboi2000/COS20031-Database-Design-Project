@@ -46,6 +46,7 @@ include 'dbconn.php';
           </tr>
         </thead>
         <tbody>
+          #reads the db, then pull the read data into the website to show to the respective user's role
           <?php
           $sql = "SELECT vin, registration_number, model, category_id, year_of_manufacture, operational_status, current_depot_id 
                   FROM Vehicles";
@@ -85,6 +86,7 @@ include 'dbconn.php';
           </tr>
         </thead>
         <tbody>
+          #hardcoded data, intended to be replace with db-interactive code later
           <tr><td>1</td><td>2026-07-15</td><td>Collision</td><td>2FZHAZCVX5AB12345</td><td>Nguyen Van An</td><td>Hanoi Main</td><td>Major</td><td>Under Investigation</td><td style="text-align:right">15,000,000</td></tr>
           <tr><td>2</td><td>2026-07-18</td><td>Breakdown</td><td>CDE345FGH67890123</td><td>Bui Van Huy</td><td>Hanoi Main</td><td>Minor</td><td>Closed</td><td style="text-align:right">3,500,000</td></tr>
           <!-- … keep the rest of your rows here … -->
