@@ -1,4 +1,4 @@
--- DROP DATABASE IF EXISTS smart_fleet;
+ DROP DATABASE IF EXISTS smart_fleet;
 CREATE DATABASE smart_fleet;
 USE smart_fleet;
 
@@ -13,7 +13,7 @@ CREATE TABLE Vehicle_Categories (
     category_name VARCHAR(100) NOT NULL UNIQUE
 );
 
-CREATE TABLE Certifications (
+CREATE TABLE Certifications ( 
     cert_id INT AUTO_INCREMENT PRIMARY KEY,
     cert_name VARCHAR(100) NOT NULL UNIQUE
 );
@@ -210,23 +210,24 @@ ON Drivers(employment_status);
 CREATE INDEX idx_vehicle_status
 ON Vehicles(operational_status);
 
-
-SELECT * FROM Vehicle_Categories;
-SELECT * FROM Depots;
-SELECT * FROM Drivers;
-SELECT * FROM Driver_Certifications;
-SELECT * FROM Vehicle_Requirement_Matrix;
-SELECT * FROM Vehicles;
-SELECT * FROM Predictive_Alerts;
+SELECT * FROM Depots; -- ok
+SELECT * FROM Vehicle_Categories;-- ok
+SELECT * FROM Depots;-- ok
+SELECT * FROM Drivers;-- ok
+SELECT * FROM Driver_Certifications;-- ok
+SELECT * FROM Vehicle_Requirement_Matrix;-- ok
+SELECT * FROM Vehicles;-- ok
+SELECT * FROM Predictive_Alerts;-- ok
 SELECT * FROM Vehicle_Assignments;
-SELECT * FROM Monthly_Safety_Scores;
-SELECT * FROM Maintenance_Jobs;
-SELECT * FROM Job_Activities;
-SELECT * FROM Mechanics;
-SELECT * FROM Mechanic_Certifications;
-SELECT * FROM Activity_Labor_Logs;
-SELECT * FROM Telematics_Events;
-SELECT * FROM Safety_Reviews;
+SELECT * FROM Monthly_Safety_Scores;-- ok
+SELECT * FROM Maintenance_Jobs;-- 
+SELECT * FROM Job_Activities; -- 
+SELECT * FROM Mechanics;-- ok
+SELECT * FROM Mechanic_Certifications;-- 
+SELECT * FROM Activity_Labor_Logs;-- 
+SELECT * FROM Telematics_Events; -- modify mockaroo 
+SELECT * FROM Safety_Reviews;	-- modify mockaroo 
+
 ------------------------------------------
 INSERT INTO Driver_Certifications
 (driver_id,cert_id,expiration_date)
