@@ -1,19 +1,56 @@
 <?php
+/*
+ * admin.php — Administrator dashboard.
+ *
+ * Shows five tabs (Vehicles, Drivers, Depots, Mechanics, Review queue) and
+ * handles all write actions (add / delete / assign / approve) submitted from
+ * those tabs. Every write is a POST that carries an "action" field telling
+ * this page which operation to run.
+ *
+ * Note: some tables (Mechanics, Telematics_Events, Safety_Reviews) may not
+ * exist in every database, so the queries that use them are wrapped in
+ * try/catch and show "Database not available." instead of crashing the page.
+ */
 session_start();
 include 'dbconn.php';
 
+// Only signed-in admins may view this page; everyone else goes back to login.
 if (($_SESSION['role'] ?? '') !== 'admin') {
     header("Location: login.php");
     exit;
 }
 $admin_name = $_SESSION['admin_name'] ?? 'admin';
-$notice = "";
+$notice = ""; // Short status message shown at the top after an action runs.
+
+/**
+ * Return the first column name from $candidates that actually exists in $table.
+ * Different copies of the database spell some columns differently
+ * (e.g. "license_type" vs "licence_type"), so we detect the real name at
+ * runtime instead of hard-coding one. Returns null if none are found.
+ */
+function find_column(mysqli $conn, string $table, array $candidates): ?string {
+    $existing = [];
+    $result = $conn->query("SHOW COLUMNS FROM `$table`");
+    while ($result && $col = $result->fetch_assoc()) {
+        $existing[] = $col['Field'];
+    }
+    foreach ($candidates as $name) {
+        if (in_array($name, $existing, true)) {
+            return $name;
+        }
+    }
+    return null;
+}
 
 // ==================== WRITE HANDLERS ====================
+// Each branch handles one POST "action". Prepared statements are used for all
+// writes so user input can never be injected into the SQL.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
     if ($action === 'add_vehicle') {
+        // Insert one new vehicle. The bind types "ssiissis" map to each
+        // placeholder in order: string, string, int, int, string, string, int, string.
         $stmt = $conn->prepare(
             "INSERT INTO Vehicles (vin, registration_number, category_id, current_depot_id, manufacturer, model, year_of_manufacture, operational_status)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
@@ -23,46 +60,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $man = $_POST['manufacturer']; $mod = $_POST['model'];
         $yr = (int)$_POST['year_of_manufacture']; $st = $_POST['operational_status'];
         $stmt->bind_param("ssiissis", $vin, $reg, $cat, $dep, $man, $mod, $yr, $st);
-        $notice = $stmt->execute() ? "Vehicle $vin added." : "Error: " . $conn->error;
+        $notice = $stmt->execute() ? "Vehicle $vin has been added." : "Could not add the vehicle. Please try again.";
         $stmt->close();
 
     } elseif ($action === 'add_driver') {
         try {
-            // Match the real licence column name (spelling varies between schemas).
-            $licCol = null;
-            $lc = $conn->query("SHOW COLUMNS FROM Drivers");
-            $driverCols = [];
-            while ($col = $lc->fetch_assoc()) { $driverCols[] = $col['Field']; }
-            foreach (['license_type', 'licence_type', 'license', 'licence', 'license_class'] as $cand) {
-                if (in_array($cand, $driverCols, true)) { $licCol = $cand; break; }
-            }
+            // The licence column has different names in different databases,
+            // so find the real one before building the INSERT.
+            $licCol = find_column($conn, 'Drivers',
+                ['license_type', 'licence_type', 'license', 'licence', 'license_class']);
+
             $fn = $_POST['first_name']; $ln = $_POST['last_name'];
             $ci = $_POST['contact_information']; $lt = $_POST['licence_type'];
             $es = $_POST['employment_status']; $dep = (int)$_POST['current_depot_id'];
+
             if ($licCol) {
+                // Table has a licence column — include it in the INSERT.
                 $stmt = $conn->prepare(
                     "INSERT INTO Drivers (first_name, last_name, contact_information, `$licCol`, employment_status, current_depot_id)
                      VALUES (?, ?, ?, ?, ?, ?)"
                 );
                 $stmt->bind_param("sssssi", $fn, $ln, $ci, $lt, $es, $dep);
             } else {
+                // No licence column — insert without it.
                 $stmt = $conn->prepare(
                     "INSERT INTO Drivers (first_name, last_name, contact_information, employment_status, current_depot_id)
                      VALUES (?, ?, ?, ?, ?)"
                 );
                 $stmt->bind_param("ssssi", $fn, $ln, $ci, $es, $dep);
             }
-            $notice = $stmt->execute() ? "Driver added." : "Error: " . $conn->error;
+            $notice = $stmt->execute() ? "The driver has been added." : "Could not add the driver. Please try again.";
             $stmt->close();
         } catch (mysqli_sql_exception $e) {
-            $notice = "No DATABASE";
+            $notice = "Database not available.";
         }
 
     } elseif ($action === 'add_depot') {
-        // Only insert a location column if the table actually has one.
-        $hasLoc = false;
-        $dc = $conn->query("SHOW COLUMNS FROM Depots LIKE 'location'");
-        if ($dc && $dc->num_rows > 0) { $hasLoc = true; }
+        // Some databases have a "location" column and some don't, so only
+        // include it in the INSERT when it actually exists.
+        $hasLoc = find_column($conn, 'Depots', ['location']) !== null;
         if ($hasLoc) {
             $stmt = $conn->prepare("INSERT INTO Depots (depot_name, location) VALUES (?, ?)");
             $dn = $_POST['depot_name']; $loc = $_POST['location'] ?? '';
@@ -72,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $dn = $_POST['depot_name'];
             $stmt->bind_param("s", $dn);
         }
-        $notice = $stmt->execute() ? "Depot added." : "Error: " . $conn->error;
+        $notice = $stmt->execute() ? "The depot has been added." : "Could not add the depot. Please try again.";
         $stmt->close();
 
     } elseif ($action === 'add_mechanic') {
@@ -85,14 +121,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ci = $_POST['contact_information']; $dep = (int)$_POST['depot_id'];
             $sp = $_POST['specialization']; $hd = $_POST['hire_date'];
             $stmt->bind_param("sssiss", $fn, $ln, $ci, $dep, $sp, $hd);
-            $notice = $stmt->execute() ? "Mechanic added." : "Error: " . $conn->error;
+            $notice = $stmt->execute() ? "The mechanic has been added." : "Could not add the mechanic. Please try again.";
             $stmt->close();
         } catch (mysqli_sql_exception $e) {
-            $notice = "No DATABASE";
+            $notice = "Database not available.";
         }
 
     } elseif ($action === 'approve_event') {
-        // Publish a driver-filed event: complete its safety review.
+        // Approve a driver-filed report: mark its safety review as completed,
+        // which is what makes it "go live" for customers to see.
         try {
             $event_id = (int)$_POST['event_id'];
             $when = date('Y-m-d H:i:s');
@@ -100,35 +137,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 "UPDATE Safety_Reviews SET reviewed_by = ?, review_date = ?, is_completed = 1 WHERE event_id = ?"
             );
             $stmt->bind_param("ssi", $admin_name, $when, $event_id);
-            $notice = $stmt->execute() ? "Event #$event_id approved." : "Error: " . $conn->error;
+            $notice = $stmt->execute() ? "Report #$event_id has been approved." : "Could not approve the report. Please try again.";
             $stmt->close();
         } catch (mysqli_sql_exception $e) {
-            $notice = "No DATABASE";
+            $notice = "Database not available.";
         }
 
     } elseif ($action === 'delete_event') {
-        // Reject: remove the review and the event.
+        // Reject a report: delete its review row first, then the event itself
+        // (the review references the event, so it must be removed first).
         try {
             $event_id = (int)$_POST['event_id'];
             $conn->query("DELETE FROM Safety_Reviews WHERE event_id = $event_id");
             $stmt = $conn->prepare("DELETE FROM Telematics_Events WHERE event_id = ?");
             $stmt->bind_param("i", $event_id);
-            $notice = $stmt->execute() ? "Event #$event_id deleted." : "Error: " . $conn->error;
+            $notice = $stmt->execute() ? "Report #$event_id has been deleted." : "Could not delete the report. Please try again.";
             $stmt->close();
         } catch (mysqli_sql_exception $e) {
-            $notice = "No DATABASE";
+            $notice = "Database not available.";
         }
 
     } elseif ($action === 'delete_vehicle') {
         $stmt = $conn->prepare("DELETE FROM Vehicles WHERE vin = ?");
         $stmt->bind_param("s", $_POST['vin']);
-        $notice = $stmt->execute() ? "Vehicle deleted." : "Error: " . $conn->error;
+        $notice = $stmt->execute() ? "The vehicle has been deleted." : "Could not delete the vehicle. Please try again.";
+        $stmt->close();
+
+    } elseif ($action === 'assign_vehicle') {
+        // Assign a driver to a vehicle.
+        $vin = $_POST['vin'] ?? '';
+        $did = (int)($_POST['driver_id'] ?? 0);
+        $stmt = $conn->prepare("UPDATE Vehicles SET driver_id = ? WHERE vin = ?");
+        $stmt->bind_param("is", $did, $vin);
+        $notice = $stmt->execute() ? "Vehicle $vin has been assigned to the selected driver." : "Could not assign the vehicle. Please try again.";
+        $stmt->close();
+
+    } elseif ($action === 'unassign_vehicle') {
+        // Remove the driver from a vehicle.
+        $vin = $_POST['vin'] ?? '';
+        $stmt = $conn->prepare("UPDATE Vehicles SET driver_id = NULL WHERE vin = ?");
+        $stmt->bind_param("s", $vin);
+        $notice = $stmt->execute() ? "Vehicle $vin has been unassigned." : "Could not unassign the vehicle. Please try again.";
         $stmt->close();
     }
 }
 
+// Data used to fill the dropdowns in the "add" forms below.
+// Drivers is wrapped in try/catch because the table may not exist everywhere.
 $depots_opts = $conn->query("SELECT depot_id, depot_name FROM Depots ORDER BY depot_name");
 $cats_opts   = $conn->query("SELECT category_id, category_name FROM Vehicle_Categories ORDER BY category_name");
+$drivers_opts = [];
+try {
+    $dr = $conn->query("SELECT driver_id, first_name, last_name FROM Drivers ORDER BY first_name, last_name");
+    while ($dr && $row = $dr->fetch_assoc()) { $drivers_opts[] = $row; }
+} catch (mysqli_sql_exception $e) { $drivers_opts = []; }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -198,32 +260,63 @@ $cats_opts   = $conn->query("SELECT category_id, category_name FROM Vehicle_Cate
     <div class="ledger-head"><h2>Fleet register</h2></div>
     <div class="table-scroll">
     <table>
-      <thead><tr><th>VIN</th><th>Registration</th><th>Model</th><th>Category</th><th>Year</th><th>Status</th><th>Depot</th><th>Action</th></tr></thead>
+      <thead><tr><th>VIN</th><th>Registration</th><th>Model</th><th>Category</th><th>Year</th><th>Status</th><th>Depot</th><th>Driver</th><th>Action</th></tr></thead>
       <tbody>
         <?php
+        // List every vehicle with its category, depot, and assigned driver.
+        // LEFT JOIN on Drivers so vehicles with no driver still appear.
+        // GROUP BY v.vin collapses any accidental duplicate join rows to one per vehicle.
         $res = $conn->query(
           "SELECT v.vin, v.registration_number, v.manufacturer, v.model, MIN(vc.category_name) AS category_name,
-                  v.year_of_manufacture, v.operational_status, MIN(d.depot_name) AS depot_name
+                  v.year_of_manufacture, v.operational_status, MIN(d.depot_name) AS depot_name,
+                  v.driver_id,
+                  MIN(TRIM(CONCAT(COALESCE(dr.first_name,''), ' ', COALESCE(dr.last_name,'')))) AS driver_name
            FROM Vehicles v
            JOIN Vehicle_Categories vc ON v.category_id = vc.category_id
            JOIN Depots d ON v.current_depot_id = d.depot_id
-           GROUP BY v.vin, v.registration_number, v.manufacturer, v.model, v.year_of_manufacture, v.operational_status
+           LEFT JOIN Drivers dr ON v.driver_id = dr.driver_id
+           GROUP BY v.vin, v.registration_number, v.manufacturer, v.model, v.year_of_manufacture, v.operational_status, v.driver_id
            ORDER BY v.vin");
         if ($res && $res->num_rows > 0) {
+          // Build driver <option> list once, reused per row.
+          $driverOptions = "";
+          foreach ($drivers_opts as $d) {
+            $dname = trim($d['first_name'] . ' ' . $d['last_name']);
+            $driverOptions .= "<option value='" . (int)$d['driver_id'] . "'>" . htmlspecialchars($dname) . "</option>";
+          }
           while ($row = $res->fetch_assoc()) {
+            $driver = trim($row['driver_name'] ?? '');
+            $vinEsc = htmlspecialchars($row['vin']);
+            $hasDriver = !is_null($row['driver_id']) && $row['driver_id'] !== '';
             echo "<tr>";
-            echo "<td class='mono'>" . htmlspecialchars($row['vin']) . "</td>";
+            echo "<td class='mono'>" . $vinEsc . "</td>";
             echo "<td class='mono'>" . htmlspecialchars($row['registration_number']) . "</td>";
             echo "<td>" . htmlspecialchars($row['manufacturer'] . ' ' . $row['model']) . "</td>";
             echo "<td>" . htmlspecialchars($row['category_name']) . "</td>";
             echo "<td class='num'>" . (int)$row['year_of_manufacture'] . "</td>";
             echo "<td>" . htmlspecialchars($row['operational_status']) . "</td>";
             echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
-            echo "<td><form method='POST' action='admin.php' onsubmit=\"return confirm('Delete this vehicle?')\" style='display:inline'><input type='hidden' name='action' value='delete_vehicle'><input type='hidden' name='vin' value='" . htmlspecialchars($row['vin']) . "'><button class='action-btn del'>Delete</button></form></td>";
+            echo "<td>" . ($driver !== '' ? htmlspecialchars($driver) : "No driver assigned") . "</td>";
+            echo "<td>";
+            // Assign: pick a driver and submit.
+            echo "<form method='POST' action='admin.php' style='display:inline'>"
+               . "<input type='hidden' name='action' value='assign_vehicle'>"
+               . "<input type='hidden' name='vin' value='$vinEsc'>"
+               . "<select name='driver_id' class='action-btn' style='margin-right:4px'>$driverOptions</select>"
+               . "<button class='action-btn'>Assign</button></form>";
+            // Unassign: only when the vehicle currently has a driver.
+            if ($hasDriver) {
+              echo "<form method='POST' action='admin.php' style='display:inline'>"
+                 . "<input type='hidden' name='action' value='unassign_vehicle'>"
+                 . "<input type='hidden' name='vin' value='$vinEsc'>"
+                 . "<button class='action-btn'>Unassign</button></form>";
+            }
+            echo "<form method='POST' action='admin.php' onsubmit=\"return confirm('Delete this vehicle?')\" style='display:inline'><input type='hidden' name='action' value='delete_vehicle'><input type='hidden' name='vin' value='$vinEsc'><button class='action-btn del'>Delete</button></form>";
+            echo "</td>";
             echo "</tr>";
           }
         } else {
-          echo "<tr><td colspan='8'>No vehicles found</td></tr>";
+          echo "<tr><td colspan='9'>No vehicles found</td></tr>";
         }
         ?>
       </tbody>
@@ -260,14 +353,11 @@ $cats_opts   = $conn->query("SELECT category_id, category_name FROM Vehicle_Cate
       <tbody>
         <?php
         try {
-        // Detect the real licence column name (spelling varies between schemas).
-        $licCol = null;
-        $lc = $conn->query("SHOW COLUMNS FROM Drivers");
-        $driverCols = [];
-        while ($col = $lc->fetch_assoc()) { $driverCols[] = $col['Field']; }
-        foreach (['license_type', 'licence_type', 'license', 'licence', 'license_class'] as $cand) {
-            if (in_array($cand, $driverCols, true)) { $licCol = $cand; break; }
-        }
+        // Detect the real licence column, then alias it to "license_type" so the
+        // display code below can read one consistent key. If there is no licence
+        // column, select an empty string instead.
+        $licCol = find_column($conn, 'Drivers',
+            ['license_type', 'licence_type', 'license', 'licence', 'license_class']);
         $licSel = $licCol ? "dr.`$licCol` AS license_type" : "'' AS license_type";
         $res = $conn->query(
           "SELECT dr.driver_id, dr.first_name, dr.last_name, $licSel,
@@ -290,7 +380,7 @@ $cats_opts   = $conn->query("SELECT category_id, category_name FROM Vehicle_Cate
           echo "<tr><td colspan='6'>No drivers found</td></tr>";
         }
         } catch (mysqli_sql_exception $e) {
-          echo "<tr><td colspan='6'>No DATABASE</td></tr>";
+          echo "<tr><td colspan='6'>Database not available.</td></tr>";
         }
         ?>
       </tbody>
@@ -302,14 +392,9 @@ $cats_opts   = $conn->query("SELECT category_id, category_name FROM Vehicle_Cate
 <!-- ==================== DEPOTS ==================== -->
 <div id="content3" class="tab-content">
   <?php
-  // Detect the real Depots columns so we don't assume a "location" column exists.
-  $depotCols = [];
-  $dc = $conn->query("SHOW COLUMNS FROM Depots");
-  while ($col = $dc->fetch_assoc()) { $depotCols[] = $col['Field']; }
-  $locCol = null;
-  foreach (['location', 'address', 'depot_location', 'city'] as $cand) {
-      if (in_array($cand, $depotCols, true)) { $locCol = $cand; break; }
-  }
+  // A depot's location column has different names across databases (or may not
+  // exist at all). Find the real one so the form and table can adapt.
+  $locCol = find_column($conn, 'Depots', ['location', 'address', 'depot_location', 'city']);
   ?>
   <div class="docket">
     <div class="docket-head"><h2>Open a depot</h2></div>
@@ -399,7 +484,7 @@ $cats_opts   = $conn->query("SELECT category_id, category_name FROM Vehicle_Cate
           echo "<tr><td colspan='6'>No mechanics found</td></tr>";
         }
         } catch (mysqli_sql_exception $e) {
-          echo "<tr><td colspan='6'>No DATABASE</td></tr>";
+          echo "<tr><td colspan='6'>Database not available.</td></tr>";
         }
         ?>
       </tbody>
@@ -447,7 +532,7 @@ $cats_opts   = $conn->query("SELECT category_id, category_name FROM Vehicle_Cate
           echo "<tr><td colspan='8'>No reports awaiting review</td></tr>";
         }
         } catch (mysqli_sql_exception $e) {
-          echo "<tr><td colspan='8'>No DATABASE</td></tr>";
+          echo "<tr><td colspan='8'>Database not available.</td></tr>";
         }
         ?>
       </tbody>
@@ -486,7 +571,7 @@ $cats_opts   = $conn->query("SELECT category_id, category_name FROM Vehicle_Cate
           echo "<tr><td colspan='7'>No approved reports yet</td></tr>";
         }
         } catch (mysqli_sql_exception $e) {
-          echo "<tr><td colspan='7'>No DATABASE</td></tr>";
+          echo "<tr><td colspan='7'>Database not available.</td></tr>";
         }
         ?>
       </tbody>

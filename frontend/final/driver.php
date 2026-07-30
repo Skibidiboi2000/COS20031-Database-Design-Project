@@ -1,17 +1,27 @@
 <?php
+/*
+ * driver.php — Driver terminal.
+ *
+ * Tabs: Fleet (read-only vehicle list), Depots (read-only), and My reports.
+ * On "My reports" a driver files a safety event, which is stored in
+ * Telematics_Events and given a matching Safety_Reviews row with
+ * is_completed = 0 (pending). An admin must approve it before it goes live.
+ */
 session_start();
 include 'dbconn.php';
 
+// Only signed-in drivers may view this page.
 if (($_SESSION['role'] ?? '') !== 'driver') {
     header("Location: login.php");
     exit;
 }
 
-$driver_id = (int)$_SESSION['driver_id'];
+$driver_id = (int)($_SESSION['driver_id'] ?? 0);
+$driver_email = $_SESSION['driver_email'] ?? '';
 $driver_name = $_SESSION['driver_name'] ?? 'Driver';
-$notice = "";
+$notice = ""; // Status message shown after filing a report.
 
-// ---- File a safety event (lands as pending review) ----
+// ---- File a safety event (starts as "pending review") ----
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'file_event') {
     try {
         $depot_id   = (int)($_POST['depot_id'] ?? 0);
@@ -37,13 +47,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'file_
             $rev->bind_param("i", $event_id);
             $rev->execute();
             $rev->close();
-            $notice = "Event #$event_id filed. Pending admin review.";
+            $notice = "Your report has been filed (event #$event_id) and is awaiting admin review.";
         } else {
-            $notice = "Could not file event: " . $conn->error;
+            $notice = "Sorry, the report could not be filed. Please try again.";
             $stmt->close();
         }
     } catch (mysqli_sql_exception $e) {
-        $notice = "No DATABASE";
+        $notice = "Database not available.";
     }
 }
 
@@ -65,10 +75,10 @@ $vehicles = $conn->query(
 
 <div class="header">
   <div class="mark">
-    <span class="plate">D&middot;<?= str_pad($driver_id, 4, '0', STR_PAD_LEFT) ?></span>
+    <span class="plate">DRIVER</span>
     <div class="titlewrap">
       <h1>Smart Fleet</h1>
-      <span class="sub">Driver &middot; <?= htmlspecialchars($driver_name) ?></span>
+      <span class="sub">Driver &middot; <?= htmlspecialchars($driver_email ?: $driver_name) ?></span>
     </div>
   </div>
   <div class="meta">
@@ -95,18 +105,24 @@ $vehicles = $conn->query(
     <div class="ledger-head"><h2>Fleet register</h2><span class="no">View only</span></div>
     <div class="table-scroll">
     <table>
-      <thead><tr><th>VIN</th><th>Registration</th><th>Model</th><th>Category</th><th>Year</th><th>Status</th><th>Depot</th></tr></thead>
+      <thead><tr><th>VIN</th><th>Registration</th><th>Model</th><th>Category</th><th>Year</th><th>Status</th><th>Depot</th><th>Driver</th></tr></thead>
       <tbody>
         <?php
+        // List all vehicles with category, depot, and assigned driver name.
+        // LEFT JOIN keeps vehicles that have no driver; COALESCE avoids NULLs
+        // so the name is a clean "First Last" (or empty) string.
         $sql = "SELECT v.vin, v.registration_number, v.manufacturer, v.model,
-                       vc.category_name, v.year_of_manufacture, v.operational_status, d.depot_name
+                       vc.category_name, v.year_of_manufacture, v.operational_status, d.depot_name,
+                       TRIM(CONCAT(COALESCE(dr.first_name,''), ' ', COALESCE(dr.last_name,''))) AS driver_name
                 FROM Vehicles v
                 JOIN Vehicle_Categories vc ON v.category_id = vc.category_id
                 JOIN Depots d ON v.current_depot_id = d.depot_id
+                LEFT JOIN Drivers dr ON v.driver_id = dr.driver_id
                 ORDER BY v.vin";
         $res = $conn->query($sql);
         if ($res && $res->num_rows > 0) {
             while ($row = $res->fetch_assoc()) {
+                $driver = trim($row['driver_name'] ?? '');
                 echo "<tr>";
                 echo "<td class='mono'>" . htmlspecialchars($row['vin']) . "</td>";
                 echo "<td class='mono'>" . htmlspecialchars($row['registration_number']) . "</td>";
@@ -115,10 +131,11 @@ $vehicles = $conn->query(
                 echo "<td class='num'>" . (int)$row['year_of_manufacture'] . "</td>";
                 echo "<td>" . htmlspecialchars($row['operational_status']) . "</td>";
                 echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
+                echo "<td>" . ($driver !== '' ? htmlspecialchars($driver) : "No driver assigned") . "</td>";
                 echo "</tr>";
             }
         } else {
-            echo "<tr><td colspan='7'>No vehicles found</td></tr>";
+            echo "<tr><td colspan='8'>No vehicles found</td></tr>";
         }
         ?>
       </tbody>
@@ -136,6 +153,8 @@ $vehicles = $conn->query(
       <thead><tr><th>ID</th><th>Name</th><th>Location</th></tr></thead>
       <tbody>
         <?php
+        // Only select the "location" column if this database actually has it,
+        // otherwise show a dash. (Some copies of the Depots table lack it.)
         $hasLoc = false;
         $dc = $conn->query("SHOW COLUMNS FROM Depots LIKE 'location'");
         if ($dc && $dc->num_rows > 0) { $hasLoc = true; }
@@ -166,7 +185,7 @@ $vehicles = $conn->query(
   <?php endif; ?>
 
   <div class="docket">
-    <div class="docket-head"><h2>Report a safety event</h2><span class="no">Filing as D-<?= str_pad($driver_id, 4, '0', STR_PAD_LEFT) ?></span></div>
+    <div class="docket-head"><h2>Report a safety event</h2><span class="no">Filing as <?= htmlspecialchars($driver_email ?: $driver_name) ?></span></div>
     <form method="POST" action="driver.php">
       <input type="hidden" name="action" value="file_event">
       <div class="form-row">
@@ -209,6 +228,8 @@ $vehicles = $conn->query(
       <tbody>
         <?php
         try {
+        // Show this driver's own reports and whether each has been approved.
+        // A report is "Approved" once its Safety_Reviews row has is_completed = 1.
         $stmt = $conn->prepare(
             "SELECT te.event_id, te.times_tamp, te.event_type, te.vin, te.severity_level, sr.is_completed
              FROM Telematics_Events te
@@ -221,8 +242,9 @@ $vehicles = $conn->query(
         $res = $stmt->get_result();
         if ($res && $res->num_rows > 0) {
             while ($row = $res->fetch_assoc()) {
+                // is_completed = 1 means an admin approved it; anything else is still pending.
                 $done = !is_null($row['is_completed']) && (int)$row['is_completed'] === 1;
-                $mk = $done ? "avail" : "fair";
+                $mk = $done ? "avail" : "fair";          // colour class for the status badge
                 $label = $done ? "Approved" : "Pending review";
                 echo "<tr>";
                 echo "<td class='mono'>" . (int)$row['event_id'] . "</td>";
@@ -238,7 +260,7 @@ $vehicles = $conn->query(
         }
         $stmt->close();
         } catch (mysqli_sql_exception $e) {
-            echo "<tr><td colspan='6'>No DATABASE</td></tr>";
+            echo "<tr><td colspan='6'>Database not available.</td></tr>";
         }
         ?>
       </tbody>

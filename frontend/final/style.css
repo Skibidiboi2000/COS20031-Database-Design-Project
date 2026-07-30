@@ -218,6 +218,11 @@ tbody tr:hover td:last-child{background:var(--amber-wash)}
   background:var(--amber);color:var(--ink);padding:6px 10px;border-radius:3px;border:2px solid var(--paper);
 }
 .login-topbar .id{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(237,232,218,.6)}
+.login-topbar .back{
+  color:var(--paper);text-decoration:none;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  padding:7px 14px;border:1px solid rgba(237,232,218,.4);border-radius:3px;transition:.15s;white-space:nowrap;
+}
+.login-topbar .back:hover{background:var(--amber);color:var(--ink);border-color:var(--amber)}
 .login-wrap{max-width:430px;margin:auto;padding:32px 24px;width:100%}
 .login-brand{margin-bottom:22px}
 .login-brand .eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:10px}
@@ -239,6 +244,17 @@ tbody tr:hover td:last-child{background:var(--amber-wash)}
 #role1:checked~#login1,
 #role2:checked~#login2,
 #role3:checked~#login3{display:block;animation:cut .18s ease}
+/* Staff sub-switch: single toggle button (Driver <-> Mechanic) */
+#staffbox-driver{display:block}
+#staffbox-mech{display:none}
+#staffmode:checked~#staffbox-driver{display:none}
+#staffmode:checked~#staffbox-mech{display:block;animation:cut .18s ease}
+
+/* Account page: Log in / Sign up tabs */
+#auth-login:checked~.role-tabs label[for="auth-login"],
+#auth-signup:checked~.role-tabs label[for="auth-signup"]{background:var(--amber);color:var(--ink)}
+#auth-login:checked~#authbox-login{display:block;animation:cut .18s ease}
+#auth-signup:checked~#authbox-signup{display:block;animation:cut .18s ease}
 .login-box .stamp{
   display:inline-block;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
   border:1.5px solid var(--ink);padding:4px 9px;margin-bottom:16px;

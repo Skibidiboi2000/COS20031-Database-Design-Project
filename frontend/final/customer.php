@@ -1,4 +1,12 @@
 <?php
+/*
+ * customer.php — Customer portal.
+ *
+ * Two tabs: Vehicles (searchable/filterable list) and Incidents (approved
+ * safety reports only). The vehicle search reads optional GET filters
+ * (category, year, depot, status) and builds a WHERE clause from whichever
+ * are set. The Incidents tab only shows reports whose review is completed.
+ */
 session_start();
 include 'dbconn.php';
 ?>
@@ -101,10 +109,12 @@ include 'dbconn.php';
       <div class="table-scroll">
       <table>
         <thead>
-          <tr><th>VIN</th><th>Registration</th><th>Model</th><th>Category</th><th>Year</th><th>Status</th><th>Depot</th></tr>
+          <tr><th>VIN</th><th>Registration</th><th>Model</th><th>Category</th><th>Year</th><th>Status</th><th>Depot</th><th>Driver</th></tr>
         </thead>
         <tbody>
           <?php
+            // Collect one SQL condition per filter the user actually chose.
+            // Text values are escaped and years are cast to int to stay safe.
             $conditions = [];
 
             if (!empty($_GET['category'])) {
@@ -126,10 +136,13 @@ include 'dbconn.php';
 
           $sql = "SELECT v.vin, v.registration_number, v.manufacturer, v.model,
                          vc.category_name AS vehicle_type, v.year_of_manufacture,
-                         v.operational_status, d.depot_name AS depot_name
+                         v.operational_status, d.depot_name AS depot_name,
+                         TRIM(CONCAT(COALESCE(dr.first_name,''), ' ', COALESCE(dr.last_name,''))) AS driver_name
                   FROM Vehicles v
                   JOIN Vehicle_Categories vc ON v.category_id = vc.category_id
-                  JOIN Depots d ON v.current_depot_id = d.depot_id";
+                  JOIN Depots d ON v.current_depot_id = d.depot_id
+                  LEFT JOIN Drivers dr ON v.driver_id = dr.driver_id";
+          // Join the chosen conditions with AND, or show everything if none were picked.
           if (count($conditions) > 0) {
             $sql .= " WHERE " . implode(" AND ", $conditions);
           }
@@ -138,6 +151,7 @@ include 'dbconn.php';
           $result = $conn->query($sql);
           if ($result && $result->num_rows > 0) {
               while ($row = $result->fetch_assoc()) {
+                  $driver = trim($row["driver_name"] ?? '');
                   echo "<tr>";
                   echo "<td class='mono'>" . htmlspecialchars($row["vin"]) . "</td>";
                   echo "<td class='mono'>" . htmlspecialchars($row["registration_number"]) . "</td>";
@@ -146,10 +160,11 @@ include 'dbconn.php';
                   echo "<td class='num'>" . (int)$row["year_of_manufacture"] . "</td>";
                   echo "<td>" . htmlspecialchars($row["operational_status"]) . "</td>";
                   echo "<td>" . htmlspecialchars($row["depot_name"]) . "</td>";
+                  echo "<td>" . ($driver !== '' ? htmlspecialchars($driver) : "No driver assigned") . "</td>";
                   echo "</tr>";
               }
           } else {
-              echo "<tr><td colspan='7'>No vehicles found</td></tr>";
+              echo "<tr><td colspan='8'>No vehicles found</td></tr>";
           }
           ?>
         </tbody>
@@ -194,7 +209,7 @@ include 'dbconn.php';
               echo "<tr><td colspan='7'>No approved incidents to show</td></tr>";
           }
           } catch (mysqli_sql_exception $e) {
-              echo "<tr><td colspan='7'>No DATABASE</td></tr>";
+              echo "<tr><td colspan='7'>Database not available.</td></tr>";
           }
           ?>
         </tbody>
