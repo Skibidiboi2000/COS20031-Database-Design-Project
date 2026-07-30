@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'dbconn.php';
+include 'dbconn.php'
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -46,22 +46,26 @@ include 'dbconn.php';
           </tr>
         </thead>
         <tbody>
-          #reads the db, then pull the read data into the website to show to the respective user's role
           <?php
-          $sql = "SELECT vin, registration_number, model, category_id, year_of_manufacture, operational_status, current_depot_id
-                  FROM Vehicles";
+          $sql = "SELECT vin, registration_number, model, vc.category_name as vehicle_type, year_of_manufacture, operational_status, d.depot_name as depot_name
+                  FROM Vehicles v
+                  JOIN Vehicle_Categories vc
+                  ON v.category_id = vc.category_id  
+                  JOIN Depots d
+                  ON v.current_depot_id = d.depot_id
+                  ";
           $result = $conn->query($sql);
 
           if ($result && $result->num_rows > 0) {
               while($row = $result->fetch_assoc()) {
                   echo "<tr>";
-                  echo "<td>" . htmlspecialchars($row["vin"]) . "</td>";
-                  echo "<td>" . htmlspecialchars($row["registration_number"]) . "</td>";
-                  echo "<td>" . htmlspecialchars($row["model"]) . "</td>";
-                  echo "<td>" . htmlspecialchars($row["category_id"]) . "</td>";
-                  echo "<td>" . htmlspecialchars($row["year_of_manufacture"]) . "</td>";
-                  echo "<td>" . htmlspecialchars($row["operational_status"]) . "</td>";
-                  echo "<td>" . htmlspecialchars($row["current_depot_id"]) . "</td>";
+                  echo "<td>" . $row["vin"] . "</td>";
+                  echo "<td>" . $row["registration_number"] . "</td>";
+                  echo "<td>" . $row["model"] . "</td>";
+                  echo "<td>" . $row["vehicle_type"] . "</td>";
+                  echo "<td>" . $row["year_of_manufacture"] . "</td>";
+                  echo "<td>" . $row["operational_status"] . "</td>";
+                  echo "<td>" . $row["depot_name"] . "</td>";
                   echo "</tr>";
               }
           } else {
@@ -86,9 +90,9 @@ include 'dbconn.php';
           </tr>
         </thead>
         <tbody>
-          #hardcoded data, intended to be replace with db-interactive code later
           <tr><td>1</td><td>2026-07-15</td><td>Collision</td><td>2FZHAZCVX5AB12345</td><td>Nguyen Van An</td><td>Hanoi Main</td><td>Major</td><td>Under Investigation</td><td style="text-align:right">15,000,000</td></tr>
           <tr><td>2</td><td>2026-07-18</td><td>Breakdown</td><td>CDE345FGH67890123</td><td>Bui Van Huy</td><td>Hanoi Main</td><td>Minor</td><td>Closed</td><td style="text-align:right">3,500,000</td></tr>
+          <!-- … keep the rest of your rows here … -->
         </tbody>
       </table>
     </div>
@@ -97,3 +101,4 @@ include 'dbconn.php';
 </div>
 </body>
 </html>
+
