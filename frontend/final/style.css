@@ -187,6 +187,15 @@ tbody tr:hover td:last-child{background:var(--amber-wash)}
 .action-btn.del{margin-right:0}
 .action-btn.del:hover{border-color:var(--stop);background:var(--stop-wash);color:var(--stop)}
 
+/* Action column: two stacked rows (assign row, then unassign/delete row) */
+.act{display:flex;flex-direction:column;gap:5px;min-width:190px}
+.act-row{display:flex;align-items:center;gap:4px;margin:0}
+.act-select{
+  flex:1;min-width:0;padding:4px 6px;border:1px solid var(--rule);border-radius:0;
+  font-family:var(--mono);font-size:10px;background:var(--paper);color:var(--ink);
+}
+.act .action-btn{margin:0}
+
 /* status marker: colored left bar + label, like a docket stamp */
 .mk{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
 .mk::before{content:"";width:3px;height:14px;background:var(--ink-3);display:inline-block}

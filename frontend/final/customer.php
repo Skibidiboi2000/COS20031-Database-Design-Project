@@ -9,6 +9,13 @@
  */
 session_start();
 include 'dbconn.php';
+
+// Only signed-in customers (or registered users) may view this page.
+$role = $_SESSION['role'] ?? '';
+if ($role !== 'customer' && $role !== 'user') {
+    header("Location: login.php");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -185,29 +192,36 @@ include 'dbconn.php';
         <tbody>
           <?php
           try {
-          $res = $conn->query(
-            "SELECT te.event_id, te.times_tamp, te.event_type, te.vin, te.severity_level,
-                    dr.first_name, dr.last_name, d.depot_name
-             FROM Telematics_Events te
-             JOIN Safety_Reviews sr ON sr.event_id = te.event_id AND sr.is_completed = 1
-             LEFT JOIN Drivers dr ON te.driver_id = dr.driver_id
-             LEFT JOIN Depots d ON te.depot_id = d.depot_id
-             ORDER BY te.event_id DESC");
-          if ($res && $res->num_rows > 0) {
-              while ($row = $res->fetch_assoc()) {
-                  echo "<tr>";
-                  echo "<td class='mono'>" . (int)$row['event_id'] . "</td>";
-                  echo "<td class='mono'>" . htmlspecialchars($row['times_tamp']) . "</td>";
-                  echo "<td>" . htmlspecialchars($row['event_type']) . "</td>";
-                  echo "<td class='mono'>" . htmlspecialchars($row['vin']) . "</td>";
-                  echo "<td>" . htmlspecialchars(trim($row['first_name'] . ' ' . $row['last_name'])) . "</td>";
-                  echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
-                  echo "<td>" . htmlspecialchars($row['severity_level']) . "</td>";
-                  echo "</tr>";
+            if (!table_exists($conn, 'Telematics_Events') || !table_exists($conn, 'Safety_Reviews')) {
+                echo "<tr><td colspan='7'>Database not available.</td></tr>";
+            } else {
+              // Adapt to the real timestamp column name across schemas.
+              $tsCol = find_column($conn, 'Telematics_Events', ['times_tamp', 'event_timestamp', 'timestamp', 'created_at']);
+              $tsSel = $tsCol ? "te.`$tsCol` AS ts" : "'' AS ts";
+              $res = $conn->query(
+                "SELECT te.event_id, $tsSel, te.event_type, te.vin, te.severity_level,
+                        dr.first_name, dr.last_name, d.depot_name
+                 FROM Telematics_Events te
+                 JOIN Safety_Reviews sr ON sr.event_id = te.event_id AND sr.is_completed = 1
+                 LEFT JOIN Drivers dr ON te.driver_id = dr.driver_id
+                 LEFT JOIN Depots d ON te.depot_id = d.depot_id
+                 ORDER BY te.event_id DESC");
+              if ($res && $res->num_rows > 0) {
+                  while ($row = $res->fetch_assoc()) {
+                      echo "<tr>";
+                      echo "<td class='mono'>" . (int)$row['event_id'] . "</td>";
+                      echo "<td class='mono'>" . htmlspecialchars($row['ts'] ?: '—') . "</td>";
+                      echo "<td>" . htmlspecialchars($row['event_type']) . "</td>";
+                      echo "<td class='mono'>" . htmlspecialchars($row['vin']) . "</td>";
+                      echo "<td>" . htmlspecialchars(trim($row['first_name'] . ' ' . $row['last_name'])) . "</td>";
+                      echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
+                      echo "<td>" . htmlspecialchars($row['severity_level']) . "</td>";
+                      echo "</tr>";
+                  }
+              } else {
+                  echo "<tr><td colspan='7'>No approved incidents to show</td></tr>";
               }
-          } else {
-              echo "<tr><td colspan='7'>No approved incidents to show</td></tr>";
-          }
+            }
           } catch (mysqli_sql_exception $e) {
               echo "<tr><td colspan='7'>Database not available.</td></tr>";
           }

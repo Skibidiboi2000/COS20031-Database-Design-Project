@@ -22,25 +22,7 @@ if (($_SESSION['role'] ?? '') !== 'admin') {
 $admin_name = $_SESSION['admin_name'] ?? 'admin';
 $notice = ""; // Short status message shown at the top after an action runs.
 
-/**
- * Return the first column name from $candidates that actually exists in $table.
- * Different copies of the database spell some columns differently
- * (e.g. "license_type" vs "licence_type"), so we detect the real name at
- * runtime instead of hard-coding one. Returns null if none are found.
- */
-function find_column(mysqli $conn, string $table, array $candidates): ?string {
-    $existing = [];
-    $result = $conn->query("SHOW COLUMNS FROM `$table`");
-    while ($result && $col = $result->fetch_assoc()) {
-        $existing[] = $col['Field'];
-    }
-    foreach ($candidates as $name) {
-        if (in_array($name, $existing, true)) {
-            return $name;
-        }
-    }
-    return null;
-}
+// Schema-detection helpers (table_exists, find_column, find_columns) live in dbconn.php.
 
 // ==================== WRITE HANDLERS ====================
 // Each branch handles one POST "action". Prepared statements are used for all
@@ -96,11 +78,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
     } elseif ($action === 'add_depot') {
-        // Some databases have a "location" column and some don't, so only
-        // include it in the INSERT when it actually exists.
-        $hasLoc = find_column($conn, 'Depots', ['location']) !== null;
-        if ($hasLoc) {
-            $stmt = $conn->prepare("INSERT INTO Depots (depot_name, location) VALUES (?, ?)");
+        // The location column is named differently across databases (and may be
+        // absent). Find the real one and insert into that; skip it if none exist.
+        $locCol = find_column($conn, 'Depots', ['location', 'location_details', 'address', 'depot_location', 'city']);
+        if ($locCol) {
+            $stmt = $conn->prepare("INSERT INTO Depots (depot_name, `$locCol`) VALUES (?, ?)");
             $dn = $_POST['depot_name']; $loc = $_POST['location'] ?? '';
             $stmt->bind_param("ss", $dn, $loc);
         } else {
@@ -113,16 +95,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     } elseif ($action === 'add_mechanic') {
         try {
-            $stmt = $conn->prepare(
-                "INSERT INTO Mechanics (first_name, last_name, contact_information, depot_id, specialization, hire_date)
-                 VALUES (?, ?, ?, ?, ?, ?)"
-            );
-            $fn = $_POST['first_name']; $ln = $_POST['last_name'];
-            $ci = $_POST['contact_information']; $dep = (int)$_POST['depot_id'];
-            $sp = $_POST['specialization']; $hd = $_POST['hire_date'];
-            $stmt->bind_param("sssiss", $fn, $ln, $ci, $dep, $sp, $hd);
-            $notice = $stmt->execute() ? "The mechanic has been added." : "Could not add the mechanic. Please try again.";
-            $stmt->close();
+            if (!table_exists($conn, 'Mechanics')) {
+                $notice = "Database not available.";
+            } else {
+                // Always-present columns.
+                $cols = ['first_name', 'last_name', 'depot_id'];
+                $types = 'ssi';
+                $vals = [$_POST['first_name'], $_POST['last_name'], (int)$_POST['depot_id']];
+
+                // Optional columns: only add them if this database actually has them.
+                $optional = [
+                    'contact_information' => ['s', $_POST['contact_information'] ?? ''],
+                    'specialization'      => ['s', $_POST['specialization'] ?? ''],
+                    'hire_date'           => ['s', $_POST['hire_date'] ?? ''],
+                ];
+                foreach ($optional as $col => [$type, $val]) {
+                    if (find_column($conn, 'Mechanics', [$col])) {
+                        $cols[]  = $col;
+                        $types  .= $type;
+                        $vals[]  = $val;
+                    }
+                }
+
+                $placeholders = implode(', ', array_fill(0, count($cols), '?'));
+                $colList = implode(', ', $cols);
+                $stmt = $conn->prepare("INSERT INTO Mechanics ($colList) VALUES ($placeholders)");
+                $stmt->bind_param($types, ...$vals);
+                $notice = $stmt->execute() ? "The mechanic has been added." : "Could not add the mechanic. Please try again.";
+                $stmt->close();
+            }
         } catch (mysqli_sql_exception $e) {
             $notice = "Database not available.";
         }
@@ -298,13 +299,16 @@ try {
             echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
             echo "<td>" . ($driver !== '' ? htmlspecialchars($driver) : "No driver assigned") . "</td>";
             echo "<td>";
-            // Assign: pick a driver and submit.
-            echo "<form method='POST' action='admin.php' style='display:inline'>"
+            // Action cell laid out as two tidy rows in a fixed-width column:
+            //   row 1: driver dropdown + Assign
+            //   row 2: Unassign (if assigned) + Delete
+            echo "<div class='act'>";
+            echo "<form method='POST' action='admin.php' class='act-row'>"
                . "<input type='hidden' name='action' value='assign_vehicle'>"
                . "<input type='hidden' name='vin' value='$vinEsc'>"
-               . "<select name='driver_id' class='action-btn' style='margin-right:4px'>$driverOptions</select>"
+               . "<select name='driver_id' class='act-select'>$driverOptions</select>"
                . "<button class='action-btn'>Assign</button></form>";
-            // Unassign: only when the vehicle currently has a driver.
+            echo "<div class='act-row'>";
             if ($hasDriver) {
               echo "<form method='POST' action='admin.php' style='display:inline'>"
                  . "<input type='hidden' name='action' value='unassign_vehicle'>"
@@ -312,6 +316,8 @@ try {
                  . "<button class='action-btn'>Unassign</button></form>";
             }
             echo "<form method='POST' action='admin.php' onsubmit=\"return confirm('Delete this vehicle?')\" style='display:inline'><input type='hidden' name='action' value='delete_vehicle'><input type='hidden' name='vin' value='$vinEsc'><button class='action-btn del'>Delete</button></form>";
+            echo "</div>";
+            echo "</div>";
             echo "</td>";
             echo "</tr>";
           }
@@ -394,7 +400,7 @@ try {
   <?php
   // A depot's location column has different names across databases (or may not
   // exist at all). Find the real one so the form and table can adapt.
-  $locCol = find_column($conn, 'Depots', ['location', 'address', 'depot_location', 'city']);
+  $locCol = find_column($conn, 'Depots', ['location', 'location_details', 'address', 'depot_location', 'city']);
   ?>
   <div class="docket">
     <div class="docket-head"><h2>Open a depot</h2></div>
@@ -463,26 +469,37 @@ try {
       <tbody>
         <?php
         try {
-        $res = $conn->query(
-          "SELECT m.mechanic_id, m.first_name, m.last_name, m.contact_information,
-                  d.depot_name, m.specialization, m.hire_date
-           FROM Mechanics m
-           LEFT JOIN Depots d ON m.depot_id = d.depot_id
-           ORDER BY m.mechanic_id");
-        if ($res && $res->num_rows > 0) {
-          while ($row = $res->fetch_assoc()) {
-            echo "<tr>";
-            echo "<td class='mono'>M-" . str_pad($row['mechanic_id'], 4, '0', STR_PAD_LEFT) . "</td>";
-            echo "<td>" . htmlspecialchars(trim($row['first_name'] . ' ' . $row['last_name'])) . "</td>";
-            echo "<td class='mono'>" . htmlspecialchars($row['contact_information']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['specialization']) . "</td>";
-            echo "<td class='mono'>" . htmlspecialchars($row['hire_date']) . "</td>";
-            echo "</tr>";
+          if (!table_exists($conn, 'Mechanics')) {
+              echo "<tr><td colspan='6'>Database not available.</td></tr>";
+          } else {
+            // Only select the optional columns that this database actually has;
+            // missing ones are aliased to an empty string so the row still renders.
+            $ci = find_column($conn, 'Mechanics', ['contact_information']) ? 'm.contact_information' : "'' AS contact_information";
+            $sp = find_column($conn, 'Mechanics', ['specialization', 'specialisation']);
+            $spSel = $sp ? "m.`$sp` AS specialization" : "'' AS specialization";
+            $hd = find_column($conn, 'Mechanics', ['hire_date']) ? 'm.hire_date' : "'' AS hire_date";
+
+            $res = $conn->query(
+              "SELECT m.mechanic_id, m.first_name, m.last_name, $ci,
+                      d.depot_name, $spSel, $hd
+               FROM Mechanics m
+               LEFT JOIN Depots d ON m.depot_id = d.depot_id
+               ORDER BY m.mechanic_id");
+            if ($res && $res->num_rows > 0) {
+              while ($row = $res->fetch_assoc()) {
+                echo "<tr>";
+                echo "<td class='mono'>M-" . str_pad($row['mechanic_id'], 4, '0', STR_PAD_LEFT) . "</td>";
+                echo "<td>" . htmlspecialchars(trim($row['first_name'] . ' ' . $row['last_name'])) . "</td>";
+                echo "<td class='mono'>" . htmlspecialchars($row['contact_information'] ?: '—') . "</td>";
+                echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['specialization'] ?: '—') . "</td>";
+                echo "<td class='mono'>" . htmlspecialchars($row['hire_date'] ?: '—') . "</td>";
+                echo "</tr>";
+              }
+            } else {
+              echo "<tr><td colspan='6'>No mechanics found</td></tr>";
+            }
           }
-        } else {
-          echo "<tr><td colspan='6'>No mechanics found</td></tr>";
-        }
         } catch (mysqli_sql_exception $e) {
           echo "<tr><td colspan='6'>Database not available.</td></tr>";
         }
@@ -503,34 +520,41 @@ try {
       <tbody>
         <?php
         try {
-        $res = $conn->query(
-          "SELECT te.event_id, te.times_tamp, te.event_type, te.vin, te.severity_level,
-                  te.driver_id, dr.first_name, dr.last_name, d.depot_name
-           FROM Telematics_Events te
-           JOIN Safety_Reviews sr ON sr.event_id = te.event_id AND sr.is_completed = 0
-           LEFT JOIN Drivers dr ON te.driver_id = dr.driver_id
-           LEFT JOIN Depots d ON te.depot_id = d.depot_id
-           ORDER BY te.event_id DESC");
-        if ($res && $res->num_rows > 0) {
-          while ($row = $res->fetch_assoc()) {
-            $eid = (int)$row['event_id'];
-            echo "<tr>";
-            echo "<td class='mono'>$eid</td>";
-            echo "<td class='mono'>" . htmlspecialchars($row['times_tamp']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['event_type']) . "</td>";
-            echo "<td class='mono'>" . htmlspecialchars($row['vin']) . "</td>";
-            echo "<td>" . htmlspecialchars(trim($row['first_name'] . ' ' . $row['last_name'])) . "</td>";
-            echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
-            echo "<td><span class='mk fair'>" . htmlspecialchars($row['severity_level']) . "</span></td>";
-            echo "<td>"
-               . "<form method='POST' action='admin.php' style='display:inline'><input type='hidden' name='action' value='approve_event'><input type='hidden' name='event_id' value='$eid'><button class='action-btn'>Approve</button></form>"
-               . "<form method='POST' action='admin.php' onsubmit=\"return confirm('Reject and delete this report?')\" style='display:inline'><input type='hidden' name='action' value='delete_event'><input type='hidden' name='event_id' value='$eid'><button class='action-btn del'>Delete</button></form>"
-               . "</td>";
-            echo "</tr>";
+          if (!table_exists($conn, 'Telematics_Events') || !table_exists($conn, 'Safety_Reviews')) {
+              echo "<tr><td colspan='8'>Database not available.</td></tr>";
+          } else {
+            // Adapt to the real timestamp column name.
+            $tsCol = find_column($conn, 'Telematics_Events', ['times_tamp', 'event_timestamp', 'timestamp', 'created_at']);
+            $tsSel = $tsCol ? "te.`$tsCol` AS ts" : "'' AS ts";
+            $res = $conn->query(
+              "SELECT te.event_id, $tsSel, te.event_type, te.vin, te.severity_level,
+                      te.driver_id, dr.first_name, dr.last_name, d.depot_name
+               FROM Telematics_Events te
+               JOIN Safety_Reviews sr ON sr.event_id = te.event_id AND sr.is_completed = 0
+               LEFT JOIN Drivers dr ON te.driver_id = dr.driver_id
+               LEFT JOIN Depots d ON te.depot_id = d.depot_id
+               ORDER BY te.event_id DESC");
+            if ($res && $res->num_rows > 0) {
+              while ($row = $res->fetch_assoc()) {
+                $eid = (int)$row['event_id'];
+                echo "<tr>";
+                echo "<td class='mono'>$eid</td>";
+                echo "<td class='mono'>" . htmlspecialchars($row['ts'] ?: '—') . "</td>";
+                echo "<td>" . htmlspecialchars($row['event_type']) . "</td>";
+                echo "<td class='mono'>" . htmlspecialchars($row['vin']) . "</td>";
+                echo "<td>" . htmlspecialchars(trim($row['first_name'] . ' ' . $row['last_name'])) . "</td>";
+                echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
+                echo "<td><span class='mk fair'>" . htmlspecialchars($row['severity_level']) . "</span></td>";
+                echo "<td>"
+                   . "<form method='POST' action='admin.php' style='display:inline'><input type='hidden' name='action' value='approve_event'><input type='hidden' name='event_id' value='$eid'><button class='action-btn'>Approve</button></form>"
+                   . "<form method='POST' action='admin.php' onsubmit=\"return confirm('Reject and delete this report?')\" style='display:inline'><input type='hidden' name='action' value='delete_event'><input type='hidden' name='event_id' value='$eid'><button class='action-btn del'>Delete</button></form>"
+                   . "</td>";
+                echo "</tr>";
+              }
+            } else {
+              echo "<tr><td colspan='8'>No reports awaiting review</td></tr>";
+            }
           }
-        } else {
-          echo "<tr><td colspan='8'>No reports awaiting review</td></tr>";
-        }
         } catch (mysqli_sql_exception $e) {
           echo "<tr><td colspan='8'>Database not available.</td></tr>";
         }
@@ -548,28 +572,34 @@ try {
       <tbody>
         <?php
         try {
-        $res = $conn->query(
-          "SELECT te.event_id, te.times_tamp, te.event_type, te.vin, te.severity_level,
-                  dr.first_name, dr.last_name, sr.reviewed_by
-           FROM Telematics_Events te
-           JOIN Safety_Reviews sr ON sr.event_id = te.event_id AND sr.is_completed = 1
-           LEFT JOIN Drivers dr ON te.driver_id = dr.driver_id
-           ORDER BY te.event_id DESC");
-        if ($res && $res->num_rows > 0) {
-          while ($row = $res->fetch_assoc()) {
-            echo "<tr>";
-            echo "<td class='mono'>" . (int)$row['event_id'] . "</td>";
-            echo "<td class='mono'>" . htmlspecialchars($row['times_tamp']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['event_type']) . "</td>";
-            echo "<td class='mono'>" . htmlspecialchars($row['vin']) . "</td>";
-            echo "<td>" . htmlspecialchars(trim($row['first_name'] . ' ' . $row['last_name'])) . "</td>";
-            echo "<td><span class='mk avail'>" . htmlspecialchars($row['severity_level']) . "</span></td>";
-            echo "<td class='mono'>" . htmlspecialchars($row['reviewed_by']) . "</td>";
-            echo "</tr>";
+          if (!table_exists($conn, 'Telematics_Events') || !table_exists($conn, 'Safety_Reviews')) {
+              echo "<tr><td colspan='7'>Database not available.</td></tr>";
+          } else {
+            $tsCol = find_column($conn, 'Telematics_Events', ['times_tamp', 'event_timestamp', 'timestamp', 'created_at']);
+            $tsSel = $tsCol ? "te.`$tsCol` AS ts" : "'' AS ts";
+            $res = $conn->query(
+              "SELECT te.event_id, $tsSel, te.event_type, te.vin, te.severity_level,
+                      dr.first_name, dr.last_name, sr.reviewed_by
+               FROM Telematics_Events te
+               JOIN Safety_Reviews sr ON sr.event_id = te.event_id AND sr.is_completed = 1
+               LEFT JOIN Drivers dr ON te.driver_id = dr.driver_id
+               ORDER BY te.event_id DESC");
+            if ($res && $res->num_rows > 0) {
+              while ($row = $res->fetch_assoc()) {
+                echo "<tr>";
+                echo "<td class='mono'>" . (int)$row['event_id'] . "</td>";
+                echo "<td class='mono'>" . htmlspecialchars($row['ts'] ?: '—') . "</td>";
+                echo "<td>" . htmlspecialchars($row['event_type']) . "</td>";
+                echo "<td class='mono'>" . htmlspecialchars($row['vin']) . "</td>";
+                echo "<td>" . htmlspecialchars(trim($row['first_name'] . ' ' . $row['last_name'])) . "</td>";
+                echo "<td><span class='mk avail'>" . htmlspecialchars($row['severity_level']) . "</span></td>";
+                echo "<td class='mono'>" . htmlspecialchars($row['reviewed_by']) . "</td>";
+                echo "</tr>";
+              }
+            } else {
+              echo "<tr><td colspan='7'>No approved reports yet</td></tr>";
+            }
           }
-        } else {
-          echo "<tr><td colspan='7'>No approved reports yet</td></tr>";
-        }
         } catch (mysqli_sql_exception $e) {
           echo "<tr><td colspan='7'>Database not available.</td></tr>";
         }

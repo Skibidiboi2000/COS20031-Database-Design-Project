@@ -99,26 +99,36 @@ $mechanic_email = $_SESSION['mechanic_email'] ?? 'Mechanic';
       <tbody>
         <?php
         try {
-        $res = $conn->query(
-          "SELECT m.mechanic_id, m.first_name, m.last_name, m.contact_information,
-                  d.depot_name, m.specialization, m.hire_date
-           FROM Mechanics m
-           LEFT JOIN Depots d ON m.depot_id = d.depot_id
-           ORDER BY m.mechanic_id");
-        if ($res && $res->num_rows > 0) {
-            while ($row = $res->fetch_assoc()) {
-                echo "<tr>";
-                echo "<td class='mono'>M-" . str_pad($row['mechanic_id'], 4, '0', STR_PAD_LEFT) . "</td>";
-                echo "<td>" . htmlspecialchars(trim($row['first_name'] . ' ' . $row['last_name'])) . "</td>";
-                echo "<td class='mono'>" . htmlspecialchars($row['contact_information']) . "</td>";
-                echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
-                echo "<td>" . htmlspecialchars($row['specialization']) . "</td>";
-                echo "<td class='mono'>" . htmlspecialchars($row['hire_date']) . "</td>";
-                echo "</tr>";
+          if (!table_exists($conn, 'Mechanics')) {
+              echo "<tr><td colspan='6'>Database not available.</td></tr>";
+          } else {
+            // Select only the optional columns this database actually has.
+            $ci = find_column($conn, 'Mechanics', ['contact_information']) ? 'm.contact_information' : "'' AS contact_information";
+            $sp = find_column($conn, 'Mechanics', ['specialization', 'specialisation']);
+            $spSel = $sp ? "m.`$sp` AS specialization" : "'' AS specialization";
+            $hd = find_column($conn, 'Mechanics', ['hire_date']) ? 'm.hire_date' : "'' AS hire_date";
+
+            $res = $conn->query(
+              "SELECT m.mechanic_id, m.first_name, m.last_name, $ci,
+                      d.depot_name, $spSel, $hd
+               FROM Mechanics m
+               LEFT JOIN Depots d ON m.depot_id = d.depot_id
+               ORDER BY m.mechanic_id");
+            if ($res && $res->num_rows > 0) {
+                while ($row = $res->fetch_assoc()) {
+                    echo "<tr>";
+                    echo "<td class='mono'>M-" . str_pad($row['mechanic_id'], 4, '0', STR_PAD_LEFT) . "</td>";
+                    echo "<td>" . htmlspecialchars(trim($row['first_name'] . ' ' . $row['last_name'])) . "</td>";
+                    echo "<td class='mono'>" . htmlspecialchars($row['contact_information'] ?: '—') . "</td>";
+                    echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['specialization'] ?: '—') . "</td>";
+                    echo "<td class='mono'>" . htmlspecialchars($row['hire_date'] ?: '—') . "</td>";
+                    echo "</tr>";
+                }
+            } else {
+                echo "<tr><td colspan='6'>No mechanics found</td></tr>";
             }
-        } else {
-            echo "<tr><td colspan='6'>No mechanics found</td></tr>";
-        }
+          }
         } catch (mysqli_sql_exception $e) {
             echo "<tr><td colspan='6'>Database not available.</td></tr>";
         }

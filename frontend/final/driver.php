@@ -24,33 +24,61 @@ $notice = ""; // Status message shown after filing a report.
 // ---- File a safety event (starts as "pending review") ----
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'file_event') {
     try {
-        $depot_id   = (int)($_POST['depot_id'] ?? 0);
-        $vin        = $_POST['vin'] ?? '';
-        $event_type = $_POST['event_type'] ?? '';
-        $severity   = $_POST['severity_level'] ?? '';
-        $odometer   = (float)($_POST['snapshot_odometer'] ?? 0);
-        $ts         = date('Y-m-d H:i:s');
-
-        $stmt = $conn->prepare(
-            "INSERT INTO Telematics_Events (depot_id, driver_id, vin, times_tamp, event_type, severity_level, snapshot_odometer)
-             VALUES (?, ?, ?, ?, ?, ?, ?)"
-        );
-        $stmt->bind_param("iisssd", $depot_id, $driver_id, $vin, $ts, $event_type, $severity, $odometer);
-        if ($stmt->execute()) {
-            $event_id = $stmt->insert_id;
-            $stmt->close();
-            // Open a pending review record so an admin must approve before it "goes live".
-            $rev = $conn->prepare(
-                "INSERT INTO Safety_Reviews (event_id, reviewed_by, review_date, comments, recommendations, is_completed)
-                 VALUES (?, NULL, NULL, NULL, NULL, 0)"
-            );
-            $rev->bind_param("i", $event_id);
-            $rev->execute();
-            $rev->close();
-            $notice = "Your report has been filed (event #$event_id) and is awaiting admin review.";
+        if (!table_exists($conn, 'Telematics_Events')) {
+            $notice = "Database not available.";
         } else {
-            $notice = "Sorry, the report could not be filed. Please try again.";
-            $stmt->close();
+            $ts = date('Y-m-d H:i:s');
+
+            // depot_id is required in every known schema. Everything else is
+            // added only if the column actually exists, so this INSERT adapts
+            // to whichever version of Telematics_Events the database has.
+            $cols  = ['depot_id'];
+            $types = 'i';
+            $vals  = [(int)($_POST['depot_id'] ?? 0)];
+
+            // Timestamp column is spelled differently across schemas.
+            $tsCol = find_column($conn, 'Telematics_Events', ['times_tamp', 'event_timestamp', 'timestamp', 'created_at']);
+            if ($tsCol) { $cols[] = $tsCol; $types .= 's'; $vals[] = $ts; }
+
+            $optional = [
+                'driver_id'         => ['i', $driver_id],
+                'vin'               => ['s', $_POST['vin'] ?? ''],
+                'event_type'        => ['s', $_POST['event_type'] ?? ''],
+                'severity_level'    => ['s', $_POST['severity_level'] ?? ''],
+                'snapshot_odometer' => ['d', (float)($_POST['snapshot_odometer'] ?? 0)],
+            ];
+            foreach ($optional as $col => [$type, $val]) {
+                if (find_column($conn, 'Telematics_Events', [$col])) {
+                    $cols[]  = $col;
+                    $types  .= $type;
+                    $vals[]  = $val;
+                }
+            }
+
+            $placeholders = implode(', ', array_fill(0, count($cols), '?'));
+            $colList = implode(', ', $cols);
+            $stmt = $conn->prepare("INSERT INTO Telematics_Events ($colList) VALUES ($placeholders)");
+            $stmt->bind_param($types, ...$vals);
+
+            if ($stmt->execute()) {
+                $event_id = $stmt->insert_id;
+                $stmt->close();
+                // Open a pending review row so an admin must approve it before it
+                // goes live — but only if the Safety_Reviews table exists.
+                if (table_exists($conn, 'Safety_Reviews')) {
+                    $rev = $conn->prepare(
+                        "INSERT INTO Safety_Reviews (event_id, reviewed_by, review_date, comments, recommendations, is_completed)
+                         VALUES (?, NULL, NULL, NULL, NULL, 0)"
+                    );
+                    $rev->bind_param("i", $event_id);
+                    $rev->execute();
+                    $rev->close();
+                }
+                $notice = "Your report has been filed (event #$event_id) and is awaiting admin review.";
+            } else {
+                $notice = "Sorry, the report could not be filed. Please try again.";
+                $stmt->close();
+            }
         }
     } catch (mysqli_sql_exception $e) {
         $notice = "Database not available.";
@@ -153,19 +181,17 @@ $vehicles = $conn->query(
       <thead><tr><th>ID</th><th>Name</th><th>Location</th></tr></thead>
       <tbody>
         <?php
-        // Only select the "location" column if this database actually has it,
-        // otherwise show a dash. (Some copies of the Depots table lack it.)
-        $hasLoc = false;
-        $dc = $conn->query("SHOW COLUMNS FROM Depots LIKE 'location'");
-        if ($dc && $dc->num_rows > 0) { $hasLoc = true; }
-        $sel = "depot_id, depot_name" . ($hasLoc ? ", location" : "");
+        // Find the real location column (its name varies) and alias it to
+        // "location"; show a dash if the table has no such column.
+        $locCol = find_column($conn, 'Depots', ['location', 'location_details', 'address', 'depot_location', 'city']);
+        $sel = "depot_id, depot_name" . ($locCol ? ", `$locCol` AS location" : "");
         $res = $conn->query("SELECT $sel FROM Depots ORDER BY depot_id");
         if ($res && $res->num_rows > 0) {
             while ($row = $res->fetch_assoc()) {
                 echo "<tr>";
                 echo "<td class='mono'>" . (int)$row['depot_id'] . "</td>";
                 echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
-                echo "<td>" . htmlspecialchars($hasLoc ? $row['location'] : '—') . "</td>";
+                echo "<td>" . htmlspecialchars($locCol ? ($row['location'] ?? '—') : '—') . "</td>";
                 echo "</tr>";
             }
         } else {
@@ -228,37 +254,53 @@ $vehicles = $conn->query(
       <tbody>
         <?php
         try {
-        // Show this driver's own reports and whether each has been approved.
-        // A report is "Approved" once its Safety_Reviews row has is_completed = 1.
-        $stmt = $conn->prepare(
-            "SELECT te.event_id, te.times_tamp, te.event_type, te.vin, te.severity_level, sr.is_completed
-             FROM Telematics_Events te
-             LEFT JOIN Safety_Reviews sr ON sr.event_id = te.event_id
-             WHERE te.driver_id = ?
-             ORDER BY te.event_id DESC"
-        );
-        $stmt->bind_param("i", $driver_id);
-        $stmt->execute();
-        $res = $stmt->get_result();
-        if ($res && $res->num_rows > 0) {
-            while ($row = $res->fetch_assoc()) {
-                // is_completed = 1 means an admin approved it; anything else is still pending.
-                $done = !is_null($row['is_completed']) && (int)$row['is_completed'] === 1;
-                $mk = $done ? "avail" : "fair";          // colour class for the status badge
-                $label = $done ? "Approved" : "Pending review";
-                echo "<tr>";
-                echo "<td class='mono'>" . (int)$row['event_id'] . "</td>";
-                echo "<td class='mono'>" . htmlspecialchars($row['times_tamp']) . "</td>";
-                echo "<td>" . htmlspecialchars($row['event_type']) . "</td>";
-                echo "<td class='mono'>" . htmlspecialchars($row['vin']) . "</td>";
-                echo "<td>" . htmlspecialchars($row['severity_level']) . "</td>";
-                echo "<td><span class='mk $mk'>$label</span></td>";
-                echo "</tr>";
+          if (!table_exists($conn, 'Telematics_Events')) {
+              echo "<tr><td colspan='6'>Database not available.</td></tr>";
+          } else {
+            // Detect the real column names so this works on either schema.
+            $tsCol  = find_column($conn, 'Telematics_Events', ['times_tamp', 'event_timestamp', 'timestamp', 'created_at']);
+            $hasDriverCol = find_column($conn, 'Telematics_Events', ['driver_id']) !== null;
+            $hasVin = find_column($conn, 'Telematics_Events', ['vin']) !== null;
+            $hasSev = find_column($conn, 'Telematics_Events', ['severity_level']) !== null;
+
+            // Build the SELECT list from whichever columns exist.
+            $tsSel  = $tsCol ? "te.`$tsCol` AS ts" : "'' AS ts";
+            $vinSel = $hasVin ? "te.vin AS vin" : "'' AS vin";
+            $sevSel = $hasSev ? "te.severity_level AS severity_level" : "'' AS severity_level";
+
+            // Only join Safety_Reviews (for the Approved/Pending badge) if it exists.
+            $hasReviews = table_exists($conn, 'Safety_Reviews');
+            $reviewSel  = $hasReviews ? "sr.is_completed" : "NULL AS is_completed";
+            $reviewJoin = $hasReviews ? "LEFT JOIN Safety_Reviews sr ON sr.event_id = te.event_id" : "";
+
+            // Only filter by this driver if the table records driver_id.
+            $where = $hasDriverCol ? "WHERE te.driver_id = " . (int)$driver_id : "";
+
+            $sql = "SELECT te.event_id, $tsSel, te.event_type, $vinSel, $sevSel, $reviewSel
+                    FROM Telematics_Events te
+                    $reviewJoin
+                    $where
+                    ORDER BY te.event_id DESC";
+            $res = $conn->query($sql);
+            if ($res && $res->num_rows > 0) {
+                while ($row = $res->fetch_assoc()) {
+                    // is_completed = 1 means an admin approved it; anything else is still pending.
+                    $done = !is_null($row['is_completed']) && (int)$row['is_completed'] === 1;
+                    $mk = $done ? "avail" : "fair";          // colour class for the status badge
+                    $label = $done ? "Approved" : "Pending review";
+                    echo "<tr>";
+                    echo "<td class='mono'>" . (int)$row['event_id'] . "</td>";
+                    echo "<td class='mono'>" . htmlspecialchars($row['ts'] ?: '—') . "</td>";
+                    echo "<td>" . htmlspecialchars($row['event_type']) . "</td>";
+                    echo "<td class='mono'>" . htmlspecialchars($row['vin'] ?: '—') . "</td>";
+                    echo "<td>" . htmlspecialchars($row['severity_level'] ?: '—') . "</td>";
+                    echo "<td><span class='mk $mk'>$label</span></td>";
+                    echo "</tr>";
+                }
+            } else {
+                echo "<tr><td colspan='6'>No reports filed yet</td></tr>";
             }
-        } else {
-            echo "<tr><td colspan='6'>No reports filed yet</td></tr>";
-        }
-        $stmt->close();
+          }
         } catch (mysqli_sql_exception $e) {
             echo "<tr><td colspan='6'>Database not available.</td></tr>";
         }
