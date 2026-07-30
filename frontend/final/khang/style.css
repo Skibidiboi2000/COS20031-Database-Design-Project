@@ -151,7 +151,16 @@ body{
   padding:11px 14px;border:1px solid #D2D2D7;border-radius:12px;
   font-family:var(--sans);font-size:14px;background:#fff;color:var(--ink);transition:.2s;
 }
-.form-group select{cursor:pointer}
+.form-group select{
+  cursor:pointer;
+  /* Custom chevron so the arrow sits neatly by the text at any width,
+   * instead of the native arrow floating off in the far corner. */
+  -webkit-appearance:none;-moz-appearance:none;appearance:none;
+  padding-right:36px;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%2386868B' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 14px center;
+}
 .form-group input:focus,.form-group select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-weak)}
 .form-btn{
   /* Apple's own web buttons are 14px; we use 17px on purpose for a data-heavy
@@ -387,8 +396,45 @@ tbody tr:hover td:last-child{background:var(--surface-3)}
   .stat{grid-column:span 6}
 }
 
-/* ============ ACCESSIBILITY / MOTION ============ */
-/* Apple focus ring: 2px accent outline, 1px offset (close to the edge). */
+/* ============ WELCOME LINE — inline under the header, types then vanishes ============ */
+/* Starts collapsed (height 0), expands to make room, then collapses again
+ * after the text is erased so the layout returns to exactly how it was. */
+#greet-line{
+  max-width:1040px;margin:0 auto;padding:0 40px;
+  max-height:0;opacity:0;overflow:hidden;
+  transition:max-height .45s cubic-bezier(.22,.61,.36,1), opacity .45s cubic-bezier(.22,.61,.36,1),
+             padding-top .45s cubic-bezier(.22,.61,.36,1), padding-bottom .45s cubic-bezier(.22,.61,.36,1);
+}
+#greet-line.greet-open{max-height:240px;opacity:1;padding-top:40px;padding-bottom:8px}
+#greet-line.greet-done{max-height:0;opacity:0;padding-top:0;padding-bottom:0}
+.greet-text{
+  font-family:var(--display);font-size:clamp(24px,3vw,34px);font-weight:600;
+  letter-spacing:-.012em;color:var(--ink);line-height:1.12;
+  overflow-wrap:anywhere;word-break:break-word;
+  /* Ghost entrance: emerges from a soft blur + slight rise, Apple-quiet. */
+  will-change:filter,opacity,transform;
+}
+#greet-line.greet-open .greet-text{animation:ghostIn .9s cubic-bezier(.22,.61,.36,1) both}
+/* On exit the whole line softens into blur as it fades — like it dissolves. */
+#greet-line.greet-done .greet-text{
+  filter:blur(6px);opacity:0;transform:translateY(-4px);
+  transition:filter .5s ease, opacity .5s ease, transform .5s ease;
+}
+@keyframes ghostIn{
+  0%{opacity:0;filter:blur(8px);transform:translateY(6px)}
+  60%{opacity:1}
+  100%{opacity:1;filter:blur(0);transform:none}
+}
+.greet-caret{
+  display:inline-block;width:3px;height:.95em;margin-left:3px;
+  background:var(--accent);vertical-align:-.08em;border-radius:2px;
+  box-shadow:0 0 6px rgba(0,113,227,.5);
+  animation:greetBlink 1s step-end infinite;
+}
+#greet-line.greet-done .greet-caret{animation:none;opacity:0}
+@keyframes greetBlink{50%{opacity:0}}
+
+/* ============ ACCESSIBILITY / MOTION ============ *//* Apple focus ring: 2px accent outline, 1px offset (close to the edge). */
 :focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 

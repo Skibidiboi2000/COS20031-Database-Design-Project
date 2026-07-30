@@ -74,7 +74,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'file_
                     $rev->execute();
                     $rev->close();
                 }
-                $notice = "Your report has been filed (event #$event_id) and is awaiting admin review.";
+                // Show the event id only when the DB actually returned one
+                // (auto-increment). Otherwise keep the message clean.
+                $notice = $event_id > 0
+                    ? "Your report has been filed (event #$event_id) and is awaiting admin review."
+                    : "Your report has been filed and is awaiting admin review.";
             } else {
                 $notice = "Sorry, the report could not be filed. Please try again.";
                 $stmt->close();
@@ -97,9 +101,9 @@ $vehicles = $conn->query(
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Smart Fleet Driver Terminal</title>
-<link rel="stylesheet" href="style.css?v=khang1">
+<link rel="stylesheet" href="style.css?v=khang7">
 </head>
-<body>
+<body data-greet-name="<?= htmlspecialchars(($driver_name && $driver_name !== 'Driver') ? $driver_name : (strstr($driver_email, '@', true) ?: 'Driver')) ?>">
 
 <div class="header">
   <div class="mark">
@@ -115,11 +119,18 @@ $vehicles = $conn->query(
   <a href="login.php" class="back">End shift</a>
 </div>
 
+<div id="greet-line"></div>
+
 <div class="wrap">
 
-<input type="radio" name="tab" id="tab1" class="tab-input" checked>
+<?php
+  // After filing a report the page reloads; keep the "My reports" tab open
+  // instead of snapping back to Fleet. $notice is only set on that action.
+  $openReports = ($notice !== '');
+?>
+<input type="radio" name="tab" id="tab1" class="tab-input"<?= $openReports ? '' : ' checked' ?>>
 <input type="radio" name="tab" id="tab2" class="tab-input">
-<input type="radio" name="tab" id="tab3" class="tab-input">
+<input type="radio" name="tab" id="tab3" class="tab-input"<?= $openReports ? ' checked' : '' ?>>
 
 <div class="tabs">
   <label for="tab1"><span class="tab-ico"><?= ui_icon('truck') ?></span>Fleet</label>
@@ -207,7 +218,13 @@ $vehicles = $conn->query(
 <!-- ==================== MY REPORTS ==================== -->
 <div id="content3" class="tab-content">
   <?php if ($notice): ?>
-    <div class="manifest"><span class="seg count"><span class="v"><?= htmlspecialchars($notice) ?></span></span></div>
+    <?php
+      $isErr = (stripos($notice, 'could not') !== false)
+            || (stripos($notice, 'not available') !== false)
+            || (stripos($notice, 'sorry') !== false)
+            || (stripos($notice, 'try again') !== false);
+    ?>
+    <div class="flash <?= $isErr ? 'flash-err' : 'flash-ok' ?>"><?= htmlspecialchars($notice) ?></div>
   <?php endif; ?>
 
   <div class="docket">
@@ -313,5 +330,6 @@ $vehicles = $conn->query(
 
 </div>
 <script src="motion.js"></script>
+<script src="greeting.js"></script>
 </body>
 </html>

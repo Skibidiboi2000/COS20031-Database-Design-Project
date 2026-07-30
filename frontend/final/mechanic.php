@@ -23,7 +23,7 @@ $mechanic_email = $_SESSION['mechanic_email'] ?? 'Mechanic';
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Smart Fleet Mechanic Terminal</title>
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 

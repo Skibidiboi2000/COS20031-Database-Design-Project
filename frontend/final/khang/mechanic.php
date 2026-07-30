@@ -16,6 +16,11 @@ if (($_SESSION['role'] ?? '') !== 'mechanic') {
     exit;
 }
 $mechanic_email = $_SESSION['mechanic_email'] ?? 'Mechanic';
+$mechanic_name = $_SESSION['mechanic_name'] ?? 'Mechanic';
+// Prefer the real first+last name from the DB; fall back to the email handle.
+$greet_name = ($mechanic_name && $mechanic_name !== 'Mechanic')
+    ? $mechanic_name
+    : (strstr($mechanic_email, '@', true) ?: $mechanic_email);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,9 +28,9 @@ $mechanic_email = $_SESSION['mechanic_email'] ?? 'Mechanic';
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Smart Fleet Mechanic Terminal</title>
-<link rel="stylesheet" href="style.css?v=khang1">
+<link rel="stylesheet" href="style.css?v=khang7">
 </head>
-<body>
+<body data-greet-name="<?= htmlspecialchars($greet_name) ?>">
 
 <div class="header">
   <div class="mark">
@@ -38,6 +43,8 @@ $mechanic_email = $_SESSION['mechanic_email'] ?? 'Mechanic';
   <div class="meta"><span class="live">On duty</span></div>
   <a href="login.php" class="back">End shift</a>
 </div>
+
+<div id="greet-line"></div>
 
 <div class="wrap">
 
@@ -183,5 +190,6 @@ $mechanic_email = $_SESSION['mechanic_email'] ?? 'Mechanic';
 
 </div>
 <script src="motion.js"></script>
+<script src="greeting.js"></script>
 </body>
 </html>

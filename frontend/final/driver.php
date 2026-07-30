@@ -97,7 +97,7 @@ $vehicles = $conn->query(
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Smart Fleet Driver Terminal</title>
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 
@@ -117,9 +117,14 @@ $vehicles = $conn->query(
 
 <div class="wrap">
 
-<input type="radio" name="tab" id="tab1" class="tab-input" checked>
+<?php
+  // After filing a report the page reloads; keep the "My reports" tab open
+  // instead of snapping back to Fleet. $notice is only set on that action.
+  $openReports = ($notice !== '');
+?>
+<input type="radio" name="tab" id="tab1" class="tab-input"<?= $openReports ? '' : ' checked' ?>>
 <input type="radio" name="tab" id="tab2" class="tab-input">
-<input type="radio" name="tab" id="tab3" class="tab-input">
+<input type="radio" name="tab" id="tab3" class="tab-input"<?= $openReports ? ' checked' : '' ?>>
 
 <div class="tabs">
   <label for="tab1">Fleet</label>
@@ -207,7 +212,15 @@ $vehicles = $conn->query(
 <!-- ==================== MY REPORTS ==================== -->
 <div id="content3" class="tab-content">
   <?php if ($notice): ?>
-    <div class="manifest"><span class="seg count"><span class="v"><?= htmlspecialchars($notice) ?></span></span></div>
+    <?php
+      $isErr = (stripos($notice, 'could not') !== false)
+            || (stripos($notice, 'not available') !== false)
+            || (stripos($notice, 'sorry') !== false)
+            || (stripos($notice, 'try again') !== false);
+      $wash = $isErr ? 'var(--stop-wash)' : 'var(--go-wash)';
+      $ink  = $isErr ? 'var(--stop)' : 'var(--go)';
+    ?>
+    <div class="stamp" style="display:block;background:<?= $wash ?>;color:<?= $ink ?>;border:1px solid <?= $ink ?>;padding:8px 12px;margin-bottom:12px;font-family:var(--mono);font-size:11px"><?= htmlspecialchars($notice) ?></div>
   <?php endif; ?>
 
   <div class="docket">

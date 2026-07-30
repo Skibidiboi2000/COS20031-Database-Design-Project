@@ -199,7 +199,7 @@ try {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Smart Fleet Admin Terminal</title>
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 
@@ -218,14 +218,33 @@ try {
 <div class="wrap">
 
 <?php if ($notice): ?>
-  <div class="manifest"><span class="seg count"><span class="v"><?= htmlspecialchars($notice) ?></span></span></div>
+  <?php
+    $isErr = (stripos($notice, 'could not') !== false)
+          || (stripos($notice, 'not available') !== false)
+          || (stripos($notice, 'try again') !== false);
+    $wash = $isErr ? 'var(--stop-wash)' : 'var(--go-wash)';
+    $ink  = $isErr ? 'var(--stop)' : 'var(--go)';
+  ?>
+  <div class="stamp" style="display:block;background:<?= $wash ?>;color:<?= $ink ?>;border:1px solid <?= $ink ?>;padding:8px 12px;margin-bottom:12px;font-family:var(--mono);font-size:11px"><?= htmlspecialchars($notice) ?></div>
 <?php endif; ?>
 
-<input type="radio" name="tab" id="tab1" class="tab-input" checked>
-<input type="radio" name="tab" id="tab2" class="tab-input">
-<input type="radio" name="tab" id="tab3" class="tab-input">
-<input type="radio" name="tab" id="tab4" class="tab-input">
-<input type="radio" name="tab" id="tab5" class="tab-input">
+<?php
+  // After an action the page reloads; keep the tab the user was working in.
+  $submittedAction = $_POST['action'] ?? '';
+  $actionTab = [
+      'add_vehicle' => 1, 'delete_vehicle' => 1, 'assign_vehicle' => 1, 'unassign_vehicle' => 1,
+      'add_driver' => 2,
+      'add_depot' => 3,
+      'add_mechanic' => 4,
+      'approve_event' => 5, 'delete_event' => 5,
+  ];
+  $openTab = $actionTab[$submittedAction] ?? 1;
+?>
+<input type="radio" name="tab" id="tab1" class="tab-input"<?= $openTab === 1 ? ' checked' : '' ?>>
+<input type="radio" name="tab" id="tab2" class="tab-input"<?= $openTab === 2 ? ' checked' : '' ?>>
+<input type="radio" name="tab" id="tab3" class="tab-input"<?= $openTab === 3 ? ' checked' : '' ?>>
+<input type="radio" name="tab" id="tab4" class="tab-input"<?= $openTab === 4 ? ' checked' : '' ?>>
+<input type="radio" name="tab" id="tab5" class="tab-input"<?= $openTab === 5 ? ' checked' : '' ?>>
 
 <div class="tabs">
   <label for="tab1">Vehicles</label>

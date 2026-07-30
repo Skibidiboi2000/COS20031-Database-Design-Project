@@ -69,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Demo authentication only. Replace with real credential checks / a users table.
     if ($role === 'customer') {
         $_SESSION['role'] = 'customer';
+        $_SESSION['customer_email'] = trim($_POST['email'] ?? '');
         header("Location: customer.php");
         exit;
     } elseif ($role === 'driver' || $role === 'mechanic') {
@@ -139,7 +140,7 @@ unset($_SESSION['login_error'], $_SESSION['login_role'], $_SESSION['signup_ok'])
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Smart Fleet Sign In</title>
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body class="login-body">
 

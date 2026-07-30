@@ -13,14 +13,16 @@ include 'dbconn.php';
 $error = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $first   = trim($_POST['first_name'] ?? '');
+    $last    = trim($_POST['last_name'] ?? '');
     $email   = trim($_POST['email'] ?? '');
     $pass    = $_POST['password'] ?? '';
     $confirm = $_POST['confirm'] ?? '';
 
     try {
         // Validate the input before touching the database.
-        if ($email === '' || $pass === '') {
-            $error = "Email and password are required.";
+        if ($first === '' || $last === '' || $email === '' || $pass === '') {
+            $error = "First name, last name, email and password are required.";
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error = "Please enter a valid email.";
         } elseif ($pass !== $confirm) {
@@ -36,8 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Store only the hash, never the raw password.
                 $hash = password_hash($pass, PASSWORD_DEFAULT);
                 $now = date('Y-m-d H:i:s');
-                $ins = $conn->prepare("INSERT INTO Users (email, password_hash, created_at) VALUES (?, ?, ?)");
-                $ins->bind_param("sss", $email, $hash, $now);
+                $ins = $conn->prepare("INSERT INTO Users (first_name, last_name, email, password_hash, created_at) VALUES (?, ?, ?, ?, ?)");
+                $ins->bind_param("sssss", $first, $last, $email, $hash, $now);
                 $ins->execute();
                 $ins->close();
                 // Account created — send them to the main login to sign in.
@@ -58,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Smart Fleet Sign Up</title>
-<link rel="stylesheet" href="style.css?v=khang1">
+<link rel="stylesheet" href="style.css?v=khang7">
 </head>
 <body class="login-body">
 
@@ -85,6 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="login-box" style="display:block;animation:boxIn .5s cubic-bezier(.22,.61,.36,1)">
   <span class="stamp">Sign up</span>
   <form method="POST" action="auth.php">
+    <div class="form-group"><label>First name</label><input type="text" name="first_name" placeholder="First name"></div>
+    <div class="form-group"><label>Last name</label><input type="text" name="last_name" placeholder="Last name"></div>
     <div class="form-group"><label>Email</label><input type="text" name="email" placeholder="you@company.com"></div>
     <div class="form-group"><label>Password</label><input type="password" name="password" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;"></div>
     <div class="form-group"><label>Confirm password</label><input type="password" name="confirm" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;"></div>

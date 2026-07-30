@@ -20,6 +20,11 @@ if (($_SESSION['role'] ?? '') !== 'admin') {
     exit;
 }
 $admin_name = $_SESSION['admin_name'] ?? 'admin';
+$admin_full_name = $_SESSION['admin_full_name'] ?? '';
+// Prefer a first+last name if the Admin table had one; else the email handle.
+$greet_name = ($admin_full_name !== '')
+    ? $admin_full_name
+    : (strstr($admin_name, '@', true) ?: $admin_name);
 $notice = ""; // Short status message shown at the top after an action runs.
 
 // Schema-detection helpers (table_exists, find_column, find_columns) live in dbconn.php.
@@ -213,9 +218,9 @@ $stat_mechanics = count_rows($conn, 'Mechanics');
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Smart Fleet Admin Terminal</title>
-<link rel="stylesheet" href="style.css?v=khang1">
+<link rel="stylesheet" href="style.css?v=khang7">
 </head>
-<body>
+<body data-greet-name="<?= htmlspecialchars($greet_name) ?>">
 
 <div class="header">
   <div class="mark">
@@ -228,6 +233,8 @@ $stat_mechanics = count_rows($conn, 'Mechanics');
   <div class="meta"><span class="live">Online</span></div>
   <a href="login.php" class="back">End shift</a>
 </div>
+
+<div id="greet-line"></div>
 
 <div class="wrap">
 
@@ -242,14 +249,33 @@ $stat_mechanics = count_rows($conn, 'Mechanics');
 </section>
 
 <?php if ($notice): ?>
-  <div class="manifest"><span class="seg count"><span class="v"><?= htmlspecialchars($notice) ?></span></span></div>
+  <?php
+    // Colour the banner red for failures, green otherwise.
+    $isErr = (stripos($notice, 'could not') !== false)
+          || (stripos($notice, 'not available') !== false)
+          || (stripos($notice, 'try again') !== false);
+  ?>
+  <div class="flash <?= $isErr ? 'flash-err' : 'flash-ok' ?>"><?= htmlspecialchars($notice) ?></div>
 <?php endif; ?>
 
-<input type="radio" name="tab" id="tab1" class="tab-input" checked>
-<input type="radio" name="tab" id="tab2" class="tab-input">
-<input type="radio" name="tab" id="tab3" class="tab-input">
-<input type="radio" name="tab" id="tab4" class="tab-input">
-<input type="radio" name="tab" id="tab5" class="tab-input">
+<?php
+  // After an action the page reloads; keep the tab the user was working in
+  // open instead of snapping back to Vehicles. Map each action to its tab.
+  $submittedAction = $_POST['action'] ?? '';
+  $actionTab = [
+      'add_vehicle' => 1, 'delete_vehicle' => 1, 'assign_vehicle' => 1, 'unassign_vehicle' => 1,
+      'add_driver' => 2,
+      'add_depot' => 3,
+      'add_mechanic' => 4,
+      'approve_event' => 5, 'delete_event' => 5,
+  ];
+  $openTab = $actionTab[$submittedAction] ?? 1;
+?>
+<input type="radio" name="tab" id="tab1" class="tab-input"<?= $openTab === 1 ? ' checked' : '' ?>>
+<input type="radio" name="tab" id="tab2" class="tab-input"<?= $openTab === 2 ? ' checked' : '' ?>>
+<input type="radio" name="tab" id="tab3" class="tab-input"<?= $openTab === 3 ? ' checked' : '' ?>>
+<input type="radio" name="tab" id="tab4" class="tab-input"<?= $openTab === 4 ? ' checked' : '' ?>>
+<input type="radio" name="tab" id="tab5" class="tab-input"<?= $openTab === 5 ? ' checked' : '' ?>>
 
 <div class="tabs">
   <label for="tab1"><span class="tab-ico"><?= ui_icon('truck') ?></span>Vehicles</label>
@@ -636,5 +662,6 @@ $stat_mechanics = count_rows($conn, 'Mechanics');
 
 </div>
 <script src="motion.js"></script>
+<script src="greeting.js"></script>
 </body>
 </html>

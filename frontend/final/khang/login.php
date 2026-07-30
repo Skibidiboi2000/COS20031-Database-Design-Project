@@ -69,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Demo authentication only. Replace with real credential checks / a users table.
     if ($role === 'customer') {
         $_SESSION['role'] = 'customer';
+        $_SESSION['customer_email'] = trim($_POST['email'] ?? '');
         header("Location: customer.php");
         exit;
     } elseif ($role === 'driver' || $role === 'mechanic') {
@@ -110,6 +111,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['role'] = 'admin';
             $_SESSION['admin_name'] = $admin['username'];
             $_SESSION['admin_id'] = (int)($admin['admin_id'] ?? 0);
+            // If the Admin table happens to carry a name, keep it for the greeting.
+            $_SESSION['admin_full_name'] = trim(($admin['first_name'] ?? '') . ' ' . ($admin['last_name'] ?? ''));
             header("Location: admin.php");
             exit;
         } else {
@@ -139,7 +142,7 @@ unset($_SESSION['login_error'], $_SESSION['login_role'], $_SESSION['signup_ok'])
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Smart Fleet Sign In</title>
-<link rel="stylesheet" href="style.css?v=khang1">
+<link rel="stylesheet" href="style.css?v=khang7">
 </head>
 <body class="login-body">
 

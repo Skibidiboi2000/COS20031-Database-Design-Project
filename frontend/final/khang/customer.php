@@ -16,6 +16,28 @@ if ($role !== 'customer' && $role !== 'user') {
     header("Location: login.php");
     exit;
 }
+$customer_email = $_SESSION['customer_email'] ?? '';
+
+// Greet by first+last name if this email is registered in Users; else the
+// email handle. Wrapped so a missing table/column can't break the page.
+$customer_name = '';
+if ($customer_email !== '' && table_exists($conn, 'Users')) {
+    try {
+        $stmt = $conn->prepare("SELECT first_name, last_name FROM Users WHERE email = ? LIMIT 1");
+        $stmt->bind_param('s', $customer_email);
+        $stmt->execute();
+        $u = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        if ($u) {
+            $customer_name = trim(($u['first_name'] ?? '') . ' ' . ($u['last_name'] ?? ''));
+        }
+    } catch (mysqli_sql_exception $e) {
+        $customer_name = '';
+    }
+}
+$greet_name = ($customer_name !== '')
+    ? $customer_name
+    : (strstr($customer_email, '@', true) ?: $customer_email);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,9 +45,9 @@ if ($role !== 'customer' && $role !== 'user') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Customer Portal — Fleet Management</title>
-  <link rel="stylesheet" href="style.css?v=khang1">
+  <link rel="stylesheet" href="style.css?v=khang7">
 </head>
-<body>
+<body data-greet-name="<?= htmlspecialchars($greet_name) ?>">
 
 <div class="header">
   <div class="mark">
@@ -38,6 +60,8 @@ if ($role !== 'customer' && $role !== 'user') {
   <div class="meta"><span class="live">Online</span></div>
   <a href="login.php" class="back">Sign out</a>
 </div>
+
+<div id="greet-line"></div>
 
 <div class="wrap">
 
@@ -234,5 +258,6 @@ if ($role !== 'customer' && $role !== 'user') {
 
 </div>
 <script src="motion.js"></script>
+<script src="greeting.js"></script>
 </body>
 </html>
