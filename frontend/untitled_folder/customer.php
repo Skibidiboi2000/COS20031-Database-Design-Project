@@ -28,9 +28,59 @@ include 'dbconn.php'
     <label for="tab1">Vehicles</label>
     <label for="tab2">Incidents</label>
   </div>
-
   <!-- ==================== VEHICLES ==================== -->
   <div id="content1" class="tab-content">
+    <!-- ==================== VEHICLES SEARCH FORM ==================== -->
+    <form method="GET" action="customer.php">
+    <!-- Category dropdown -->
+    <label for="category">Category:</label>
+    <select name="category" id="category">
+        <option value="">All Categories</option>
+        <option value="Delivery Van">Delivery Van</option>
+        <option value="Refrigerated Truck">Refrigerated Truck</option>
+        <option value="Electric Van">Electric Van</option>
+        <option value="Service Vehicle">Service Vehicle</option>
+        <option value="Heavy Transport Truck">Heavy Transport Truck</option>
+    </select>
+
+    <!-- Year dropdown -->
+    <label for="year">Year:</label>
+    <select name="year" id="year">
+        <option value="">All Years</option>
+        <?php
+        for ($y = 2010; $y <= 2026; $y++) {
+            echo "<option value='$y'>$y</option>";
+        }
+        ?>
+    </select>
+
+    <!-- Depot dropdown -->
+    <label for="depot">Depot:</label>
+    <select name="depot" id="depot">
+        <option value="">All Depots</option>
+        <option value="Ha Noi">Ha Noi</option>
+        <option value="Da Nang">Da Nang</option>
+        <option value="Ho Chi Minh City">Ho Chi Minh City</option>
+        <option value="Can Tho">Can Tho</option>
+    </select>
+
+    <!-- Status dropdown -->
+    <label for="status">Status:</label>
+    <select name="status" id="status">
+        <option value="">All Statuses</option>
+        <option value="Available">Available</option>
+        <option value="Active">Active</option>
+        <option value="Under Maintenance">Under Maintenance</option>
+        <option value="Retired">Retired</option>
+        <option value="Awaiting Inspection">Awaiting Inspection</option>
+        <option value="Out of Service">Out of Service</option>
+    </select>
+
+    <button type="submit">Search</button>
+</form>
+
+ <!-- ==================== VEHICLES SEARCH FORM ==================== -->
+
     <div class="table-section">
       <h2>Vehicles</h2>
       <table>
@@ -47,6 +97,27 @@ include 'dbconn.php'
         </thead>
         <tbody>
           <?php
+            $conditions = [];
+
+            if (!empty($_GET['category'])) {
+                $category = $conn->real_escape_string($_GET['category']);
+                $conditions[] = "vc.category_name = '$category'";
+            }
+
+            if (!empty($_GET['year'])) {
+                $year = (int)$_GET['year'];
+                $conditions[] = "v.year_of_manufacture = $year";
+            }
+
+            if (!empty($_GET['depot'])) {
+                $depot = $conn->real_escape_string($_GET['depot']);
+                $conditions[] = "d.depot_name = '$depot'";
+            }
+            if (!empty($_GET['status'])) {
+                $status = $conn->real_escape_string($_GET['status']);
+                $conditions[] = "v.operational_status = '$status'";
+            }
+
           $sql = "SELECT vin, registration_number, model, vc.category_name as vehicle_type, year_of_manufacture, operational_status, d.depot_name as depot_name
                   FROM Vehicles v
                   JOIN Vehicle_Categories vc
@@ -54,7 +125,11 @@ include 'dbconn.php'
                   JOIN Depots d
                   ON v.current_depot_id = d.depot_id
                   ";
-          $result = $conn->query($sql);
+          if (count($conditions) > 0) {
+            $sql .= " WHERE " . implode(" AND ", $conditions);
+            }
+
+            $result = $conn->query($sql);
 
           if ($result && $result->num_rows > 0) {
               while($row = $result->fetch_assoc()) {
