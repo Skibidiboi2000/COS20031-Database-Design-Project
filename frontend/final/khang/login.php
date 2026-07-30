@@ -39,6 +39,28 @@ function find_staff_by_email(mysqli $conn, string $table, string $email): ?array
     }
 }
 
+/**
+ * Look an admin up by username in the Admin table (columns: admin_id,
+ * username, password_hash). Returns the row or null. Uses a prepared
+ * statement; wrapped in try/catch so a missing table can't crash login.
+ */
+function find_admin_by_username(mysqli $conn, string $username): ?array {
+    if (!table_exists($conn, 'Admin')) {
+        return null;
+    }
+    try {
+        $stmt = $conn->prepare("SELECT * FROM `Admin` WHERE `username` = ? LIMIT 1");
+        $stmt->bind_param('s', $username);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $row = $res ? $res->fetch_assoc() : null;
+        $stmt->close();
+        return $row ?: null;
+    } catch (mysqli_sql_exception $e) {
+        return null;
+    }
+}
+
 $error = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -79,11 +101,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     } elseif ($role === 'admin') {
-        // Demo admin gate. Replace with a real admin credential check.
-        $_SESSION['role'] = 'admin';
-        $_SESSION['admin_name'] = $_POST['username'] ?: 'admin';
-        header("Location: admin.php");
-        exit;
+        // Admin login is checked against the Admin table (username + password_hash).
+        $username = trim($_POST['username'] ?? '');
+        $password = $_POST['password'] ?? '';
+        $admin = find_admin_by_username($conn, $username);
+
+        if ($admin && password_verify($password, $admin['password_hash'] ?? '')) {
+            $_SESSION['role'] = 'admin';
+            $_SESSION['admin_name'] = $admin['username'];
+            $_SESSION['admin_id'] = (int)($admin['admin_id'] ?? 0);
+            header("Location: admin.php");
+            exit;
+        } else {
+            $error = "If you an Admin, check the DB.";
+        }
     } else {
         $error = "Please choose a role to sign in.";
     }

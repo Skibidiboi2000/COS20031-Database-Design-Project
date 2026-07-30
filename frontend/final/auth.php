@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="login-body">
 
 <div class="login-topbar">
-  <span class="plate">FF&middot;01</span>
+  <?= version_switch_plate() ?>
   <span class="id">Smart Fleet &middot; Sign Up</span>
   <span style="margin-left:auto">
     <a href="login.php" class="back">Terminal login</a>

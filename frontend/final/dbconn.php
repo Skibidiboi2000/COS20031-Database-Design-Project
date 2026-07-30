@@ -1,5 +1,5 @@
 <?php
-#$host = "100.98.213.61";
+#$host = "127.0.0.1";
 #$user = "admin";
 #$pass = "1234";
 #$dbname = "SmartFleetProject";
@@ -66,5 +66,37 @@ function find_columns(mysqli $conn, string $table, array $map): array {
         }
     }
     return $found;
+}
+
+/* ============================================================
+ * UI version toggle.
+ *
+ * Two builds live side by side: this original in php/ and the Apple
+ * copy in php/khang/. FF·01 links to the same page in the OTHER build.
+ * No memory — the original php/ is always the default entry point.
+ * ============================================================ */
+
+// Which build is THIS file part of? This is the original (not /khang/).
+define('IS_KHANG', false);
+
+/** The page name currently running, e.g. "admin.php". */
+function current_page(): string {
+    $script = $_SERVER['SCRIPT_NAME'] ?? '';
+    return basename(parse_url($script, PHP_URL_PATH) ?: 'login.php');
+}
+
+/** Build a link to $page in the OTHER build (relative to this one). */
+function other_build_link(string $page): string {
+    return IS_KHANG ? '../' . $page : 'khang/' . $page;
+}
+
+/**
+ * Render the FF·01 plate as a link that switches to the OTHER build,
+ * keeping the same page name. $class keeps each header's plate styling.
+ */
+function version_switch_plate(string $label = 'FF&middot;01', string $class = 'plate'): string {
+    $href = htmlspecialchars(other_build_link(current_page()));
+    $tip  = IS_KHANG ? 'Switch to Classic UI' : 'Switch to Apple UI';
+    return "<a href=\"$href\" class=\"$class plate-switch\" title=\"$tip\">$label</a>";
 }
 ?>

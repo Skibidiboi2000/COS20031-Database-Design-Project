@@ -103,7 +103,7 @@ $vehicles = $conn->query(
 
 <div class="header">
   <div class="mark">
-    <span class="plate">DRIVER</span>
+    <?= version_switch_plate('DRIVER') ?>
     <div class="titlewrap">
       <h1>Smart Fleet</h1>
       <span class="sub">Driver &middot; <?= htmlspecialchars($driver_email ?: $driver_name) ?></span>

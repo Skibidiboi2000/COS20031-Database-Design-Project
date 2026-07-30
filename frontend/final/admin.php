@@ -205,7 +205,7 @@ try {
 
 <div class="header">
   <div class="mark">
-    <span class="plate">FF&middot;01</span>
+    <?= version_switch_plate() ?>
     <div class="titlewrap">
       <h1>Smart Fleet</h1>
       <span class="sub">Admin &middot; <?= htmlspecialchars($admin_name) ?></span>

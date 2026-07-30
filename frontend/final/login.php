@@ -3,8 +3,10 @@
  * login.php — Main sign-in terminal.
  *
  * Three roles sign in here: Customer, Staff (Driver or Mechanic), and Admin.
- * Staff sign in by email — the email domain decides where they go:
- *   @driver.com -> driver.php,  @mech.com -> mechanic.php.
+ * Staff sign in by email — we look the email up in the database: if it is in
+ * the Drivers table the user goes to driver.php, if it is in the Mechanics
+ * table they go to mechanic.php. The email column name is auto-detected so
+ * this works across schema variations.
  *
  * On a failed login we use the Post/Redirect/Get pattern: the error is stored
  * in the session, then we redirect to this same page with GET. That way a
@@ -13,6 +15,51 @@
  */
 session_start();
 include 'dbconn.php';
+
+/**
+ * Look $email up in $table (Drivers or Mechanics). Detects the email column
+ * at runtime and returns the matching row, or null if the table/column is
+ * missing or no row matches. Uses a prepared statement so input is safe.
+ */
+function find_staff_by_email(mysqli $conn, string $table, string $email): ?array {
+    $emailCol = find_column($conn, $table, ['email', 'email_address', 'contact_email', 'contact_information']);
+    if ($emailCol === null) {
+        return null; // table or a usable email column doesn't exist
+    }
+    try {
+        $stmt = $conn->prepare("SELECT * FROM `$table` WHERE `$emailCol` = ? LIMIT 1");
+        $stmt->bind_param('s', $email);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $row = $res ? $res->fetch_assoc() : null;
+        $stmt->close();
+        return $row ?: null;
+    } catch (mysqli_sql_exception $e) {
+        return null;
+    }
+}
+
+/**
+ * Look an admin up by username in the Admin table (columns: admin_id,
+ * username, password_hash). Returns the row or null. Uses a prepared
+ * statement; wrapped in try/catch so a missing table can't crash login.
+ */
+function find_admin_by_username(mysqli $conn, string $username): ?array {
+    if (!table_exists($conn, 'Admin')) {
+        return null;
+    }
+    try {
+        $stmt = $conn->prepare("SELECT * FROM `Admin` WHERE `username` = ? LIMIT 1");
+        $stmt->bind_param('s', $username);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $row = $res ? $res->fetch_assoc() : null;
+        $stmt->close();
+        return $row ?: null;
+    } catch (mysqli_sql_exception $e) {
+        return null;
+    }
+}
 
 $error = "";
 
@@ -25,40 +72,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: customer.php");
         exit;
     } elseif ($role === 'driver' || $role === 'mechanic') {
-        // Staff login by email. The email domain must match the chosen role.
+        // Staff login by email — the database decides Driver vs Mechanic.
         $email = trim($_POST['email'] ?? '');
-        // Take everything after the last "@" and lowercase it, e.g. "a@Driver.com" -> "driver.com".
-        $domain = strtolower(substr(strrchr($email, "@") ?: '', 1));
 
-        if ($domain !== 'driver.com' && $domain !== 'mech.com') {
-            // Any domain that isn't a recognised staff domain.
-            $error = "This email cannot be used to sign in.";
-        } elseif ($role === 'driver' && $domain !== 'driver.com') {
-            // On the Driver form but this is a Mechanic email.
-            $error = "This is a Mechanic email. Please switch to Mechanic sign-in.";
-        } elseif ($role === 'mechanic' && $domain !== 'mech.com') {
-            // On the Mechanic form but this is a Driver email.
-            $error = "This is a Driver email. Please switch to Driver sign-in.";
-        } elseif ($domain === 'driver.com') {
-            $_SESSION['role'] = 'driver';
-            $_SESSION['driver_email'] = $email;
-            $_SESSION['driver_name'] = 'Driver';
-            $_SESSION['driver_id'] = 0;
-            header("Location: driver.php");
-            exit;
-        } elseif ($domain === 'mech.com') {
-            $_SESSION['role'] = 'mechanic';
-            $_SESSION['mechanic_email'] = $email;
-            $_SESSION['mechanic_name'] = 'Mechanic';
-            header("Location: mechanic.php");
-            exit;
+        if ($email === '') {
+            $error = "Please enter your email.";
+        } else {
+            $driver   = find_staff_by_email($conn, 'Drivers', $email);
+            $mechanic = $driver ? null : find_staff_by_email($conn, 'Mechanics', $email);
+
+            if ($driver) {
+                $_SESSION['role'] = 'driver';
+                $_SESSION['driver_email'] = $email;
+                $_SESSION['driver_name'] = trim(($driver['first_name'] ?? '') . ' ' . ($driver['last_name'] ?? '')) ?: 'Driver';
+                $_SESSION['driver_id'] = (int)($driver['driver_id'] ?? 0);
+                header("Location: driver.php");
+                exit;
+            } elseif ($mechanic) {
+                $_SESSION['role'] = 'mechanic';
+                $_SESSION['mechanic_email'] = $email;
+                $_SESSION['mechanic_name'] = trim(($mechanic['first_name'] ?? '') . ' ' . ($mechanic['last_name'] ?? '')) ?: 'Mechanic';
+                $_SESSION['mechanic_id'] = (int)($mechanic['mechanic_id'] ?? 0);
+                header("Location: mechanic.php");
+                exit;
+            } else {
+                // Email is in neither the Drivers nor the Mechanics table.
+                $error = "This email is not registered as staff.";
+            }
         }
     } elseif ($role === 'admin') {
-        // Demo admin gate. Replace with a real admin credential check.
-        $_SESSION['role'] = 'admin';
-        $_SESSION['admin_name'] = $_POST['username'] ?: 'admin';
-        header("Location: admin.php");
-        exit;
+        // Admin login is checked against the Admin table (username + password_hash).
+        $username = trim($_POST['username'] ?? '');
+        $password = $_POST['password'] ?? '';
+        $admin = find_admin_by_username($conn, $username);
+
+        if ($admin && password_verify($password, $admin['password_hash'] ?? '')) {
+            $_SESSION['role'] = 'admin';
+            $_SESSION['admin_name'] = $admin['username'];
+            $_SESSION['admin_id'] = (int)($admin['admin_id'] ?? 0);
+            header("Location: admin.php");
+            exit;
+        } else {
+            $error = "If you an Admin, check the DB.";
+        }
     } else {
         $error = "Please choose a role to sign in.";
     }
@@ -88,7 +144,7 @@ unset($_SESSION['login_error'], $_SESSION['login_role'], $_SESSION['signup_ok'])
 <body class="login-body">
 
 <div class="login-topbar">
-  <span class="plate">FF&middot;01</span>
+  <?= version_switch_plate() ?>
   <span class="id">Smart Fleet &middot; Terminal Access</span>
   <span style="margin-left:auto">
     <a href="auth.php" class="back">Terminal signup</a>
@@ -154,12 +210,12 @@ unset($_SESSION['login_error'], $_SESSION['login_role'], $_SESSION['signup_ok'])
     </label>
     <form method="POST" action="login.php" style="margin-top:16px">
       <input type="hidden" name="role" value="driver">
-      <div class="form-group"><label>Email</label><input type="text" name="email" placeholder="you@driver.com"></div>
+      <div class="form-group"><label>Email</label><input type="text" name="email" placeholder="you@company.com"></div>
       <div class="form-group"><label>Password</label><input type="password" name="password" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;"></div>
       <button type="submit" class="form-btn primary">Sign in as Driver</button>
     </form>
     <div class="hint">
-      Use a <b>@driver.com</b> email<br>
+      Sign in with your staff email<br>
       See your assigned unit<br>
       Report safety events
     </div>
@@ -172,12 +228,12 @@ unset($_SESSION['login_error'], $_SESSION['login_role'], $_SESSION['signup_ok'])
     </label>
     <form method="POST" action="login.php" style="margin-top:16px">
       <input type="hidden" name="role" value="mechanic">
-      <div class="form-group"><label>Email</label><input type="text" name="email" placeholder="you@mech.com"></div>
+      <div class="form-group"><label>Email</label><input type="text" name="email" placeholder="you@company.com"></div>
       <div class="form-group"><label>Password</label><input type="password" name="password" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;"></div>
       <button type="submit" class="form-btn primary">Sign in as Mechanic</button>
     </form>
     <div class="hint">
-      Use a <b>@mech.com</b> email<br>
+      Sign in with your staff email<br>
       View workshop roster<br>
       Track maintenance jobs
     </div>

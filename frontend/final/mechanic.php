@@ -29,7 +29,7 @@ $mechanic_email = $_SESSION['mechanic_email'] ?? 'Mechanic';
 
 <div class="header">
   <div class="mark">
-    <span class="plate">M&middot;01</span>
+    <?= version_switch_plate('M&middot;01') ?>
     <div class="titlewrap">
       <h1>Smart Fleet</h1>
       <span class="sub">Mechanic &middot; <?= htmlspecialchars($mechanic_email) ?></span>
