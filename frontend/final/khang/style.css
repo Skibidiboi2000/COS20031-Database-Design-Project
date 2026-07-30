@@ -1,0 +1,400 @@
+:root{
+  /* ===== Apple Design DNA =====
+   * Neutrals from apple.com, SF system font, pill buttons,
+   * borderless surfaces separated by soft grey fills + whitespace. */
+  --bg:#FFFFFF;
+  --surface:#FFFFFF;
+  --surface-2:#F5F5F7;      /* Apple's signature light grey */
+  --surface-3:#FAFAFC;
+  --ink:#1D1D1F;            /* near-black text */
+  --ink-2:#6E6E73;          /* secondary */
+  --ink-3:#86868B;          /* tertiary / captions */
+  --line:#E8E8ED;           /* whisper-thin divider, used sparingly */
+  --accent:#0071E3;         /* Apple blue */
+  --accent-ink:#0066CC;
+  --accent-weak:#EDF4FE;
+
+  /* Very subtle shadows — Apple keeps web card shadows minimal, no heavy depth. */
+  --shadow-card:0 1px 3px rgba(0,0,0,.05);
+  --shadow-card-hover:0 2px 8px rgba(0,0,0,.08);
+
+  /* muted status tones */
+  --go:#1D8036;   --go-wash:#E9F6EE;
+  --road:#0071E3; --road-wash:#EDF4FE;
+  --hold:#B25000; --hold-wash:#FCF0E6;
+  --stop:#D22E2E; --stop-wash:#FBEBEB;
+
+  /* Body uses SF Pro Text; headlines prefer SF Pro Display (Apple splits the
+   * two optical sizes). -apple-system already picks the right one on Apple
+   * devices; the explicit names help other platforms. */
+  --sans:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --display:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,'SF Mono','Menlo','Roboto Mono',monospace;
+
+  --radius:18px;
+  --radius-sm:12px;
+  --disabled-opacity:.42;   /* Apple's disabled link/control opacity */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  /* Apple body: 17px / 1.47 / -.022em on SF Pro Text. Background is pure white —
+   * Apple never greys the whole page; grey is only used per-section. */
+  font-family:var(--sans);font-size:17px;color:var(--ink);line-height:1.47059;
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  letter-spacing:-.022em;
+}
+
+/* ============ HEADER — translucent, borderless, tall ============ */
+.header{
+  /* Apple nav: warm off-white + DESATURATED blur (saturate below 100%). */
+  background:rgba(250,250,252,.92);backdrop-filter:saturate(80%) blur(20px);-webkit-backdrop-filter:saturate(80%) blur(20px);
+  color:var(--ink);
+  padding:0 40px;min-height:60px;display:flex;align-items:center;gap:0;
+  position:sticky;top:0;z-index:30;border-bottom:1px solid var(--line);
+}
+.header .mark{display:flex;align-items:center;gap:14px;padding:12px 0}
+.header .plate{
+  font-family:var(--mono);font-weight:600;font-size:11px;letter-spacing:0;
+  background:var(--ink);color:#fff;padding:5px 10px;border-radius:980px;white-space:nowrap;
+}
+/* FF·01 plate doubles as a link that toggles between the two UI builds.
+ * Keep it looking exactly like the static badge, just clickable. */
+.plate-switch{text-decoration:none;cursor:pointer;transition:.2s}
+.plate-switch:hover{background:var(--accent)!important;color:#fff}
+.header .titlewrap{display:flex;flex-direction:column;justify-content:center}
+.header h1{font-family:var(--display);font-size:19px;font-weight:600;letter-spacing:.012em}
+.header .sub{font-size:12px;letter-spacing:-.01em;color:var(--ink-3);margin-top:1px}
+.header .meta{
+  margin-left:auto;display:flex;align-items:center;gap:24px;
+  font-size:12px;color:var(--ink-3);
+}
+.header .meta .live{display:inline-flex;align-items:center}
+.header .meta .live::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--go);margin-right:7px}
+.header .back{
+  color:var(--accent-ink);text-decoration:none;font-size:13px;letter-spacing:-.01em;
+  padding:6px 14px;margin-left:22px;border-radius:980px;transition:.2s;white-space:nowrap;
+}
+.header .back:hover{background:var(--surface-2)}
+
+.wrap{max-width:1040px;margin:0 auto;padding:40px 40px 96px}
+
+/* ============ TABS — pill segmented, centered ============ */
+/* Fixed (not absolute) so that clicking a <label> — which focuses the hidden
+ * radio — does NOT scroll the page back to the top. A fixed element is always
+ * in the viewport, so the browser has nothing to scroll to. */
+.tab-input{position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none}
+.tabs{
+  display:inline-flex;gap:2px;margin:0 0 32px;
+  background:#E9E9EC;border-radius:980px;padding:3px;
+  position:sticky;top:76px;z-index:20;
+}
+.tabs label{
+  text-align:center;padding:7px 20px;cursor:pointer;transition:.2s;border-radius:980px;
+  font-size:13px;font-weight:500;color:var(--ink-2);
+  display:inline-flex;align-items:center;gap:7px;
+}
+.tab-ico{display:inline-flex;width:16px;height:16px}
+.tab-ico svg{width:100%;height:100%}
+.tabs label:hover{color:var(--ink)}
+.tab-content{display:none}
+.tab-content.on{display:block}
+
+#tab1:checked~.tabs label[for="tab1"],
+#tab2:checked~.tabs label[for="tab2"],
+#tab3:checked~.tabs label[for="tab3"],
+#tab4:checked~.tabs label[for="tab4"],
+#tab5:checked~.tabs label[for="tab5"]{color:var(--ink);background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+/* When a tab is selected its panel appears AND replays a fade+slide, so every
+ * tab switch animates — not just the first page load. */
+#tab1:checked~#content1,
+#tab2:checked~#content2,
+#tab3:checked~#content3,
+#tab4:checked~#content4,
+#tab5:checked~#content5{display:block;animation:tabIn .45s cubic-bezier(.22,.61,.36,1)}
+
+@keyframes tabIn{
+  from{opacity:0;transform:translateY(14px)}
+  to{opacity:1;transform:none}
+}
+
+/* ============ NOTICE / MANIFEST — soft card, no hard borders ============ */
+.manifest{
+  border-radius:var(--radius-sm);background:#fff;color:var(--ink-2);
+  display:flex;align-items:center;flex-wrap:wrap;gap:0;margin-bottom:20px;
+  font-size:13px;overflow:hidden;box-shadow:var(--shadow-card);
+}
+.manifest .seg{padding:13px 18px;display:flex;align-items:center;gap:8px}
+.manifest .seg .k{color:var(--ink-3)}
+.manifest .seg .v{color:var(--ink);font-weight:600}
+.manifest .seg.count{background:var(--accent);color:#fff}
+.manifest .seg.count .k{color:rgba(255,255,255,.8)}
+.manifest .seg.count .v{color:#fff}
+.manifest .tally{margin-left:auto;display:flex;gap:0}
+.manifest .tally .t{padding:13px 16px;display:flex;align-items:center;gap:7px}
+.manifest .tally .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.dot.go{background:var(--go)}.dot.road{background:var(--road)}.dot.hold{background:var(--hold)}.dot.stop{background:var(--stop)}
+
+/* ============ DOCKET / FORM — clean card, generous padding ============ */
+.docket{
+  border-radius:var(--radius);background:#fff;
+  padding:32px;margin-bottom:24px;box-shadow:var(--shadow-card);
+}
+.docket-head{display:flex;align-items:baseline;gap:12px;margin-bottom:12px}
+.docket-head h2{font-family:var(--display);font-size:22px;font-weight:600;letter-spacing:.009em}
+.docket-head .no{font-size:13px;color:var(--ink-3)}
+.form-row{display:flex;flex-wrap:wrap;gap:18px 20px;margin-bottom:16px}
+.form-group{display:flex;flex-direction:column;gap:7px}
+.form-group label{font-size:12px;font-weight:500;color:var(--ink-2)}
+.form-group input,.form-group select{
+  padding:11px 14px;border:1px solid #D2D2D7;border-radius:12px;
+  font-family:var(--sans);font-size:14px;background:#fff;color:var(--ink);transition:.2s;
+}
+.form-group select{cursor:pointer}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-weak)}
+.form-btn{
+  /* Apple's own web buttons are 14px; we use 17px on purpose for a data-heavy
+   * dashboard where larger, easier-to-tap controls read better. Pill, weight 400. */
+  background:var(--surface-2);border:none;padding:8px 16px;border-radius:980px;
+  font-family:var(--sans);font-size:17px;font-weight:400;letter-spacing:-.022em;line-height:1.29;cursor:pointer;color:var(--ink);transition:.2s;
+}
+.form-btn:hover{background:#E8E8ED}
+.form-btn.primary{background:var(--accent);color:#fff}
+.form-btn.primary:hover{background:#0077ED}
+/* Disabled controls: dimmed and non-interactive, matching Apple's .42 opacity. */
+.form-btn:disabled,.form-btn[disabled],.action-btn:disabled,.action-btn[disabled]{
+  opacity:var(--disabled-opacity);cursor:not-allowed;pointer-events:none;
+}
+a[aria-disabled="true"],.is-disabled{opacity:var(--disabled-opacity);pointer-events:none}
+.form-group input:disabled,.form-group select:disabled{opacity:var(--disabled-opacity);cursor:not-allowed}
+
+/* ============ LEDGER TABLE — borderless, grey header, roomy rows ============ */
+.ledger{border-radius:var(--radius);background:#fff;margin-bottom:26px;overflow:hidden;box-shadow:var(--shadow-card)}
+.ledger-head{display:flex;align-items:baseline;gap:12px;padding:20px 24px 12px}
+.ledger-head h2{font-family:var(--display);font-size:22px;font-weight:600;letter-spacing:.009em}
+.ledger-head .no{font-size:13px;color:var(--ink-3)}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;scrollbar-width:thin}
+.table-scroll::-webkit-scrollbar{height:8px}
+.table-scroll::-webkit-scrollbar-thumb{background:#D2D2D7;border-radius:8px}
+.table-scroll::-webkit-scrollbar-track{background:transparent}
+table{width:100%;border-collapse:collapse;background:#fff;font-size:14px}
+thead th{
+  /* Apple table header: subtle grey fill, 12px, no uppercase, no wide tracking. */
+  background:var(--surface-2);color:var(--ink-3);text-align:left;padding:12px 16px;
+  font-size:12px;font-weight:500;letter-spacing:0;white-space:nowrap;
+}
+tbody td{padding:14px 16px;border-top:1px solid var(--line);vertical-align:middle}
+tbody td.mono,tbody td.num,thead th{white-space:nowrap}
+tbody tr:hover{background:var(--surface-3)}
+td.mono,td .id{font-family:var(--mono);font-size:12.5px}
+td.num{font-family:var(--mono);text-align:right}
+/* Action column pinned right */
+thead th:last-child,tbody td:last-child{position:sticky;right:0;background:#fff;text-align:right}
+thead th:last-child{background:var(--surface-2)}
+tbody tr:hover td:last-child{background:var(--surface-3)}
+
+.action-btn{
+  /* Apple uses blue link colour for actionable text controls. */
+  padding:6px 13px;border:none;background:var(--surface-2);border-radius:980px;
+  font-family:var(--sans);font-size:12px;font-weight:500;cursor:pointer;margin-right:5px;color:var(--accent-ink);transition:.2s;
+}
+.action-btn:hover{background:#E8E8ED}
+.action-btn.del{margin-right:0;color:var(--stop)}
+.action-btn.del:hover{background:var(--stop-wash)}
+
+/* Status pill — a wash-filled badge with matching text, muted like Apple's. */
+.badge{
+  display:inline-block;padding:3px 10px;border-radius:980px;
+  font-size:12px;font-weight:500;letter-spacing:-.012em;line-height:1.4;white-space:nowrap;
+}
+.badge-go{background:var(--go-wash);color:var(--go)}
+.badge-road{background:var(--road-wash);color:var(--road)}
+.badge-hold{background:var(--hold-wash);color:var(--hold)}
+.badge-stop{background:var(--stop-wash);color:var(--stop)}
+.badge-neutral{background:var(--surface-2);color:var(--ink-2)}
+
+/* Empty state — a designed placeholder instead of a bare "No X found" line.
+ * Lives inside a full-width <td>; centers an icon, a title, and a hint. */
+.empty{padding:44px 20px!important;text-align:center;color:var(--ink-3)}
+.empty .empty-icon{width:40px;height:40px;margin:0 auto 14px;color:var(--ink-3);opacity:.55}
+.empty .empty-icon svg{width:100%;height:100%;display:block}
+.empty .empty-title{font-size:17px;font-weight:500;color:var(--ink-2);letter-spacing:-.022em}
+.empty .empty-hint{font-size:14px;margin-top:4px;letter-spacing:-.016em}
+
+/* Action column: two stacked rows */
+.act{display:flex;flex-direction:column;gap:7px;min-width:200px}
+.act-row{display:flex;align-items:center;gap:6px;margin:0}
+.act-select{
+  flex:1;min-width:0;padding:6px 10px;border:1px solid #D2D2D7;border-radius:980px;
+  font-family:var(--sans);font-size:12px;background:#fff;color:var(--ink);cursor:pointer;
+}
+.act .action-btn{margin:0}
+
+/* status marker: dot + label */
+.mk{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500}
+.mk::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ink-3);display:inline-block}
+.mk.avail::before,.mk.good::before{background:var(--go)}
+.mk.road::before{background:var(--road)}
+.mk.shop::before,.mk.fair::before{background:var(--hold)}
+.mk.oos::before,.mk.poor::before{background:var(--stop)}
+.mk.avail,.mk.good{color:var(--go)}
+.mk.road{color:var(--road)}
+.mk.shop,.mk.fair{color:var(--hold)}
+.mk.oos,.mk.poor{color:var(--stop)}
+.score{font-family:var(--mono);font-weight:600}
+
+/* ============ LOGIN / AUTH — centered, airy, big type ============ */
+.login-body{
+  min-height:100vh;display:flex;flex-direction:column;
+  background:var(--surface-2);color:var(--ink);
+}
+.login-topbar{
+  background:rgba(250,250,252,.92);backdrop-filter:saturate(80%) blur(20px);-webkit-backdrop-filter:saturate(80%) blur(20px);
+  border-bottom:1px solid var(--line);
+  padding:16px 40px;display:flex;align-items:center;gap:14px;
+}
+.login-topbar .plate{
+  font-family:var(--mono);font-weight:600;font-size:11px;
+  background:var(--ink);color:#fff;padding:5px 10px;border-radius:980px;
+}
+.login-topbar .id{font-size:12px;letter-spacing:-.01em;color:var(--ink-3)}
+.login-topbar .back{
+  color:var(--accent-ink);text-decoration:none;font-size:13px;
+  padding:6px 14px;border-radius:980px;transition:.2s;white-space:nowrap;
+}
+.login-topbar .back:hover{background:var(--surface-2)}
+.login-wrap{max-width:400px;margin:auto;padding:56px 24px;width:100%}
+.login-brand{margin-bottom:32px;text-align:center}
+.login-brand .eyebrow{font-size:13px;letter-spacing:-.01em;color:var(--accent-ink);margin-bottom:8px}
+.login-brand h1{font-family:var(--display);font-size:40px;font-weight:600;letter-spacing:0;line-height:1.1}
+.login-brand p{font-size:17px;color:var(--ink-2);margin-top:14px;line-height:1.47;letter-spacing:-.022em}
+
+.role-tabs{display:inline-flex;gap:2px;background:#E9E9EC;border-radius:980px;padding:3px;margin-bottom:0;width:100%}
+.role-tabs label{
+  flex:1;text-align:center;padding:8px 8px;cursor:pointer;transition:.2s;border-radius:980px;
+  font-size:13px;font-weight:500;color:var(--ink-2);
+}
+.role-tabs label:hover{color:var(--ink)}
+.login-box{display:none;background:#fff;border-radius:var(--radius);padding:28px;margin-top:16px;box-shadow:var(--shadow-card)}
+#role1:checked~.role-tabs label[for="role1"],
+#role2:checked~.role-tabs label[for="role2"],
+#role3:checked~.role-tabs label[for="role3"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+/* When a tab is selected the box appears AND replays a fade+slide, so every
+ * switch (not just the first load) animates. */
+#role1:checked~#login1,
+#role2:checked~#login2,
+#role3:checked~#login3{display:block;animation:boxIn .4s cubic-bezier(.22,.61,.36,1)}
+
+/* Two-step sign-in (Apple-style): the email field stays visible; the password
+ * field is revealed below it on Continue. Without JS both steps show (safe
+ * fallback). With JS (.js-two-step) the password step is hidden until .on-pass. */
+.js-two-step .step-pass{display:none}
+.js-two-step.on-pass .step-pass{display:block;animation:boxIn .35s cubic-bezier(.22,.61,.36,1)}
+/* Hide the Continue button once we're on the password step. */
+.js-two-step.on-pass .btn-continue{display:none}
+.step-title{display:block;margin-bottom:16px}
+.link-back{
+  display:block;margin-top:14px;background:none;border:none;padding:0;cursor:pointer;
+  font-family:var(--sans);font-size:14px;color:var(--accent-ink);letter-spacing:-.016em;
+}
+.link-back:hover{text-decoration:underline}
+.field-error{margin-top:8px;font-size:13px;color:var(--stop);letter-spacing:-.016em}
+
+/* Account page tabs */
+#auth-login:checked~.role-tabs label[for="auth-login"],
+#auth-signup:checked~.role-tabs label[for="auth-signup"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+#auth-login:checked~#authbox-login{display:block;animation:boxIn .4s cubic-bezier(.22,.61,.36,1)}
+#auth-signup:checked~#authbox-signup{display:block;animation:boxIn .4s cubic-bezier(.22,.61,.36,1)}
+
+/* Fade + gentle rise, replayed on every tab switch. */
+@keyframes boxIn{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:none}
+}
+
+.login-box .stamp{
+  display:inline-block;font-size:13px;font-weight:600;letter-spacing:-.01em;
+  color:var(--ink);margin-bottom:18px;
+}
+.login-box .form-group{margin-bottom:16px;display:flex;flex-direction:column;gap:7px}
+.login-box .form-group label{font-size:12px;font-weight:500;color:var(--ink-2)}
+.login-box .form-group input{width:100%;padding:12px 14px;border:1px solid #D2D2D7;border-radius:12px;background:#fff;font-size:14px;color:var(--ink);transition:.2s}
+.login-box .form-group input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-weak)}
+.login-box .form-btn{width:100%;padding:13px;margin-top:6px;display:block;text-align:center;text-decoration:none}
+.login-box .hint{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-3);line-height:1.7}
+
+/* Flash messages (login/signup) — soft pill card, no hard border, sans font */
+.flash{
+  border-radius:12px;padding:12px 16px;margin-bottom:14px;
+  font-size:13px;font-weight:500;line-height:1.4;
+}
+.flash-ok{background:var(--go-wash);color:var(--go)}
+.flash-err{background:var(--stop-wash);color:var(--stop)}
+
+/* ============ SECTION LABEL + STATS — Apple-style big numbers ============ */
+/* Quiet breadcrumb-style label that replaces the old marketing hero. */
+.section-label{font-size:13px;font-weight:500;color:var(--ink-3);letter-spacing:-.008em;margin:4px 0 18px}
+
+.stats{
+  /* Apple-style 12-column grid, 24px gutter. Each stat spans 3 columns
+   * (four per row); the tablet/mobile breakpoints re-flow it below. */
+  display:grid;grid-template-columns:repeat(12,1fr);gap:24px;margin:32px 0 40px;
+}
+.stat{
+  grid-column:span 3;
+  background:#fff;border-radius:var(--radius);padding:28px 24px;text-align:center;
+  box-shadow:var(--shadow-card);transition:box-shadow .3s ease,transform .3s ease;
+}
+.stat:hover{box-shadow:var(--shadow-card-hover);transform:translateY(-2px)}
+.stat-num{
+  display:block;font-family:var(--display);font-size:clamp(40px,6vw,64px);font-weight:600;letter-spacing:-.005em;
+  line-height:1;color:var(--ink);font-variant-numeric:tabular-nums;
+}
+.stat-label{display:block;margin-top:10px;font-size:14px;color:var(--ink-3);font-weight:400;letter-spacing:-.016em}
+
+/* ============ MOTION — Apple-style reveal on scroll/load ============ */
+/* Elements start slightly lowered + transparent, then ease into place.
+ * The cubic-bezier is Apple's typical soft ease-out. */
+.reveal{
+  opacity:0;transform:translateY(24px);
+  transition:opacity .7s cubic-bezier(.22,.61,.36,1), transform .7s cubic-bezier(.22,.61,.36,1);
+  will-change:opacity,transform;
+}
+.reveal.in{opacity:1;transform:none}
+
+/* Cards lift subtly on hover, the way Apple product tiles do. */
+.ledger,.docket{transition:box-shadow .3s ease, transform .3s ease}
+.ledger:hover,.docket:hover{box-shadow:var(--shadow-card-hover)}
+
+/* Primary buttons get a gentle press feel. */
+.form-btn.primary{transition:background .2s ease, transform .12s ease}
+.form-btn.primary:active{transform:scale(.98)}
+
+/* ============ RESPONSIVE ============ */
+/* Apple uses two breakpoints; mirror that with a tablet tier at 1068px. */
+@media (max-width:1068px){
+  .wrap{padding:32px 28px 88px}
+  .stats{gap:16px}
+  .stat{grid-column:span 6}
+}
+@media (max-width:734px){
+  .header{flex-wrap:wrap;padding:0 18px}
+  .header .meta{display:none}
+  .wrap{padding:24px 16px 80px}
+  .tabs{display:flex;flex-wrap:wrap}
+  .login-brand h1{font-size:32px}
+  .stat{grid-column:span 6}
+}
+
+/* ============ ACCESSIBILITY / MOTION ============ */
+/* Apple focus ring: 2px accent outline, 1px offset (close to the edge). */
+:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ============ PRINT ============ */
+@media print{
+  body{background:#fff}
+  .header .back,.tabs,.role-tabs,.login-topbar{display:none}
+  .tab-content{display:block!important;page-break-after:always}
+}
