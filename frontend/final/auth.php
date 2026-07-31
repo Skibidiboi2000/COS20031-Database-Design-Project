@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Smart Fleet Sign Up</title>
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=khang24">
 </head>
 <body class="login-body">
 
@@ -74,17 +74,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="login-wrap">
 
-<div class="login-brand">
+<div class="login-brand reveal">
   <div class="eyebrow">Fantastic Four &middot; Fleet Ops</div>
   <h1>Create<br>Account</h1>
   <p>Register a new account, then log in from the terminal.</p>
 </div>
 
 <?php if ($error): ?>
-  <div class="stamp" style="display:block;background:var(--stop-wash);color:var(--stop);border:1px solid var(--stop);padding:8px 12px;margin-bottom:12px;font-family:var(--mono);font-size:11px"><?= htmlspecialchars($error) ?></div>
+  <div class="flash flash-err"><?= htmlspecialchars($error) ?></div>
 <?php endif; ?>
 
-<div class="login-box" style="display:block;border-top:1px solid var(--amber)">
+<div class="login-box" style="display:block;animation:boxIn .5s cubic-bezier(.22,.61,.36,1)">
   <span class="stamp">Sign up</span>
   <form method="POST" action="auth.php">
     <div class="form-group"><label>First name</label><input type="text" name="first_name" placeholder="First name"></div>
@@ -96,10 +96,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </form>
   <div class="hint">
     Already have an account?<br>
-    <a href="login.php" style="color:var(--amber)">Log in from the terminal</a>
+    <a href="login.php" style="color:var(--accent-ink)">Log in from the terminal</a>
   </div>
 </div>
 
 </div>
+<script src="motion.js"></script>
 </body>
 </html>

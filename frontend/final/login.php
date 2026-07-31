@@ -64,65 +64,78 @@ function find_admin_by_username(mysqli $conn, string $username): ?array {
 $error = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $role = $_POST['role'] ?? '';
+    // Which tab did they use? customer | staff (driver/mechanic) | admin.
+    $tab = $_POST['role'] ?? '';
+    // Both the email and admin "username" fields hold the account email.
+    $email    = trim($_POST['email'] ?? ($_POST['username'] ?? ''));
+    $password = $_POST['password'] ?? '';
 
-    // Demo authentication only. Replace with real credential checks / a users table.
-    if ($role === 'customer') {
-        $_SESSION['role'] = 'customer';
-        $_SESSION['customer_email'] = trim($_POST['email'] ?? '');
-        header("Location: customer.php");
-        exit;
-    } elseif ($role === 'driver' || $role === 'mechanic') {
-        // Staff login by email — the database decides Driver vs Mechanic.
-        $email = trim($_POST['email'] ?? '');
+    // Roles each tab is allowed to sign in.
+    $tabRoles = [
+        'customer' => ['customer', 'user'],
+        'driver'   => ['driver', 'mechanic'],   // the Staff tab
+        'mechanic' => ['driver', 'mechanic'],
+        'admin'    => ['admin'],
+    ];
 
-        if ($email === '') {
-            $error = "Please enter your email.";
+    if (!isset($tabRoles[$tab])) {
+        $error = "Please choose a role to sign in.";
+    } elseif ($email === '' || $password === '') {
+        $error = "Please enter your email and password.";
+    } else {
+        $acct = find_account_by_email($conn, $email);
+
+        if (!$acct) {
+            $error = "No account found for that email.";
+        } elseif (isset($acct['is_active']) && (int)$acct['is_active'] === 0) {
+            $error = "This account has been deactivated.";
+        } elseif (!password_verify($password, $acct['password_hash'] ?? '')) {
+            $error = "Incorrect email or password.";
         } else {
-            $driver   = find_staff_by_email($conn, 'Drivers', $email);
-            $mechanic = $driver ? null : find_staff_by_email($conn, 'Mechanics', $email);
+            $acctRole = strtolower(trim($acct['role'] ?? ''));
+            // 'user' is treated as a customer.
+            if ($acctRole === 'user') $acctRole = 'customer';
 
-            if ($driver) {
-                $_SESSION['role'] = 'driver';
-                $_SESSION['driver_email'] = $email;
-                $_SESSION['driver_name'] = trim(($driver['first_name'] ?? '') . ' ' . ($driver['last_name'] ?? '')) ?: 'Driver';
-                $_SESSION['driver_id'] = (int)($driver['driver_id'] ?? 0);
-                header("Location: driver.php");
-                exit;
-            } elseif ($mechanic) {
-                $_SESSION['role'] = 'mechanic';
-                $_SESSION['mechanic_email'] = $email;
-                $_SESSION['mechanic_name'] = trim(($mechanic['first_name'] ?? '') . ' ' . ($mechanic['last_name'] ?? '')) ?: 'Mechanic';
-                $_SESSION['mechanic_id'] = (int)($mechanic['mechanic_id'] ?? 0);
-                header("Location: mechanic.php");
-                exit;
+            if (!in_array($acctRole, $tabRoles[$tab], true)) {
+                // Right credentials, wrong tab — point them to the correct one.
+                $niceTab = ['customer' => 'Customer', 'driver' => 'Staff', 'mechanic' => 'Staff', 'admin' => 'Admin'][$acctRole] ?? ucfirst($acctRole);
+                $error = "That's a {$acctRole} account — use the {$niceTab} tab.";
             } else {
-                // Email is in neither the Drivers nor the Mechanics table.
-                $error = "This email is not registered as staff.";
+                // Success. Store a common identity plus role-specific keys the
+                // existing dashboards already read.
+                $fullName = trim(($acct['first_name'] ?? '') . ' ' . ($acct['last_name'] ?? ''));
+                $acctId   = (int)($acct['account_id'] ?? 0);
+                $_SESSION['role']       = $acctRole;
+                $_SESSION['account_id'] = $acctId;
+                $_SESSION['email']      = $email;
+
+                if ($acctRole === 'admin') {
+                    $_SESSION['admin_id']        = $acctId;
+                    $_SESSION['admin_name']      = $email;
+                    $_SESSION['admin_full_name'] = $fullName;
+                    header("Location: admin.php"); exit;
+                } elseif ($acctRole === 'driver') {
+                    $_SESSION['driver_id']    = $acctId;
+                    $_SESSION['driver_email'] = $email;
+                    $_SESSION['driver_name']  = $fullName ?: 'Driver';
+                    header("Location: driver.php"); exit;
+                } elseif ($acctRole === 'mechanic') {
+                    $_SESSION['mechanic_id']    = $acctId;
+                    $_SESSION['mechanic_email'] = $email;
+                    $_SESSION['mechanic_name']  = $fullName ?: 'Mechanic';
+                    header("Location: mechanic.php"); exit;
+                } else { // customer
+                    $_SESSION['customer_email'] = $email;
+                    $_SESSION['customer_name']  = $fullName;
+                    header("Location: customer.php"); exit;
+                }
             }
         }
-    } elseif ($role === 'admin') {
-        // Admin login is checked against the Admin table (username + password_hash).
-        $username = trim($_POST['username'] ?? '');
-        $password = $_POST['password'] ?? '';
-        $admin = find_admin_by_username($conn, $username);
-
-        if ($admin && password_verify($password, $admin['password_hash'] ?? '')) {
-            $_SESSION['role'] = 'admin';
-            $_SESSION['admin_name'] = $admin['username'];
-            $_SESSION['admin_id'] = (int)($admin['admin_id'] ?? 0);
-            header("Location: admin.php");
-            exit;
-        } else {
-            $error = "If you an Admin, check the DB.";
-        }
-    } else {
-        $error = "Please choose a role to sign in.";
     }
 
     // Post/Redirect/Get: keep the error out of the POST so refresh won't repeat it.
     $_SESSION['login_error'] = $error;
-    $_SESSION['login_role'] = $role;
+    $_SESSION['login_role'] = $tab;
     header("Location: login.php");
     exit;
 }
@@ -140,7 +153,7 @@ unset($_SESSION['login_error'], $_SESSION['login_role'], $_SESSION['signup_ok'])
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Smart Fleet Sign In</title>
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=khang24">
 </head>
 <body class="login-body">
 
@@ -154,18 +167,18 @@ unset($_SESSION['login_error'], $_SESSION['login_role'], $_SESSION['signup_ok'])
 
 <div class="login-wrap">
 
-<div class="login-brand">
+<div class="login-brand reveal">
   <div class="eyebrow">Fantastic Four &middot; Fleet Ops</div>
   <h1>Smart Fleet<br>Dispatch Terminal</h1>
   <p>Heavy haulage across Hanoi, HCMC,<br>Da Nang &amp; Hai Phong. Sign in to begin your shift.</p>
 </div>
 
 <?php if ($notice): ?>
-  <div class="stamp" style="display:block;background:var(--go-wash);color:var(--go);border:1px solid var(--go);padding:8px 12px;margin-bottom:12px;font-family:var(--mono);font-size:11px"><?= htmlspecialchars($notice) ?></div>
+  <div class="flash flash-ok reveal"><?= htmlspecialchars($notice) ?></div>
 <?php endif; ?>
 
 <?php if ($error): ?>
-  <div class="stamp" style="display:block;background:var(--stop-wash);color:var(--stop);border:1px solid var(--stop);padding:8px 12px;margin-bottom:12px;font-family:var(--mono);font-size:11px"><?= htmlspecialchars($error) ?></div>
+  <div class="flash flash-err reveal"><?= htmlspecialchars($error) ?></div>
 <?php endif; ?>
 
 <?php
@@ -178,19 +191,26 @@ unset($_SESSION['login_error'], $_SESSION['login_role'], $_SESSION['signup_ok'])
 <input type="radio" name="role" id="role2" class="tab-input"<?= $isStaff ? ' checked' : '' ?>>
 <input type="radio" name="role" id="role3" class="tab-input"<?= $isAdmin ? ' checked' : '' ?>>
 
-<div class="role-tabs">
+<div class="role-tabs reveal" style="transition-delay:.08s">
   <label for="role1">Customer</label>
   <label for="role2">Staff</label>
   <label for="role3">Admin</label>
 </div>
 
-<div id="login1" class="login-box">
-  <span class="stamp">Customer access</span>
-  <form method="POST" action="login.php">
+<!-- Customer: email step -> password step (progressive disclosure). -->
+<div id="login1" class="login-box" style="transition-delay:.14s">
+  <form method="POST" action="login.php" class="two-step" data-role="customer">
     <input type="hidden" name="role" value="customer">
-    <div class="form-group"><label>Email</label><input type="text" name="email" placeholder="you@company.com"></div>
-    <div class="form-group"><label>Password</label><input type="password" name="password" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;"></div>
-    <button type="submit" class="form-btn primary">Sign in</button>
+    <div class="step step-email">
+      <span class="stamp step-title">Customer access</span>
+      <div class="form-group"><label>Email</label><input type="text" name="email" autocomplete="username" placeholder="you@company.com"></div>
+      <button type="button" class="form-btn primary btn-continue">Continue</button>
+    </div>
+    <div class="step step-pass">
+      <div class="form-group"><label>Password</label><input type="password" name="password" autocomplete="current-password" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;"></div>
+      <button type="submit" class="form-btn primary">Sign in</button>
+      <button type="button" class="link-back">&larr; Use a different email</button>
+    </div>
   </form>
   <div class="hint">
     Track shipments<br>
@@ -199,55 +219,41 @@ unset($_SESSION['login_error'], $_SESSION['login_role'], $_SESSION['signup_ok'])
   </div>
 </div>
 
-<div id="login2" class="login-box">
-
-  <!-- One toggle button switches between Driver and Mechanic login -->
-  <input type="checkbox" id="staffmode" class="tab-input"<?= ($submittedRole === 'mechanic') ? ' checked' : '' ?>>
-
-  <div id="staffbox-driver">
-    <label for="staffmode" style="cursor:pointer;display:inline-flex;align-items:center;gap:8px" title="Click to switch to Mechanic">
-      <span class="stamp" style="margin-bottom:0">Driver access</span>
-      <span style="font-size:16px">&#8646;</span>
-    </label>
-    <form method="POST" action="login.php" style="margin-top:16px">
-      <input type="hidden" name="role" value="driver">
-      <div class="form-group"><label>Email</label><input type="text" name="email" placeholder="you@company.com"></div>
-      <div class="form-group"><label>Password</label><input type="password" name="password" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;"></div>
-      <button type="submit" class="form-btn primary">Sign in as Driver</button>
-    </form>
-    <div class="hint">
-      Sign in with your staff email<br>
-      See your assigned unit<br>
-      Report safety events
+<!-- Staff: one email field; the domain decides Driver vs Mechanic on Continue. -->
+<div id="login2" class="login-box" style="transition-delay:.14s">
+  <form method="POST" action="login.php" class="two-step" data-role="staff">
+    <input type="hidden" name="role" value="driver">
+    <div class="step step-email">
+      <span class="stamp step-title">Staff access</span>
+      <div class="form-group"><label>Email</label><input type="text" name="email" autocomplete="username" placeholder="you@company.com"></div>
+      <button type="button" class="form-btn primary btn-continue">Continue</button>
     </div>
-  </div>
-
-  <div id="staffbox-mech">
-    <label for="staffmode" style="cursor:pointer;display:inline-flex;align-items:center;gap:8px" title="Click to switch to Driver">
-      <span class="stamp" style="margin-bottom:0">Mechanic access</span>
-      <span style="font-size:16px">&#8646;</span>
-    </label>
-    <form method="POST" action="login.php" style="margin-top:16px">
-      <input type="hidden" name="role" value="mechanic">
-      <div class="form-group"><label>Email</label><input type="text" name="email" placeholder="you@company.com"></div>
-      <div class="form-group"><label>Password</label><input type="password" name="password" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;"></div>
-      <button type="submit" class="form-btn primary">Sign in as Mechanic</button>
-    </form>
-    <div class="hint">
-      Sign in with your staff email<br>
-      View workshop roster<br>
-      Track maintenance jobs
+    <div class="step step-pass">
+      <div class="form-group"><label>Password</label><input type="password" name="password" autocomplete="current-password" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;"></div>
+      <button type="submit" class="form-btn primary btn-signin">Sign in</button>
+      <button type="button" class="link-back">&larr; Use a different email</button>
     </div>
+  </form>
+  <div class="hint">
+    Sign in with your staff email<br>
+    We'll take you to the right place automatically
   </div>
 </div>
 
-<div id="login3" class="login-box">
-  <span class="stamp">Admin access</span>
-  <form method="POST" action="login.php">
+<!-- Admin: email step -> password step. -->
+<div id="login3" class="login-box" style="transition-delay:.14s">
+  <form method="POST" action="login.php" class="two-step" data-role="admin">
     <input type="hidden" name="role" value="admin">
-    <div class="form-group"><label>Username</label><input type="text" name="username" placeholder="admin"></div>
-    <div class="form-group"><label>Password</label><input type="password" name="password" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;"></div>
-    <button type="submit" class="form-btn primary">Sign in</button>
+    <div class="step step-email">
+      <span class="stamp step-title">Admin access</span>
+      <div class="form-group"><label>Email</label><input type="text" name="email" autocomplete="username" placeholder="you@company.com"></div>
+      <button type="button" class="form-btn primary btn-continue">Continue</button>
+    </div>
+    <div class="step step-pass">
+      <div class="form-group"><label>Password</label><input type="password" name="password" autocomplete="current-password" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;"></div>
+      <button type="submit" class="form-btn primary">Sign in</button>
+      <button type="button" class="link-back">&larr; Use a different email</button>
+    </div>
   </form>
   <div class="hint">
     Run fleet operations<br>
@@ -257,5 +263,7 @@ unset($_SESSION['login_error'], $_SESSION['login_role'], $_SESSION['signup_ok'])
 </div>
 
 </div>
+<script src="motion.js"></script>
+<script src="login.js"></script>
 </body>
 </html>

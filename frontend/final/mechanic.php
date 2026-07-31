@@ -16,6 +16,12 @@ if (($_SESSION['role'] ?? '') !== 'mechanic') {
     exit;
 }
 $mechanic_email = $_SESSION['mechanic_email'] ?? 'Mechanic';
+$mechanic_name = $_SESSION['mechanic_name'] ?? 'Mechanic';
+$mechanic_id = (int)($_SESSION['mechanic_id'] ?? 0);
+// Prefer the real first+last name from the DB; fall back to the email handle.
+$greet_name = ($mechanic_name && $mechanic_name !== 'Mechanic')
+    ? $mechanic_name
+    : (strstr($mechanic_email, '@', true) ?: $mechanic_email);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,9 +29,9 @@ $mechanic_email = $_SESSION['mechanic_email'] ?? 'Mechanic';
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Smart Fleet Mechanic Terminal</title>
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=khang24">
 </head>
-<body>
+<body data-greet-name="<?= htmlspecialchars($greet_name) ?>">
 
 <div class="header">
   <div class="mark">
@@ -36,19 +42,24 @@ $mechanic_email = $_SESSION['mechanic_email'] ?? 'Mechanic';
     </div>
   </div>
   <div class="meta"><span class="live">On duty</span></div>
+  <a href="dashboard.php" class="back">Dashboard</a>
+  <a href="account.php" class="back">Account</a>
   <a href="login.php" class="back">End shift</a>
 </div>
 
+<div id="greet-line"></div>
+
 <div class="wrap">
 
-<input type="radio" name="tab" id="tab1" class="tab-input" checked>
+<!-- Default to Maintenance — the tab a mechanic needs most (Clarity). -->
+<input type="radio" name="tab" id="tab1" class="tab-input">
 <input type="radio" name="tab" id="tab2" class="tab-input">
-<input type="radio" name="tab" id="tab3" class="tab-input">
+<input type="radio" name="tab" id="tab3" class="tab-input" checked>
 
 <div class="tabs">
-  <label for="tab1">Fleet</label>
-  <label for="tab2">Workshop</label>
-  <label for="tab3">Maintenance</label>
+  <label for="tab1"><span class="tab-ico"><?= ui_icon('truck') ?></span>Fleet</label>
+  <label for="tab2"><span class="tab-ico"><?= ui_icon('wrench') ?></span>Workshop</label>
+  <label for="tab3"><span class="tab-ico"><?= ui_icon('clipboard') ?></span>Maintenance</label>
 </div>
 
 <!-- ==================== VEHICLES (read-only) ==================== -->
@@ -75,12 +86,12 @@ $mechanic_email = $_SESSION['mechanic_email'] ?? 'Mechanic';
                 echo "<td>" . htmlspecialchars($row['manufacturer'] . ' ' . $row['model']) . "</td>";
                 echo "<td>" . htmlspecialchars($row['category_name']) . "</td>";
                 echo "<td class='num'>" . (int)$row['year_of_manufacture'] . "</td>";
-                echo "<td>" . htmlspecialchars($row['operational_status']) . "</td>";
+                echo "<td>" . status_badge($row['operational_status']) . "</td>";
                 echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
                 echo "</tr>";
             }
         } else {
-            echo "<tr><td colspan='7'>No vehicles found</td></tr>";
+            echo empty_row(7, "No vehicles yet", "Vehicles added by an admin will show here.", "truck");
         }
         ?>
       </tbody>
@@ -100,7 +111,7 @@ $mechanic_email = $_SESSION['mechanic_email'] ?? 'Mechanic';
         <?php
         try {
           if (!table_exists($conn, 'Mechanics')) {
-              echo "<tr><td colspan='6'>Database not available.</td></tr>";
+              echo empty_row(6, "Database not available", "The Mechanics table could not be reached.", "wrench");
           } else {
             // Select only the optional columns this database actually has.
             $ci = find_column($conn, 'Mechanics', ['contact_information']) ? 'm.contact_information' : "'' AS contact_information";
@@ -126,11 +137,11 @@ $mechanic_email = $_SESSION['mechanic_email'] ?? 'Mechanic';
                     echo "</tr>";
                 }
             } else {
-                echo "<tr><td colspan='6'>No mechanics found</td></tr>";
+                echo empty_row(6, "No mechanics yet", "Workshop staff added by an admin will show here.", "wrench");
             }
           }
         } catch (mysqli_sql_exception $e) {
-            echo "<tr><td colspan='6'>Database not available.</td></tr>";
+            echo empty_row(6, "Database not available", "The Mechanics table could not be reached.", "wrench");
         }
         ?>
       </tbody>
@@ -168,10 +179,10 @@ $mechanic_email = $_SESSION['mechanic_email'] ?? 'Mechanic';
                 echo "</tr>";
             }
         } else {
-            echo "<tr><td colspan='7'>No maintenance jobs found</td></tr>";
+            echo empty_row(7, "No maintenance jobs", "Open jobs will appear here as they are logged.", "wrench");
         }
         } catch (mysqli_sql_exception $e) {
-            echo "<tr><td colspan='7'>Database not available.</td></tr>";
+            echo empty_row(7, "Database not available", "The Maintenance_Jobs table could not be reached.", "wrench");
         }
         ?>
       </tbody>
@@ -181,5 +192,7 @@ $mechanic_email = $_SESSION['mechanic_email'] ?? 'Mechanic';
 </div>
 
 </div>
+<script src="motion.js"></script>
+<script src="greeting.js"></script>
 </body>
 </html>

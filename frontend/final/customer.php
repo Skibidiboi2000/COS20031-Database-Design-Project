@@ -16,6 +16,12 @@ if ($role !== 'customer' && $role !== 'user') {
     header("Location: login.php");
     exit;
 }
+$customer_email = $_SESSION['customer_email'] ?? '';
+// Name came from the Accounts row at login; fall back to the email handle.
+$customer_name = $_SESSION['customer_name'] ?? '';
+$greet_name = ($customer_name !== '')
+    ? $customer_name
+    : (strstr($customer_email, '@', true) ?: $customer_email);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,9 +29,9 @@ if ($role !== 'customer' && $role !== 'user') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Customer Portal — Fleet Management</title>
-  <link rel="stylesheet" href="style.css?v=6">
+  <link rel="stylesheet" href="style.css?v=khang24">
 </head>
-<body>
+<body data-greet-name="<?= htmlspecialchars($greet_name) ?>">
 
 <div class="header">
   <div class="mark">
@@ -36,8 +42,12 @@ if ($role !== 'customer' && $role !== 'user') {
     </div>
   </div>
   <div class="meta"><span class="live">Online</span></div>
+  <a href="dashboard.php" class="back">Dashboard</a>
+  <a href="account.php" class="back">Account</a>
   <a href="login.php" class="back">Sign out</a>
 </div>
+
+<div id="greet-line"></div>
 
 <div class="wrap">
 
@@ -45,8 +55,8 @@ if ($role !== 'customer' && $role !== 'user') {
   <input type="radio" name="tab" id="tab2" class="tab-input">
 
   <div class="tabs">
-    <label for="tab1">Vehicles</label>
-    <label for="tab2">Incidents</label>
+    <label for="tab1"><span class="tab-ico"><?= ui_icon('truck') ?></span>Vehicles</label>
+    <label for="tab2"><span class="tab-ico"><?= ui_icon('clipboard') ?></span>Incidents</label>
   </div>
 
   <!-- ==================== VEHICLES ==================== -->
@@ -165,13 +175,13 @@ if ($role !== 'customer' && $role !== 'user') {
                   echo "<td>" . htmlspecialchars($row["manufacturer"] . ' ' . $row["model"]) . "</td>";
                   echo "<td>" . htmlspecialchars($row["vehicle_type"]) . "</td>";
                   echo "<td class='num'>" . (int)$row["year_of_manufacture"] . "</td>";
-                  echo "<td>" . htmlspecialchars($row["operational_status"]) . "</td>";
+                  echo "<td>" . status_badge($row["operational_status"]) . "</td>";
                   echo "<td>" . htmlspecialchars($row["depot_name"]) . "</td>";
                   echo "<td>" . ($driver !== '' ? htmlspecialchars($driver) : "No driver assigned") . "</td>";
                   echo "</tr>";
               }
           } else {
-              echo "<tr><td colspan='8'>No vehicles found</td></tr>";
+              echo empty_row(8, "No vehicles match", "Try adjusting or clearing the filters above.", "truck");
           }
           ?>
         </tbody>
@@ -193,7 +203,7 @@ if ($role !== 'customer' && $role !== 'user') {
           <?php
           try {
             if (!table_exists($conn, 'Telematics_Events') || !table_exists($conn, 'Safety_Reviews')) {
-                echo "<tr><td colspan='7'>Database not available.</td></tr>";
+                echo empty_row(7, "Database not available", "Incident tables could not be reached.", "clipboard");
             } else {
               // Adapt to the real timestamp column name across schemas.
               $tsCol = find_column($conn, 'Telematics_Events', ['times_tamp', 'event_timestamp', 'timestamp', 'created_at']);
@@ -219,11 +229,11 @@ if ($role !== 'customer' && $role !== 'user') {
                       echo "</tr>";
                   }
               } else {
-                  echo "<tr><td colspan='7'>No approved incidents to show</td></tr>";
+                  echo empty_row(7, "No incidents to show", "Approved incident reports will appear here.", "clipboard");
               }
             }
           } catch (mysqli_sql_exception $e) {
-              echo "<tr><td colspan='7'>Database not available.</td></tr>";
+              echo empty_row(7, "Database not available", "Incident tables could not be reached.", "clipboard");
           }
           ?>
         </tbody>
@@ -233,5 +243,7 @@ if ($role !== 'customer' && $role !== 'user') {
   </div>
 
 </div>
+<script src="motion.js"></script>
+<script src="greeting.js"></script>
 </body>
 </html>

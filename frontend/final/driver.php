@@ -74,7 +74,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'file_
                     $rev->execute();
                     $rev->close();
                 }
-                $notice = "Your report has been filed (event #$event_id) and is awaiting admin review.";
+                // Show the event id only when the DB actually returned one
+                // (auto-increment). Otherwise keep the message clean.
+                $notice = $event_id > 0
+                    ? "Your report has been filed (event #$event_id) and is awaiting admin review."
+                    : "Your report has been filed and is awaiting admin review.";
             } else {
                 $notice = "Sorry, the report could not be filed. Please try again.";
                 $stmt->close();
@@ -97,9 +101,9 @@ $vehicles = $conn->query(
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Smart Fleet Driver Terminal</title>
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=khang24">
 </head>
-<body>
+<body data-greet-name="<?= htmlspecialchars(($driver_name && $driver_name !== 'Driver') ? $driver_name : (strstr($driver_email, '@', true) ?: 'Driver')) ?>">
 
 <div class="header">
   <div class="mark">
@@ -112,14 +116,31 @@ $vehicles = $conn->query(
   <div class="meta">
     <span class="live">On duty</span>
   </div>
+  <a href="dashboard.php" class="back">Dashboard</a>
+  <a href="account.php" class="back">Account</a>
   <a href="login.php" class="back">End shift</a>
 </div>
 
+<div id="greet-line"></div>
+
 <div class="wrap">
 
+<?php if ($notice): ?>
+  <?php
+    $isErr = (stripos($notice, 'could not') !== false)
+          || (stripos($notice, 'not available') !== false)
+          || (stripos($notice, 'sorry') !== false)
+          || (stripos($notice, 'incorrect') !== false)
+          || (stripos($notice, 'do not match') !== false)
+          || (stripos($notice, 'required') !== false)
+          || (stripos($notice, 'at least') !== false)
+          || (stripos($notice, 'try again') !== false);
+  ?>
+  <div class="flash <?= $isErr ? 'flash-err' : 'flash-ok' ?>"><?= htmlspecialchars($notice) ?></div>
+<?php endif; ?>
+
 <?php
-  // After filing a report the page reloads; keep the "My reports" tab open
-  // instead of snapping back to Fleet. $notice is only set on that action.
+  // After filing a report the page reloads; keep the "My reports" tab open.
   $openReports = ($notice !== '');
 ?>
 <input type="radio" name="tab" id="tab1" class="tab-input"<?= $openReports ? '' : ' checked' ?>>
@@ -127,9 +148,9 @@ $vehicles = $conn->query(
 <input type="radio" name="tab" id="tab3" class="tab-input"<?= $openReports ? ' checked' : '' ?>>
 
 <div class="tabs">
-  <label for="tab1">Fleet</label>
-  <label for="tab2">Depots</label>
-  <label for="tab3">My reports</label>
+  <label for="tab1"><span class="tab-ico"><?= ui_icon('truck') ?></span>Fleet</label>
+  <label for="tab2"><span class="tab-ico"><?= ui_icon('building') ?></span>Depots</label>
+  <label for="tab3"><span class="tab-ico"><?= ui_icon('clipboard') ?></span>My reports</label>
 </div>
 
 <!-- ==================== VEHICLES (read-only) ==================== -->
@@ -162,13 +183,13 @@ $vehicles = $conn->query(
                 echo "<td>" . htmlspecialchars($row['manufacturer'] . ' ' . $row['model']) . "</td>";
                 echo "<td>" . htmlspecialchars($row['category_name']) . "</td>";
                 echo "<td class='num'>" . (int)$row['year_of_manufacture'] . "</td>";
-                echo "<td>" . htmlspecialchars($row['operational_status']) . "</td>";
+                echo "<td>" . status_badge($row['operational_status']) . "</td>";
                 echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
                 echo "<td>" . ($driver !== '' ? htmlspecialchars($driver) : "No driver assigned") . "</td>";
                 echo "</tr>";
             }
         } else {
-            echo "<tr><td colspan='8'>No vehicles found</td></tr>";
+            echo empty_row(8, "No vehicles yet", "Vehicles added by an admin will show here.", "truck");
         }
         ?>
       </tbody>
@@ -200,7 +221,7 @@ $vehicles = $conn->query(
                 echo "</tr>";
             }
         } else {
-            echo "<tr><td colspan='3'>No depots found</td></tr>";
+            echo empty_row(3, "No depots yet", "Depots added by an admin will show here.", "building");
         }
         ?>
       </tbody>
@@ -211,17 +232,6 @@ $vehicles = $conn->query(
 
 <!-- ==================== MY REPORTS ==================== -->
 <div id="content3" class="tab-content">
-  <?php if ($notice): ?>
-    <?php
-      $isErr = (stripos($notice, 'could not') !== false)
-            || (stripos($notice, 'not available') !== false)
-            || (stripos($notice, 'sorry') !== false)
-            || (stripos($notice, 'try again') !== false);
-      $wash = $isErr ? 'var(--stop-wash)' : 'var(--go-wash)';
-      $ink  = $isErr ? 'var(--stop)' : 'var(--go)';
-    ?>
-    <div class="stamp" style="display:block;background:<?= $wash ?>;color:<?= $ink ?>;border:1px solid <?= $ink ?>;padding:8px 12px;margin-bottom:12px;font-family:var(--mono);font-size:11px"><?= htmlspecialchars($notice) ?></div>
-  <?php endif; ?>
 
   <div class="docket">
     <div class="docket-head"><h2>Report a safety event</h2><span class="no">Filing as <?= htmlspecialchars($driver_email ?: $driver_name) ?></span></div>
@@ -268,7 +278,7 @@ $vehicles = $conn->query(
         <?php
         try {
           if (!table_exists($conn, 'Telematics_Events')) {
-              echo "<tr><td colspan='6'>Database not available.</td></tr>";
+              echo empty_row(6, "Database not available", "The events table could not be reached.", "clipboard");
           } else {
             // Detect the real column names so this works on either schema.
             $tsCol  = find_column($conn, 'Telematics_Events', ['times_tamp', 'event_timestamp', 'timestamp', 'created_at']);
@@ -311,11 +321,11 @@ $vehicles = $conn->query(
                     echo "</tr>";
                 }
             } else {
-                echo "<tr><td colspan='6'>No reports filed yet</td></tr>";
+                echo empty_row(6, "No reports filed yet", "File a safety event above to start your log.", "clipboard");
             }
           }
         } catch (mysqli_sql_exception $e) {
-            echo "<tr><td colspan='6'>Database not available.</td></tr>";
+            echo empty_row(6, "Database not available", "The events table could not be reached.", "clipboard");
         }
         ?>
       </tbody>
@@ -325,5 +335,7 @@ $vehicles = $conn->query(
 </div>
 
 </div>
+<script src="motion.js"></script>
+<script src="greeting.js"></script>
 </body>
 </html>

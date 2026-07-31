@@ -20,6 +20,11 @@ if (($_SESSION['role'] ?? '') !== 'admin') {
     exit;
 }
 $admin_name = $_SESSION['admin_name'] ?? 'admin';
+$admin_full_name = $_SESSION['admin_full_name'] ?? '';
+// Prefer a first+last name if the Admin table had one; else the email handle.
+$greet_name = ($admin_full_name !== '')
+    ? $admin_full_name
+    : (strstr($admin_name, '@', true) ?: $admin_name);
 $notice = ""; // Short status message shown at the top after an action runs.
 
 // Schema-detection helpers (table_exists, find_column, find_columns) live in dbconn.php.
@@ -192,6 +197,20 @@ try {
     $dr = $conn->query("SELECT driver_id, first_name, last_name FROM Drivers ORDER BY first_name, last_name");
     while ($dr && $row = $dr->fetch_assoc()) { $drivers_opts[] = $row; }
 } catch (mysqli_sql_exception $e) { $drivers_opts = []; }
+
+/* Headline counts for the dashboard stat cards. Each is wrapped so a missing
+ * table simply shows 0 instead of breaking the page. */
+function count_rows(mysqli $conn, string $table): int {
+    try {
+        if (!table_exists($conn, $table)) return 0;
+        $r = $conn->query("SELECT COUNT(*) AS n FROM `$table`");
+        return $r ? (int)$r->fetch_assoc()['n'] : 0;
+    } catch (mysqli_sql_exception $e) { return 0; }
+}
+$stat_vehicles  = count_rows($conn, 'Vehicles');
+$stat_drivers   = count_rows($conn, 'Drivers');
+$stat_depots    = count_rows($conn, 'Depots');
+$stat_mechanics = count_rows($conn, 'Mechanics');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -199,9 +218,9 @@ try {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Smart Fleet Admin Terminal</title>
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=khang24">
 </head>
-<body>
+<body data-greet-name="<?= htmlspecialchars($greet_name) ?>">
 
 <div class="header">
   <div class="mark">
@@ -212,24 +231,45 @@ try {
     </div>
   </div>
   <div class="meta"><span class="live">Online</span></div>
+  <a href="dashboard.php" class="back">Dashboard</a>
+  <a href="account.php" class="back">Account</a>
   <a href="login.php" class="back">End shift</a>
 </div>
 
+<div id="greet-line"></div>
+
 <div class="wrap">
+
+<!-- Quiet section label instead of a marketing hero (Deference). -->
+<div class="section-label reveal">Fleet Overview</div>
+
+<section class="stats reveal" style="transition-delay:.08s">
+  <div class="stat"><span class="stat-num" data-count="<?= $stat_vehicles ?>">0</span><span class="stat-label">Vehicles</span></div>
+  <div class="stat"><span class="stat-num" data-count="<?= $stat_drivers ?>">0</span><span class="stat-label">Drivers</span></div>
+  <div class="stat"><span class="stat-num" data-count="<?= $stat_depots ?>">0</span><span class="stat-label">Depots</span></div>
+  <div class="stat"><span class="stat-num" data-count="<?= $stat_mechanics ?>">0</span><span class="stat-label">Mechanics</span></div>
+</section>
 
 <?php if ($notice): ?>
   <?php
+    // Colour the banner red for failures, green otherwise.
     $isErr = (stripos($notice, 'could not') !== false)
           || (stripos($notice, 'not available') !== false)
+          || (stripos($notice, 'incorrect') !== false)
+          || (stripos($notice, 'do not match') !== false)
+          || (stripos($notice, 'required') !== false)
+          || (stripos($notice, 'at least') !== false)
+          || (stripos($notice, 'no ') !== false && stripos($notice, 'found') !== false)
+          || (stripos($notice, 'not available for') !== false)
+          || (stripos($notice, 'valid account') !== false)
           || (stripos($notice, 'try again') !== false);
-    $wash = $isErr ? 'var(--stop-wash)' : 'var(--go-wash)';
-    $ink  = $isErr ? 'var(--stop)' : 'var(--go)';
   ?>
-  <div class="stamp" style="display:block;background:<?= $wash ?>;color:<?= $ink ?>;border:1px solid <?= $ink ?>;padding:8px 12px;margin-bottom:12px;font-family:var(--mono);font-size:11px"><?= htmlspecialchars($notice) ?></div>
+  <div class="flash <?= $isErr ? 'flash-err' : 'flash-ok' ?>"><?= htmlspecialchars($notice) ?></div>
 <?php endif; ?>
 
 <?php
-  // After an action the page reloads; keep the tab the user was working in.
+  // After an action the page reloads; keep the tab the user was working in
+  // open instead of snapping back to Vehicles. Map each action to its tab.
   $submittedAction = $_POST['action'] ?? '';
   $actionTab = [
       'add_vehicle' => 1, 'delete_vehicle' => 1, 'assign_vehicle' => 1, 'unassign_vehicle' => 1,
@@ -247,11 +287,11 @@ try {
 <input type="radio" name="tab" id="tab5" class="tab-input"<?= $openTab === 5 ? ' checked' : '' ?>>
 
 <div class="tabs">
-  <label for="tab1">Vehicles</label>
-  <label for="tab2">Drivers</label>
-  <label for="tab3">Depots</label>
-  <label for="tab4">Mechanics</label>
-  <label for="tab5">Review queue</label>
+  <label for="tab1"><span class="tab-ico"><?= ui_icon('truck') ?></span>Vehicles</label>
+  <label for="tab2"><span class="tab-ico"><?= ui_icon('user') ?></span>Drivers</label>
+  <label for="tab3"><span class="tab-ico"><?= ui_icon('building') ?></span>Depots</label>
+  <label for="tab4"><span class="tab-ico"><?= ui_icon('wrench') ?></span>Mechanics</label>
+  <label for="tab5"><span class="tab-ico"><?= ui_icon('clipboard') ?></span>Review queue</label>
 </div>
 
 <!-- ==================== VEHICLES ==================== -->
@@ -314,7 +354,7 @@ try {
             echo "<td>" . htmlspecialchars($row['manufacturer'] . ' ' . $row['model']) . "</td>";
             echo "<td>" . htmlspecialchars($row['category_name']) . "</td>";
             echo "<td class='num'>" . (int)$row['year_of_manufacture'] . "</td>";
-            echo "<td>" . htmlspecialchars($row['operational_status']) . "</td>";
+            echo "<td>" . status_badge($row['operational_status']) . "</td>";
             echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
             echo "<td>" . ($driver !== '' ? htmlspecialchars($driver) : "No driver assigned") . "</td>";
             echo "<td>";
@@ -341,7 +381,7 @@ try {
             echo "</tr>";
           }
         } else {
-          echo "<tr><td colspan='9'>No vehicles found</td></tr>";
+          echo empty_row(9, "No vehicles yet", "Add a vehicle above to get started.", "truck");
         }
         ?>
       </tbody>
@@ -402,10 +442,10 @@ try {
             echo "</tr>";
           }
         } else {
-          echo "<tr><td colspan='6'>No drivers found</td></tr>";
+          echo empty_row(6, "No drivers yet", "Add a driver above to build your roster.", "user");
         }
         } catch (mysqli_sql_exception $e) {
-          echo "<tr><td colspan='6'>Database not available.</td></tr>";
+          echo empty_row(6, "Database not available", "The Drivers table could not be reached.", "user");
         }
         ?>
       </tbody>
@@ -451,7 +491,7 @@ try {
             echo "</tr>";
           }
         } else {
-          echo "<tr><td colspan='3'>No depots found</td></tr>";
+          echo empty_row(3, "No depots yet", "Open a depot above to add locations.", "building");
         }
         ?>
       </tbody>
@@ -489,7 +529,7 @@ try {
         <?php
         try {
           if (!table_exists($conn, 'Mechanics')) {
-              echo "<tr><td colspan='6'>Database not available.</td></tr>";
+              echo empty_row(6, "Database not available", "The Mechanics table could not be reached.", "wrench");
           } else {
             // Only select the optional columns that this database actually has;
             // missing ones are aliased to an empty string so the row still renders.
@@ -516,11 +556,11 @@ try {
                 echo "</tr>";
               }
             } else {
-              echo "<tr><td colspan='6'>No mechanics found</td></tr>";
+              echo empty_row(6, "No mechanics yet", "Add a mechanic above to build the workshop.", "wrench");
             }
           }
         } catch (mysqli_sql_exception $e) {
-          echo "<tr><td colspan='6'>Database not available.</td></tr>";
+          echo empty_row(6, "Database not available", "The Mechanics table could not be reached.", "wrench");
         }
         ?>
       </tbody>
@@ -540,7 +580,7 @@ try {
         <?php
         try {
           if (!table_exists($conn, 'Telematics_Events') || !table_exists($conn, 'Safety_Reviews')) {
-              echo "<tr><td colspan='8'>Database not available.</td></tr>";
+              echo empty_row(8, "Database not available", "Report tables could not be reached.", "clipboard");
           } else {
             // Adapt to the real timestamp column name.
             $tsCol = find_column($conn, 'Telematics_Events', ['times_tamp', 'event_timestamp', 'timestamp', 'created_at']);
@@ -571,11 +611,11 @@ try {
                 echo "</tr>";
               }
             } else {
-              echo "<tr><td colspan='8'>No reports awaiting review</td></tr>";
+              echo empty_row(8, "No reports awaiting review", "New driver reports will appear here.", "clipboard");
             }
           }
         } catch (mysqli_sql_exception $e) {
-          echo "<tr><td colspan='8'>Database not available.</td></tr>";
+          echo empty_row(8, "Database not available", "Report tables could not be reached.", "clipboard");
         }
         ?>
       </tbody>
@@ -592,7 +632,7 @@ try {
         <?php
         try {
           if (!table_exists($conn, 'Telematics_Events') || !table_exists($conn, 'Safety_Reviews')) {
-              echo "<tr><td colspan='7'>Database not available.</td></tr>";
+              echo empty_row(7, "Database not available", "Report tables could not be reached.", "clipboard");
           } else {
             $tsCol = find_column($conn, 'Telematics_Events', ['times_tamp', 'event_timestamp', 'timestamp', 'created_at']);
             $tsSel = $tsCol ? "te.`$tsCol` AS ts" : "'' AS ts";
@@ -616,11 +656,11 @@ try {
                 echo "</tr>";
               }
             } else {
-              echo "<tr><td colspan='7'>No approved reports yet</td></tr>";
+              echo empty_row(7, "No approved reports yet", "Approved reports will be listed here.", "clipboard");
             }
           }
         } catch (mysqli_sql_exception $e) {
-          echo "<tr><td colspan='7'>Database not available.</td></tr>";
+          echo empty_row(7, "Database not available", "Report tables could not be reached.", "clipboard");
         }
         ?>
       </tbody>
@@ -630,5 +670,7 @@ try {
 </div>
 
 </div>
+<script src="motion.js"></script>
+<script src="greeting.js"></script>
 </body>
 </html>
