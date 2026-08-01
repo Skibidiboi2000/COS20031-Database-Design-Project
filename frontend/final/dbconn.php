@@ -1,22 +1,49 @@
 <?php
-#$host = "127.0.0.1";
-#$user = "admin";
-#$pass = "1234";
-#$dbname = "SmartFleetProject";
+/*
+ * dbconn.php — database connection + shared helpers.
+ *
+ * Every page starts with `include 'dbconn.php';`. It opens one MySQLi
+ * connection ($conn) used across the app, then defines the schema-detection
+ * helpers, the auth/password functions, and the small HTML render helpers
+ * (icons, badges, empty states) so every page produces consistent markup.
+ */
 
-$conn = new mysqli('100.98.213.61', 'admin', '1234', 'SmartFleetProject');
+// Open the shared connection.
+//
+// The DB (MariaDB) lives on the same machine as the PHP server, so the fast,
+// reliable path is the local loopback 127.0.0.1. We try that first. If it
+// isn't reachable (e.g. running the code from a different host that can only
+// reach the box over the Tailscale/tunnel address), we fall back to the
+// remote IP. This is why "Review queue" worked on the hosted build (local
+// connection) but not on localhost before — localhost was being forced out
+// over the remote IP instead of using the loopback.
+mysqli_report(MYSQLI_REPORT_OFF); // handle connect failure ourselves, don't throw
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+$DB_USER = 'admin';
+$DB_PASS = '1234';
+$DB_NAME = 'SmartFleetProject';
+$DB_HOSTS = ['127.0.0.1', '100.98.213.61']; // local loopback first, remote fallback
+
+$conn = null;
+foreach ($DB_HOSTS as $host) {
+    $try = @new mysqli($host, $DB_USER, $DB_PASS, $DB_NAME);
+    if (!$try->connect_error) { $conn = $try; break; }
 }
+
+if (!$conn) {
+    die("Connection failed: could not reach the database on any known host.");
+}
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT); // restore exceptions for queries
 
 /* ============================================================
  * Schema-detection helpers.
  *
- * The app must run on the current database (7 tables) AND on the
- * full one (18 tables) without any code changes. These helpers let
- * each page ask the database what it actually has, then adapt the
- * query instead of assuming a fixed schema.
+ * The app is written so it keeps working even if the database schema
+ * changes slightly (a column renamed, an optional table missing). Rather
+ * than hard-coding table/column names everywhere, each page asks the
+ * database what it actually has via these helpers, then builds its query
+ * to match. This is what lets the same PHP run against different versions
+ * of the SmartFleet database without edits.
  * ============================================================ */
 
 /**
@@ -66,6 +93,34 @@ function find_columns(mysqli $conn, string $table, array $map): array {
         }
     }
     return $found;
+}
+
+/* ============================================================
+ * CSRF protection. Every state-changing form carries a hidden
+ * token; every POST handler verifies it with hash_equals before
+ * doing anything.
+ * ============================================================ */
+function csrf_token(): string {
+    if (empty($_SESSION['csrf'])) {
+        $_SESSION['csrf'] = bin2hex(random_bytes(16));
+    }
+    return $_SESSION['csrf'];
+}
+function csrf_verify(?string $token): bool {
+    return is_string($token) && $token !== '' && !empty($_SESSION['csrf']) && hash_equals($_SESSION['csrf'], $token);
+}
+function csrf_field(): string {
+    return '<input type="hidden" name="csrf" value="' . htmlspecialchars(csrf_token()) . '">';
+}
+
+/**
+ * Null-safe HTML escaper. Database columns can be NULL (LEFT JOINs, optional
+ * fields), and on PHP 8.1+ passing null straight to htmlspecialchars() raises
+ * a deprecation notice. h() coerces null/other scalars to a string first, so
+ * page code can escape any value without a per-field "?? ''" guard.
+ */
+function h($value): string {
+    return htmlspecialchars((string)($value ?? ''), ENT_QUOTES, 'UTF-8');
 }
 
 /* ============================================================
@@ -124,16 +179,40 @@ function empty_row(int $colspan, string $title, string $hint = '', string $icon 
     return $html;
 }
 
-/** Render a vehicle status as a coloured pill badge (green/blue/amber/red). */
+/**
+ * Render a status as a coloured pill badge. Covers both vehicle statuses
+ * (Available / On Road / Under Maintenance / Out of Service …) and staff
+ * employment statuses (Active / On Leave / Suspended / Inactive), so driver
+ * and mechanic rosters get the same colour treatment as the fleet table:
+ *   go   (green)  = healthy / working
+ *   road (blue)   = in transit
+ *   hold (amber)  = attention / temporarily out (maintenance, on leave)
+ *   stop (red)    = out of service / suspended / retired
+ *   neutral(grey) = inactive / unknown
+ */
 function status_badge(string $status): string {
     $key = strtolower(trim($status));
-    // Map each known status to a semantic tone class.
     $tone = 'neutral';
-    if (in_array($key, ['available', 'active'], true))              $tone = 'go';
-    elseif (in_array($key, ['on road', 'in transit'], true))        $tone = 'road';
-    elseif (in_array($key, ['under maintenance', 'in shop', 'awaiting inspection'], true)) $tone = 'hold';
-    elseif (in_array($key, ['out of service', 'retired', 'suspended'], true)) $tone = 'stop';
+    if (in_array($key, ['available', 'active'], true))                          $tone = 'go';
+    elseif (in_array($key, ['on road', 'in transit'], true))                    $tone = 'road';
+    elseif (in_array($key, ['under maintenance', 'in shop', 'awaiting inspection', 'on leave'], true)) $tone = 'hold';
+    elseif (in_array($key, ['out of service', 'retired', 'suspended'], true))   $tone = 'stop';
+    // 'inactive' and anything unrecognised stay neutral grey.
     return "<span class='badge badge-$tone'>" . htmlspecialchars($status) . "</span>";
+}
+
+/**
+ * Render an event severity as a coloured pill: Low green, Medium blue,
+ * High amber, Critical red — rising urgency. Used in the incident logs.
+ */
+function severity_badge(string $sev): string {
+    $key = strtolower(trim($sev));
+    $tone = 'neutral';
+    if ($key === 'low')          $tone = 'go';
+    elseif ($key === 'medium')   $tone = 'road';
+    elseif ($key === 'high')     $tone = 'hold';
+    elseif ($key === 'critical') $tone = 'stop';
+    return "<span class='badge badge-$tone'>" . htmlspecialchars($sev) . "</span>";
 }
 
 /* ============================================================
@@ -142,18 +221,18 @@ function status_badge(string $status): string {
  * ============================================================ */
 
 /** Render the FF·01 plate as a plain static badge. */
-function version_switch_plate(string $label = 'FF&middot;01', string $class = 'plate'): string {
-    return "<span class=\"$class\">$label</span>";
+function version_switch_plate(string $label = 'FF·01', string $class = 'plate'): string {
+    return "<span class=\"" . htmlspecialchars($class) . "\">" . htmlspecialchars($label) . "</span>";
 }
 
 /* ============================================================
  * Change password (requires the current password).
  *
- * Shared by every dashboard's "Password" tab. Verifies the current
- * password against the stored hash, then stores a new hash. Works on
- * any account table that has a password_hash column, identified by its
- * own id column + value (e.g. Admin/admin_id, Users/user_id,
- * Drivers/driver_id, Mechanics/mechanic_id). Returns [ok, message].
+ * Used by the account settings page. Verifies the user's current password
+ * against the stored bcrypt hash, then writes a new hash. Generic over the
+ * account table + id column so it can serve any table with a password_hash
+ * column — in this app that is always Accounts, keyed by account_id.
+ * Returns [ok(bool), message(string)] so the caller can show the result.
  * ============================================================ */
 function change_password(
     mysqli $conn, string $table, string $idCol, int $idVal,
@@ -203,6 +282,7 @@ function password_form(string $action_page): string {
   <div class="docket-head"><h2>Change password</h2><span class="no">Requires your current password</span></div>
   <form method="POST" action="$p">
     <input type="hidden" name="action" value="change_password">
+    <?= csrf_field() ?>
     <div class="form-row">
       <div class="form-group"><label>Current password</label><input type="password" name="current_password" autocomplete="current-password"></div>
       <div class="form-group"><label>New password</label><input type="password" name="new_password" autocomplete="new-password"></div>
@@ -266,6 +346,7 @@ function admin_reset_form(string $action_page): string {
   <div class="docket-head"><h2>Reset a user's password</h2><span class="no">Admin only &middot; no current password needed</span></div>
   <form method="POST" action="$p">
     <input type="hidden" name="action" value="admin_reset_password">
+    <?= csrf_field() ?>
     <div class="form-row">
       <div class="form-group"><label>Account email</label><input type="text" name="reset_email" placeholder="person@company.com"></div>
       <div class="form-group"><label>New password</label><input type="password" name="new_password" autocomplete="new-password"></div>

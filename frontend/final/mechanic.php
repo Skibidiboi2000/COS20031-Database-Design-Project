@@ -29,22 +29,22 @@ $greet_name = ($mechanic_name && $mechanic_name !== 'Mechanic')
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Smart Fleet Mechanic Terminal</title>
-<link rel="stylesheet" href="style.css?v=khang24">
+<link rel="stylesheet" href="style.css">
 </head>
-<body data-greet-name="<?= htmlspecialchars($greet_name) ?>">
+<body data-greet-name="<?= h($greet_name) ?>">
 
 <div class="header">
   <div class="mark">
-    <?= version_switch_plate('M&middot;01') ?>
+    <?= version_switch_plate('M·01') ?>
     <div class="titlewrap">
       <h1>Smart Fleet</h1>
-      <span class="sub">Mechanic &middot; <?= htmlspecialchars($mechanic_email) ?></span>
+      <span class="sub">Mechanic &middot; <?= h($mechanic_email) ?></span>
     </div>
   </div>
   <div class="meta"><span class="live">On duty</span></div>
   <a href="dashboard.php" class="back">Dashboard</a>
   <a href="account.php" class="back">Account</a>
-  <a href="login.php" class="back">End shift</a>
+  <a href="logout.php" class="back">End shift</a>
 </div>
 
 <div id="greet-line"></div>
@@ -81,13 +81,13 @@ $greet_name = ($mechanic_name && $mechanic_name !== 'Mechanic')
         if ($res && $res->num_rows > 0) {
             while ($row = $res->fetch_assoc()) {
                 echo "<tr>";
-                echo "<td class='mono'>" . htmlspecialchars($row['vin']) . "</td>";
-                echo "<td class='mono'>" . htmlspecialchars($row['registration_number']) . "</td>";
-                echo "<td>" . htmlspecialchars($row['manufacturer'] . ' ' . $row['model']) . "</td>";
-                echo "<td>" . htmlspecialchars($row['category_name']) . "</td>";
+                echo "<td class='mono'>" . h($row['vin']) . "</td>";
+                echo "<td class='mono'>" . h($row['registration_number']) . "</td>";
+                echo "<td>" . h($row['manufacturer'] . ' ' . $row['model']) . "</td>";
+                echo "<td>" . h($row['category_name']) . "</td>";
                 echo "<td class='num'>" . (int)$row['year_of_manufacture'] . "</td>";
-                echo "<td>" . status_badge($row['operational_status']) . "</td>";
-                echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
+                echo "<td>" . status_badge((string)($row['operational_status'] ?? '')) . "</td>";
+                echo "<td>" . h($row['depot_name']) . "</td>";
                 echo "</tr>";
             }
         } else {
@@ -129,11 +129,11 @@ $greet_name = ($mechanic_name && $mechanic_name !== 'Mechanic')
                 while ($row = $res->fetch_assoc()) {
                     echo "<tr>";
                     echo "<td class='mono'>M-" . str_pad($row['mechanic_id'], 4, '0', STR_PAD_LEFT) . "</td>";
-                    echo "<td>" . htmlspecialchars(trim($row['first_name'] . ' ' . $row['last_name'])) . "</td>";
-                    echo "<td class='mono'>" . htmlspecialchars($row['contact_information'] ?: '—') . "</td>";
-                    echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
-                    echo "<td>" . htmlspecialchars($row['specialization'] ?: '—') . "</td>";
-                    echo "<td class='mono'>" . htmlspecialchars($row['hire_date'] ?: '—') . "</td>";
+                    echo "<td>" . h(trim($row['first_name'] . ' ' . $row['last_name'])) . "</td>";
+                    echo "<td class='mono'>" . h($row['contact_information'] ?: '—') . "</td>";
+                    echo "<td>" . h($row['depot_name']) . "</td>";
+                    echo "<td>" . h($row['specialization'] ?: '—') . "</td>";
+                    echo "<td class='mono'>" . h($row['hire_date'] ?: '—') . "</td>";
                     echo "</tr>";
                 }
             } else {
@@ -160,6 +160,9 @@ $greet_name = ($mechanic_name && $mechanic_name !== 'Mechanic')
       <tbody>
         <?php
         try {
+        if (!table_exists($conn, 'Maintenance_Jobs')) {
+            echo empty_row(7, "Database not available", "The Maintenance_Jobs table could not be reached.", "wrench");
+        } else {
         $res = $conn->query(
           "SELECT j.job_id, j.vin, d.depot_name, j.date_opened, j.date_closed,
                   j.downtime_hours, j.total_cost_vnd
@@ -170,16 +173,17 @@ $greet_name = ($mechanic_name && $mechanic_name !== 'Mechanic')
             while ($row = $res->fetch_assoc()) {
                 echo "<tr>";
                 echo "<td class='mono'>" . (int)$row['job_id'] . "</td>";
-                echo "<td class='mono'>" . htmlspecialchars($row['vin']) . "</td>";
-                echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
-                echo "<td class='mono'>" . htmlspecialchars($row['date_opened']) . "</td>";
-                echo "<td class='mono'>" . htmlspecialchars($row['date_closed'] ?? '—') . "</td>";
+                echo "<td class='mono'>" . h($row['vin']) . "</td>";
+                echo "<td>" . h($row['depot_name']) . "</td>";
+                echo "<td class='mono'>" . h($row['date_opened']) . "</td>";
+                echo "<td class='mono'>" . h($row['date_closed'] ?? '—') . "</td>";
                 echo "<td class='num'>" . (int)$row['downtime_hours'] . "</td>";
                 echo "<td class='num'>" . number_format((int)$row['total_cost_vnd']) . "</td>";
                 echo "</tr>";
             }
         } else {
             echo empty_row(7, "No maintenance jobs", "Open jobs will appear here as they are logged.", "wrench");
+        }
         }
         } catch (mysqli_sql_exception $e) {
             echo empty_row(7, "Database not available", "The Maintenance_Jobs table could not be reached.", "wrench");

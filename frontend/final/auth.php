@@ -20,32 +20,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirm = $_POST['confirm'] ?? '';
 
     try {
-        // Validate the input before touching the database.
-        if ($first === '' || $last === '' || $email === '' || $pass === '') {
-            $error = "First name, last name, email and password are required.";
+        // Validate the input before touching the database. First/last name
+        // are optional — only email and password are required.
+        if ($email === '' || $pass === '') {
+            $error = "Email and password are required.";
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error = "Please enter a valid email.";
         } elseif ($pass !== $confirm) {
             $error = "Passwords do not match.";
+        } elseif (!csrf_verify($_POST['csrf'] ?? null)) {
+            $error = "Your session expired. Please try again.";
         } else {
             // Reject duplicates so each email is used only once.
-            $chk = $conn->prepare("SELECT user_id FROM Users WHERE email = ?");
+            $chk = $conn->prepare("SELECT account_id FROM Accounts WHERE email = ?");
             $chk->bind_param("s", $email);
             $chk->execute();
             if ($chk->get_result()->fetch_assoc()) {
                 $error = "That email is already registered.";
             } else {
-                // Store only the hash, never the raw password.
+                // Store only the hash, never the raw password. New signups are
+                // customers; the trigger keeps them off the Users table, which
+                // now tracks registration dates instead of credentials.
                 $hash = password_hash($pass, PASSWORD_DEFAULT);
                 $now = date('Y-m-d H:i:s');
-                $ins = $conn->prepare("INSERT INTO Users (first_name, last_name, email, password_hash, created_at) VALUES (?, ?, ?, ?, ?)");
+                $ins = $conn->prepare("INSERT INTO Accounts (first_name, last_name, email, password_hash, role, is_active, created_at) VALUES (?, ?, ?, ?, 'customer', 1, ?)");
                 $ins->bind_param("sssss", $first, $last, $email, $hash, $now);
-                $ins->execute();
+                $ok = $ins->execute();
                 $ins->close();
-                // Account created — send them to the main login to sign in.
-                $_SESSION['signup_ok'] = "Your account has been created. Please sign in.";
-                header("Location: login.php");
-                exit;
+                if ($ok) {
+                    // Account created — send them to the main login to sign in.
+                    $_SESSION['signup_ok'] = "Your account has been created. Please sign in.";
+                    header("Location: login.php");
+                    exit;
+                }
+                $error = "Could not create the account. Please try again.";
             }
             $chk->close();
         }
@@ -60,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Smart Fleet Sign Up</title>
-<link rel="stylesheet" href="style.css?v=khang24">
+<link rel="stylesheet" href="style.css">
 </head>
 <body class="login-body">
 
@@ -87,8 +95,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="login-box" style="display:block;animation:boxIn .5s cubic-bezier(.22,.61,.36,1)">
   <span class="stamp">Sign up</span>
   <form method="POST" action="auth.php">
-    <div class="form-group"><label>First name</label><input type="text" name="first_name" placeholder="First name"></div>
-    <div class="form-group"><label>Last name</label><input type="text" name="last_name" placeholder="Last name"></div>
+    <?= csrf_field() ?>
+    <div class="form-group"><label>First name <span class="opt">(optional)</span></label><input type="text" name="first_name" placeholder="First name"></div>
+    <div class="form-group"><label>Last name <span class="opt">(optional)</span></label><input type="text" name="last_name" placeholder="Last name"></div>
     <div class="form-group"><label>Email</label><input type="text" name="email" placeholder="you@company.com"></div>
     <div class="form-group"><label>Password</label><input type="password" name="password" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;"></div>
     <div class="form-group"><label>Confirm password</label><input type="password" name="confirm" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;"></div>

@@ -29,9 +29,9 @@ $greet_name = ($customer_name !== '')
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Customer Portal — Fleet Management</title>
-  <link rel="stylesheet" href="style.css?v=khang24">
+  <link rel="stylesheet" href="style.css">
 </head>
-<body data-greet-name="<?= htmlspecialchars($greet_name) ?>">
+<body data-greet-name="<?= h($greet_name) ?>">
 
 <div class="header">
   <div class="mark">
@@ -44,7 +44,7 @@ $greet_name = ($customer_name !== '')
   <div class="meta"><span class="live">Online</span></div>
   <a href="dashboard.php" class="back">Dashboard</a>
   <a href="account.php" class="back">Account</a>
-  <a href="login.php" class="back">Sign out</a>
+  <a href="logout.php" class="back">Sign out</a>
 </div>
 
 <div id="greet-line"></div>
@@ -72,7 +72,7 @@ $greet_name = ($customer_name !== '')
             $catRes = $conn->query("SELECT category_name FROM Vehicle_Categories ORDER BY category_name");
             while ($c = $catRes->fetch_assoc()) {
                 $sel = (($_GET['category'] ?? '') === $c['category_name']) ? 'selected' : '';
-                echo "<option value='" . htmlspecialchars($c['category_name']) . "' $sel>" . htmlspecialchars($c['category_name']) . "</option>";
+                echo "<option value='" . h($c['category_name']) . "' $sel>" . h($c['category_name']) . "</option>";
             }
             ?>
         </select>
@@ -83,7 +83,7 @@ $greet_name = ($customer_name !== '')
             <option value="">All Years</option>
             <?php
             for ($y = 2010; $y <= 2026; $y++) {
-                $sel = (($_GET['year'] ?? '') == $y) ? 'selected' : '';
+                $sel = ((int)($_GET['year'] ?? '') === $y) ? 'selected' : '';
                 echo "<option value='$y' $sel>$y</option>";
             }
             ?>
@@ -97,7 +97,7 @@ $greet_name = ($customer_name !== '')
             $depRes = $conn->query("SELECT depot_name FROM Depots ORDER BY depot_name");
             while ($d = $depRes->fetch_assoc()) {
                 $sel = (($_GET['depot'] ?? '') === $d['depot_name']) ? 'selected' : '';
-                echo "<option value='" . htmlspecialchars($d['depot_name']) . "' $sel>" . htmlspecialchars($d['depot_name']) . "</option>";
+                echo "<option value='" . h($d['depot_name']) . "' $sel>" . h($d['depot_name']) . "</option>";
             }
             ?>
         </select>
@@ -110,7 +110,7 @@ $greet_name = ($customer_name !== '')
             $statuses = ['Available','Active','Under Maintenance','Retired','Awaiting Inspection','Out of Service'];
             foreach ($statuses as $s) {
                 $sel = (($_GET['status'] ?? '') === $s) ? 'selected' : '';
-                echo "<option value='" . htmlspecialchars($s) . "' $sel>" . htmlspecialchars($s) . "</option>";
+                echo "<option value='" . h($s) . "' $sel>" . h($s) . "</option>";
             }
             ?>
         </select>
@@ -170,14 +170,14 @@ $greet_name = ($customer_name !== '')
               while ($row = $result->fetch_assoc()) {
                   $driver = trim($row["driver_name"] ?? '');
                   echo "<tr>";
-                  echo "<td class='mono'>" . htmlspecialchars($row["vin"]) . "</td>";
-                  echo "<td class='mono'>" . htmlspecialchars($row["registration_number"]) . "</td>";
-                  echo "<td>" . htmlspecialchars($row["manufacturer"] . ' ' . $row["model"]) . "</td>";
-                  echo "<td>" . htmlspecialchars($row["vehicle_type"]) . "</td>";
+                  echo "<td class='mono'>" . h($row["vin"]) . "</td>";
+                  echo "<td class='mono'>" . h($row["registration_number"]) . "</td>";
+                  echo "<td>" . h($row["manufacturer"] . ' ' . $row["model"]) . "</td>";
+                  echo "<td>" . h($row["vehicle_type"]) . "</td>";
                   echo "<td class='num'>" . (int)$row["year_of_manufacture"] . "</td>";
-                  echo "<td>" . status_badge($row["operational_status"]) . "</td>";
-                  echo "<td>" . htmlspecialchars($row["depot_name"]) . "</td>";
-                  echo "<td>" . ($driver !== '' ? htmlspecialchars($driver) : "No driver assigned") . "</td>";
+                  echo "<td>" . status_badge((string)($row["operational_status"] ?? "")) . "</td>";
+                  echo "<td>" . h($row["depot_name"]) . "</td>";
+                  echo "<td>" . ($driver !== '' ? h($driver) : "No driver assigned") . "</td>";
                   echo "</tr>";
               }
           } else {
@@ -210,22 +210,21 @@ $greet_name = ($customer_name !== '')
               $tsSel = $tsCol ? "te.`$tsCol` AS ts" : "'' AS ts";
               $res = $conn->query(
                 "SELECT te.event_id, $tsSel, te.event_type, te.vin, te.severity_level,
-                        dr.first_name, dr.last_name, d.depot_name
+                        dr.first_name, dr.last_name, COALESCE(te.depot_id, '') AS depot_name
                  FROM Telematics_Events te
                  JOIN Safety_Reviews sr ON sr.event_id = te.event_id AND sr.is_completed = 1
                  LEFT JOIN Drivers dr ON te.driver_id = dr.driver_id
-                 LEFT JOIN Depots d ON te.depot_id = d.depot_id
                  ORDER BY te.event_id DESC");
               if ($res && $res->num_rows > 0) {
                   while ($row = $res->fetch_assoc()) {
                       echo "<tr>";
                       echo "<td class='mono'>" . (int)$row['event_id'] . "</td>";
-                      echo "<td class='mono'>" . htmlspecialchars($row['ts'] ?: '—') . "</td>";
-                      echo "<td>" . htmlspecialchars($row['event_type']) . "</td>";
-                      echo "<td class='mono'>" . htmlspecialchars($row['vin']) . "</td>";
-                      echo "<td>" . htmlspecialchars(trim($row['first_name'] . ' ' . $row['last_name'])) . "</td>";
-                      echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
-                      echo "<td>" . htmlspecialchars($row['severity_level']) . "</td>";
+                      echo "<td class='mono'>" . h($row['ts'] ?: '—') . "</td>";
+                      echo "<td>" . h($row['event_type']) . "</td>";
+                      echo "<td class='mono'>" . h($row['vin']) . "</td>";
+                      echo "<td>" . h(trim($row['first_name'] . ' ' . $row['last_name'])) . "</td>";
+                      echo "<td>" . h($row['depot_name']) . "</td>";
+                      echo "<td>" . severity_badge((string)($row['severity_level'] ?? '')) . "</td>";
                       echo "</tr>";
                   }
               } else {

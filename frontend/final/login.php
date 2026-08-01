@@ -2,11 +2,10 @@
 /*
  * login.php — Main sign-in terminal.
  *
- * Three roles sign in here: Customer, Staff (Driver or Mechanic), and Admin.
- * Staff sign in by email — we look the email up in the database: if it is in
- * the Drivers table the user goes to driver.php, if it is in the Mechanics
- * table they go to mechanic.php. The email column name is auto-detected so
- * this works across schema variations.
+ * Every role signs in here against the single Accounts table (the source of
+ * truth): Customer, Staff (Driver or Mechanic), and Admin. The account's own
+ * `role` column decides where they land; the tab they used is only checked so
+ * a driver can't sign in through the Admin tab and vice-versa.
  *
  * On a failed login we use the Post/Redirect/Get pattern: the error is stored
  * in the session, then we redirect to this same page with GET. That way a
@@ -15,51 +14,6 @@
  */
 session_start();
 include 'dbconn.php';
-
-/**
- * Look $email up in $table (Drivers or Mechanics). Detects the email column
- * at runtime and returns the matching row, or null if the table/column is
- * missing or no row matches. Uses a prepared statement so input is safe.
- */
-function find_staff_by_email(mysqli $conn, string $table, string $email): ?array {
-    $emailCol = find_column($conn, $table, ['email', 'email_address', 'contact_email', 'contact_information']);
-    if ($emailCol === null) {
-        return null; // table or a usable email column doesn't exist
-    }
-    try {
-        $stmt = $conn->prepare("SELECT * FROM `$table` WHERE `$emailCol` = ? LIMIT 1");
-        $stmt->bind_param('s', $email);
-        $stmt->execute();
-        $res = $stmt->get_result();
-        $row = $res ? $res->fetch_assoc() : null;
-        $stmt->close();
-        return $row ?: null;
-    } catch (mysqli_sql_exception $e) {
-        return null;
-    }
-}
-
-/**
- * Look an admin up by username in the Admin table (columns: admin_id,
- * username, password_hash). Returns the row or null. Uses a prepared
- * statement; wrapped in try/catch so a missing table can't crash login.
- */
-function find_admin_by_username(mysqli $conn, string $username): ?array {
-    if (!table_exists($conn, 'Admin')) {
-        return null;
-    }
-    try {
-        $stmt = $conn->prepare("SELECT * FROM `Admin` WHERE `username` = ? LIMIT 1");
-        $stmt->bind_param('s', $username);
-        $stmt->execute();
-        $res = $stmt->get_result();
-        $row = $res ? $res->fetch_assoc() : null;
-        $stmt->close();
-        return $row ?: null;
-    } catch (mysqli_sql_exception $e) {
-        return null;
-    }
-}
 
 $error = "";
 
@@ -82,14 +36,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Please choose a role to sign in.";
     } elseif ($email === '' || $password === '') {
         $error = "Please enter your email and password.";
+    } elseif (!csrf_verify($_POST['csrf'] ?? null)) {
+        $error = "Your session expired. Please refresh and try again.";
     } else {
         $acct = find_account_by_email($conn, $email);
 
         if (!$acct) {
-            $error = "No account found for that email.";
+            $error = "Incorrect email or password.";
         } elseif (isset($acct['is_active']) && (int)$acct['is_active'] === 0) {
             $error = "This account has been deactivated.";
-        } elseif (!password_verify($password, $acct['password_hash'] ?? '')) {
+        } elseif (($acct['password_hash'] ?? '') === '' || $acct['password_hash'] === null) {
+            // Account exists but has no password set yet (e.g. not finished syncing).
+            $error = "Incorrect email or password.";
+        } elseif (!password_verify($password, $acct['password_hash'])) {
             $error = "Incorrect email or password.";
         } else {
             $acctRole = strtolower(trim($acct['role'] ?? ''));
@@ -101,7 +60,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $niceTab = ['customer' => 'Customer', 'driver' => 'Staff', 'mechanic' => 'Staff', 'admin' => 'Admin'][$acctRole] ?? ucfirst($acctRole);
                 $error = "That's a {$acctRole} account — use the {$niceTab} tab.";
             } else {
-                // Success. Store a common identity plus role-specific keys the
+                // Success. Regenerate the session id so a session id fixed by
+                // an attacker before login can never carry the new identity.
+                session_regenerate_id(true);
+                // Store a common identity plus role-specific keys the
                 // existing dashboards already read.
                 $fullName = trim(($acct['first_name'] ?? '') . ' ' . ($acct['last_name'] ?? ''));
                 $acctId   = (int)($acct['account_id'] ?? 0);
@@ -153,7 +115,7 @@ unset($_SESSION['login_error'], $_SESSION['login_role'], $_SESSION['signup_ok'])
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Smart Fleet Sign In</title>
-<link rel="stylesheet" href="style.css?v=khang24">
+<link rel="stylesheet" href="style.css">
 </head>
 <body class="login-body">
 
@@ -201,6 +163,7 @@ unset($_SESSION['login_error'], $_SESSION['login_role'], $_SESSION['signup_ok'])
 <div id="login1" class="login-box" style="transition-delay:.14s">
   <form method="POST" action="login.php" class="two-step" data-role="customer">
     <input type="hidden" name="role" value="customer">
+    <?= csrf_field() ?>
     <div class="step step-email">
       <span class="stamp step-title">Customer access</span>
       <div class="form-group"><label>Email</label><input type="text" name="email" autocomplete="username" placeholder="you@company.com"></div>
@@ -223,6 +186,7 @@ unset($_SESSION['login_error'], $_SESSION['login_role'], $_SESSION['signup_ok'])
 <div id="login2" class="login-box" style="transition-delay:.14s">
   <form method="POST" action="login.php" class="two-step" data-role="staff">
     <input type="hidden" name="role" value="driver">
+    <?= csrf_field() ?>
     <div class="step step-email">
       <span class="stamp step-title">Staff access</span>
       <div class="form-group"><label>Email</label><input type="text" name="email" autocomplete="username" placeholder="you@company.com"></div>
@@ -244,6 +208,7 @@ unset($_SESSION['login_error'], $_SESSION['login_role'], $_SESSION['signup_ok'])
 <div id="login3" class="login-box" style="transition-delay:.14s">
   <form method="POST" action="login.php" class="two-step" data-role="admin">
     <input type="hidden" name="role" value="admin">
+    <?= csrf_field() ?>
     <div class="step step-email">
       <span class="stamp step-title">Admin access</span>
       <div class="form-group"><label>Email</label><input type="text" name="email" autocomplete="username" placeholder="you@company.com"></div>

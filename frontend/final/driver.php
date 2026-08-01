@@ -21,9 +21,27 @@ $driver_email = $_SESSION['driver_email'] ?? '';
 $driver_name = $_SESSION['driver_name'] ?? 'Driver';
 $notice = ""; // Status message shown after filing a report.
 
+// The session holds the Accounts.account_id, but events are attributed by
+// Drivers.driver_id — resolve the real driver id from the sign-in email so
+// filed events and the event log line up with the driver's own records.
+// Resolved BEFORE the POST handler because filing an event uses it.
+$real_driver_id = 0;
+if ($driver_email !== '') {
+    try {
+        $s = $conn->prepare("SELECT driver_id FROM Drivers WHERE contact_information = ? LIMIT 1");
+        $s->bind_param('s', $driver_email);
+        $s->execute();
+        $row = $s->get_result()->fetch_assoc();
+        $real_driver_id = $row ? (int)$row['driver_id'] : 0;
+        $s->close();
+    } catch (mysqli_sql_exception $e) { $real_driver_id = 0; }
+}
+
 // ---- File a safety event (starts as "pending review") ----
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'file_event') {
-    try {
+    if (!csrf_verify($_POST['csrf'] ?? null)) {
+        $notice = "Your session expired. Please refresh and try again.";
+    } else try {
         if (!table_exists($conn, 'Telematics_Events')) {
             $notice = "Database not available.";
         } else {
@@ -33,15 +51,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'file_
             // added only if the column actually exists, so this INSERT adapts
             // to whichever version of Telematics_Events the database has.
             $cols  = ['depot_id'];
-            $types = 'i';
-            $vals  = [(int)($_POST['depot_id'] ?? 0)];
+            $types = 's';
+            $vals  = [($_POST['depot_id'] ?? '')];
 
             // Timestamp column is spelled differently across schemas.
             $tsCol = find_column($conn, 'Telematics_Events', ['times_tamp', 'event_timestamp', 'timestamp', 'created_at']);
             if ($tsCol) { $cols[] = $tsCol; $types .= 's'; $vals[] = $ts; }
 
             $optional = [
-                'driver_id'         => ['i', $driver_id],
+                'driver_id'         => ['i', $real_driver_id ?: $driver_id],
                 'vin'               => ['s', $_POST['vin'] ?? ''],
                 'event_type'        => ['s', $_POST['event_type'] ?? ''],
                 'severity_level'    => ['s', $_POST['severity_level'] ?? ''],
@@ -64,8 +82,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'file_
                 $event_id = $stmt->insert_id;
                 $stmt->close();
                 // Open a pending review row so an admin must approve it before it
-                // goes live — but only if the Safety_Reviews table exists.
-                if (table_exists($conn, 'Safety_Reviews')) {
+                // goes live — but only if the Safety_Reviews table exists AND we
+                // got a real event id back (avoid an orphaned review on event 0).
+                if ($event_id > 0 && table_exists($conn, 'Safety_Reviews')) {
                     $rev = $conn->prepare(
                         "INSERT INTO Safety_Reviews (event_id, reviewed_by, review_date, comments, recommendations, is_completed)
                          VALUES (?, NULL, NULL, NULL, NULL, 0)"
@@ -101,16 +120,16 @@ $vehicles = $conn->query(
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Smart Fleet Driver Terminal</title>
-<link rel="stylesheet" href="style.css?v=khang24">
+<link rel="stylesheet" href="style.css">
 </head>
-<body data-greet-name="<?= htmlspecialchars(($driver_name && $driver_name !== 'Driver') ? $driver_name : (strstr($driver_email, '@', true) ?: 'Driver')) ?>">
+<body data-greet-name="<?= h(($driver_name && $driver_name !== 'Driver') ? $driver_name : (strstr($driver_email, '@', true) ?: 'Driver')) ?>">
 
 <div class="header">
   <div class="mark">
     <?= version_switch_plate('DRIVER') ?>
     <div class="titlewrap">
       <h1>Smart Fleet</h1>
-      <span class="sub">Driver &middot; <?= htmlspecialchars($driver_email ?: $driver_name) ?></span>
+      <span class="sub">Driver &middot; <?= h($driver_email ?: $driver_name) ?></span>
     </div>
   </div>
   <div class="meta">
@@ -118,7 +137,7 @@ $vehicles = $conn->query(
   </div>
   <a href="dashboard.php" class="back">Dashboard</a>
   <a href="account.php" class="back">Account</a>
-  <a href="login.php" class="back">End shift</a>
+  <a href="logout.php" class="back">End shift</a>
 </div>
 
 <div id="greet-line"></div>
@@ -136,7 +155,7 @@ $vehicles = $conn->query(
           || (stripos($notice, 'at least') !== false)
           || (stripos($notice, 'try again') !== false);
   ?>
-  <div class="flash <?= $isErr ? 'flash-err' : 'flash-ok' ?>"><?= htmlspecialchars($notice) ?></div>
+  <div class="flash <?= $isErr ? 'flash-err' : 'flash-ok' ?>"><?= h($notice) ?></div>
 <?php endif; ?>
 
 <?php
@@ -178,14 +197,14 @@ $vehicles = $conn->query(
             while ($row = $res->fetch_assoc()) {
                 $driver = trim($row['driver_name'] ?? '');
                 echo "<tr>";
-                echo "<td class='mono'>" . htmlspecialchars($row['vin']) . "</td>";
-                echo "<td class='mono'>" . htmlspecialchars($row['registration_number']) . "</td>";
-                echo "<td>" . htmlspecialchars($row['manufacturer'] . ' ' . $row['model']) . "</td>";
-                echo "<td>" . htmlspecialchars($row['category_name']) . "</td>";
+                echo "<td class='mono'>" . h($row['vin']) . "</td>";
+                echo "<td class='mono'>" . h($row['registration_number']) . "</td>";
+                echo "<td>" . h($row['manufacturer'] . ' ' . $row['model']) . "</td>";
+                echo "<td>" . h($row['category_name']) . "</td>";
                 echo "<td class='num'>" . (int)$row['year_of_manufacture'] . "</td>";
-                echo "<td>" . status_badge($row['operational_status']) . "</td>";
-                echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
-                echo "<td>" . ($driver !== '' ? htmlspecialchars($driver) : "No driver assigned") . "</td>";
+                echo "<td>" . status_badge((string)($row['operational_status'] ?? '')) . "</td>";
+                echo "<td>" . h($row['depot_name']) . "</td>";
+                echo "<td>" . ($driver !== '' ? h($driver) : "No driver assigned") . "</td>";
                 echo "</tr>";
             }
         } else {
@@ -216,8 +235,8 @@ $vehicles = $conn->query(
             while ($row = $res->fetch_assoc()) {
                 echo "<tr>";
                 echo "<td class='mono'>" . (int)$row['depot_id'] . "</td>";
-                echo "<td>" . htmlspecialchars($row['depot_name']) . "</td>";
-                echo "<td>" . htmlspecialchars($locCol ? ($row['location'] ?? '—') : '—') . "</td>";
+                echo "<td>" . h($row['depot_name']) . "</td>";
+                echo "<td>" . h($locCol ? ($row['location'] ?? '—') : '—') . "</td>";
                 echo "</tr>";
             }
         } else {
@@ -234,9 +253,10 @@ $vehicles = $conn->query(
 <div id="content3" class="tab-content">
 
   <div class="docket">
-    <div class="docket-head"><h2>Report a safety event</h2><span class="no">Filing as <?= htmlspecialchars($driver_email ?: $driver_name) ?></span></div>
+    <div class="docket-head"><h2>Report a safety event</h2><span class="no">Filing as <?= h($driver_email ?: $driver_name) ?></span></div>
     <form method="POST" action="driver.php">
       <input type="hidden" name="action" value="file_event">
+      <?= csrf_field() ?>
       <div class="form-row">
         <div class="form-group"><label>Type</label>
           <select name="event_type">
@@ -252,14 +272,14 @@ $vehicles = $conn->query(
         <div class="form-group"><label>Vehicle</label>
           <select name="vin">
             <?php while ($v = $vehicles->fetch_assoc()): ?>
-              <option value="<?= htmlspecialchars($v['vin']) ?>"><?= htmlspecialchars($v['vin'] . ' · ' . $v['manufacturer'] . ' ' . $v['model']) ?></option>
+              <option value="<?= h($v['vin']) ?>"><?= h($v['vin'] . ' · ' . $v['manufacturer'] . ' ' . $v['model']) ?></option>
             <?php endwhile; ?>
           </select>
         </div>
         <div class="form-group"><label>Depot</label>
           <select name="depot_id">
             <?php while ($d = $depots->fetch_assoc()): ?>
-              <option value="<?= (int)$d['depot_id'] ?>"><?= htmlspecialchars($d['depot_name']) ?></option>
+              <option value="<?= (int)$d['depot_id'] ?>"><?= h($d['depot_name']) ?></option>
             <?php endwhile; ?>
           </select>
         </div>
@@ -297,7 +317,8 @@ $vehicles = $conn->query(
             $reviewJoin = $hasReviews ? "LEFT JOIN Safety_Reviews sr ON sr.event_id = te.event_id" : "";
 
             // Only filter by this driver if the table records driver_id.
-            $where = $hasDriverCol ? "WHERE te.driver_id = " . (int)$driver_id : "";
+            $filterId = $real_driver_id ?: $driver_id;
+            $where = $hasDriverCol && $filterId > 0 ? "WHERE te.driver_id = " . (int)$filterId : "";
 
             $sql = "SELECT te.event_id, $tsSel, te.event_type, $vinSel, $sevSel, $reviewSel
                     FROM Telematics_Events te
@@ -313,10 +334,10 @@ $vehicles = $conn->query(
                     $label = $done ? "Approved" : "Pending review";
                     echo "<tr>";
                     echo "<td class='mono'>" . (int)$row['event_id'] . "</td>";
-                    echo "<td class='mono'>" . htmlspecialchars($row['ts'] ?: '—') . "</td>";
-                    echo "<td>" . htmlspecialchars($row['event_type']) . "</td>";
-                    echo "<td class='mono'>" . htmlspecialchars($row['vin'] ?: '—') . "</td>";
-                    echo "<td>" . htmlspecialchars($row['severity_level'] ?: '—') . "</td>";
+                    echo "<td class='mono'>" . h($row['ts'] ?: '—') . "</td>";
+                    echo "<td>" . h($row['event_type']) . "</td>";
+                    echo "<td class='mono'>" . h($row['vin'] ?: '—') . "</td>";
+                    echo "<td>" . h($row['severity_level'] ?: '—') . "</td>";
                     echo "<td><span class='mk $mk'>$label</span></td>";
                     echo "</tr>";
                 }

@@ -23,10 +23,14 @@ $acctId = (int)($_SESSION['account_id'] ?? 0);
 $displayEmail = $_SESSION['email'] ?? '';
 $notice = "";
 
-/* Handle the two POST actions. */
+/* Handle the two POST actions. Both are guarded by a CSRF token check first,
+ * the same way login.php / admin.php protect their writes — changing or
+ * resetting a password is sensitive, so it must not be forgeable. */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
-    if ($action === 'change_password') {
+    if (!csrf_verify($_POST['csrf'] ?? null)) {
+        $notice = "Your session expired. Please refresh and try again.";
+    } elseif ($action === 'change_password') {
         if ($acctId > 0) {
             [$ok, $notice] = change_password(
                 $conn, 'Accounts', 'account_id', $acctId,
@@ -67,7 +71,7 @@ $home = [
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Smart Fleet Account</title>
-<link rel="stylesheet" href="style.css?v=khang24">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 

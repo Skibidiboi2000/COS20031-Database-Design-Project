@@ -83,15 +83,39 @@ body{
  * radio — does NOT scroll the page back to the top. A fixed element is always
  * in the viewport, so the browser has nothing to scroll to. */
 .tab-input{position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none}
+.lg-defs{position:absolute;width:0;height:0;overflow:hidden}
+/* Liquid Glass segmented control. Base layer = glassmorphism (works
+ * everywhere). On Chrome/Edge an SVG displacement filter is layered on top to
+ * actually bend the page behind the bar (refraction/lensing). */
 .tabs{
   display:inline-flex;gap:2px;margin:0 0 32px;
-  background:#E9E9EC;border-radius:980px;padding:3px;
+  background:rgba(240,240,245,.82);
+  -webkit-backdrop-filter:blur(14px) saturate(180%);
+  backdrop-filter:blur(14px) saturate(180%);
+  border:.5px solid rgba(255,255,255,.55);
+  border-radius:980px;padding:3px;
+  box-shadow:0 1px 1px rgba(255,255,255,.7) inset, 0 8px 24px rgba(0,0,0,.08);
   position:sticky;top:76px;z-index:20;
+  isolation:isolate;overflow:hidden;
+}
+/* Specular highlight: a bright sheen arcing across the top edge — the
+ * "illumination" layer of Liquid Glass. Sits above the glass, below content. */
+.tabs::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,0) 45%),
+    radial-gradient(120% 80% at 30% 0%, rgba(255,255,255,.5), rgba(255,255,255,0) 60%);
+  mix-blend-mode:screen;
+}
+/* Chrome/Edge: add the real refraction pass on the backdrop. */
+@supports (backdrop-filter:url(#liquid-glass)){
+  .tabs{-webkit-backdrop-filter:url(#liquid-glass) blur(2px) saturate(160%);backdrop-filter:url(#liquid-glass) blur(2px) saturate(160%)}
 }
 .tabs label{
-  text-align:center;padding:7px 20px;cursor:pointer;transition:.2s;border-radius:980px;
+  text-align:center;padding:7px 20px;cursor:pointer;border-radius:980px;
   font-size:13px;font-weight:500;color:var(--ink-2);
-  display:inline-flex;align-items:center;gap:7px;
+  display:inline-flex;align-items:center;gap:7px;position:relative;
+  transition:color .2s ease, background .2s ease, box-shadow .3s ease;
 }
 .tab-ico{display:inline-flex;width:16px;height:16px}
 .tab-ico svg{width:100%;height:100%}
@@ -99,12 +123,17 @@ body{
 .tab-content{display:none}
 .tab-content.on{display:block}
 
+/* Active pill: a brighter shard of glass with its own top-edge highlight. */
 #tab1:checked~.tabs label[for="tab1"],
 #tab2:checked~.tabs label[for="tab2"],
 #tab3:checked~.tabs label[for="tab3"],
 #tab4:checked~.tabs label[for="tab4"],
 #tab5:checked~.tabs label[for="tab5"],
-#tab6:checked~.tabs label[for="tab6"]{color:var(--ink);background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+#tab6:checked~.tabs label[for="tab6"]{
+  color:var(--ink);
+  background:linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.78));
+  box-shadow:0 1px 0 rgba(255,255,255,.95) inset, 0 2px 6px rgba(0,0,0,.12), 0 0 0 .5px rgba(255,255,255,.6);
+}
 /* When a tab is selected its panel appears AND replays a fade+slide, so every
  * tab switch animates — not just the first page load. */
 #tab1:checked~#content1,
@@ -211,6 +240,12 @@ tbody tr:hover td:last-child{background:var(--surface-3)}
 .action-btn:hover{background:#E8E8ED}
 .action-btn.del{margin-right:0;color:var(--stop)}
 .action-btn.del:hover{background:var(--stop-wash)}
+/* Review queue: its two action forms are direct children of the cell; make
+ * them inline-block so Approve + Delete sit side by side on one line.
+ * (The Vehicles action cell wraps its forms in .act, so it isn't affected.) */
+td > form{display:inline-block;vertical-align:middle}
+/* Never let the Approve/Delete pair wrap onto two lines. */
+td:has(> form){white-space:nowrap}
 
 /* Status pill — a wash-filled badge with matching text, muted like Apple's. */
 .badge{
@@ -309,6 +344,8 @@ tbody tr:hover td:last-child{background:var(--surface-3)}
 }
 .link-back:hover{text-decoration:underline}
 .field-error{margin-top:8px;font-size:13px;color:var(--stop);letter-spacing:-.016em}
+/* Muted "(optional)" hint next to a form label. */
+.opt{color:var(--ink-3);font-weight:400;font-size:.9em;letter-spacing:0}
 
 /* Account page tabs */
 #auth-login:checked~.role-tabs label[for="auth-login"],
@@ -565,6 +602,11 @@ body.asc .col-bar{border-radius:4px 4px 0 0}
 /* ============ ACCESSIBILITY / MOTION ============ *//* Apple focus ring: 2px accent outline, 1px offset (close to the edge). */
 :focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* Reduced transparency: fall back to a solid rail (Apple does the same). */
+@media (prefers-reduced-transparency:reduce){
+  .tabs{background:#E9E9EC;-webkit-backdrop-filter:none;backdrop-filter:none}
+  .tabs::before{display:none}
+}
 
 /* ============ PRINT ============ */
 @media print{

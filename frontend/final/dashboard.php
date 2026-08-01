@@ -62,16 +62,17 @@ function events_by_month(mysqli $conn): array {
     $ts = find_column($conn, 'Telematics_Events', ['times_tamp', 'event_timestamp', 'timestamp', 'created_at']);
     if ($ts === null) return [];
     try {
+        // The stored timestamps are TEXT like "1/4/2026" (M/D/YYYY), so DATE_FORMAT
+        // can't group them. Pull the raw values and bucket them in PHP instead.
         $out = [];
-        $res = $conn->query(
-            "SELECT DATE_FORMAT(`$ts`, '%Y-%m') AS k, COUNT(*) AS n
-             FROM Telematics_Events
-             WHERE `$ts` IS NOT NULL
-             GROUP BY k ORDER BY k ASC LIMIT 12");
+        $res = $conn->query("SELECT `$ts` AS v FROM Telematics_Events WHERE `$ts` IS NOT NULL");
         while ($res && $row = $res->fetch_assoc()) {
-            if ($row['k'] !== null) $out[(string)$row['k']] = (int)$row['n'];
+            $t = strtotime((string)$row['v']);
+            if ($t === false) continue;
+            $out[date('Y-m', $t)] = ($out[date('Y-m', $t)] ?? 0) + 1;
         }
-        return $out;
+        ksort($out);
+        return array_slice($out, -12, 12, true);
     } catch (mysqli_sql_exception $e) { return []; }
 }
 
@@ -207,10 +208,15 @@ $byEventType = group_counts($conn, 'Telematics_Events', ['event_type', 'type']);
 $eventsMonth = events_by_month($conn);
 
 // Fleet utilization: how many vehicles are "in service" (Available/Active).
-$activeVehicles = count_where($conn, 'Vehicles', "operational_status IN ('Available','Active')");
+// Detect the real status column name so this works across schemas.
+$statusCol = find_column($conn, 'Vehicles', ['operational_status', 'status']);
+$activeVehicles = $statusCol
+    ? count_where($conn, 'Vehicles', "`$statusCol` IN ('Available','Active')")
+    : 0;
 
 // Pending safety reviews awaiting an admin.
 $pendingReviews = count_where($conn, 'Safety_Reviews', "is_completed = 0");
+if (!table_exists($conn, 'Safety_Reviews')) $pendingReviews = 0;
 
 /* ============================================================
  * Widget access per role. A widget shows only if the role is listed.
@@ -233,7 +239,7 @@ $home = [
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Smart Fleet Dashboard</title>
-<link rel="stylesheet" href="style.css?v=khang24">
+<link rel="stylesheet" href="style.css">
 </head>
 <body class="asc role-<?= htmlspecialchars($viewRole) ?>">
 
@@ -348,7 +354,7 @@ $home = [
 
 </div>
 <div id="chart-tip" class="chart-tip" hidden></div>
-<script src="motion.js?v=khang24"></script>
-<script src="dashboard.js?v=khang24"></script>
+<script src="motion.js"></script>
+<script src="dashboard.js"></script>
 </body>
 </html>
