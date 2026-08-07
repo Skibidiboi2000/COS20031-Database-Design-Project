@@ -27,3 +27,19 @@ COS20031-Database-Design-Project/
 ├── [Certifications_DATA.csv](Certifications_DATA.csv)        # 6 certifications
 └── [Vehicle_Categories_DATA.csv](Vehicle_Categories_DATA.csv) # 5 vehicle categories
 ```
+## Getting around our website:
+The user will be met with a login screen upon accessing the website, one for the customer role, one for staff role (drivers and mechanics) and one for admin
+There is also an interface where the user can create an account in order to see some public data being displayed within the website.
+### Customers' interface
+This role will be able to access information such as driver list, vehicle list and depot list, but limited to read-only permission
+### Staffs' interface
+Staffs have a separated website interface where they can see information such as driver, vehicle as well as depots. Mechanics however, can also see some reports. Limited to read-only permission
+### Admins' interface
+This interface where granted all permissions (Create, Read, Update and Delete). Admin can assign a driver to a vehicle, register a new vehicle or driver, add a new depot and approve or decline a report ticket. It also include a dashboard tab where the admin can see summaries of drivers, vehicles by depot and such helpful queries in the form of graphs.
+### Other noticeable features
+- Protected from SQL Injections
+- Password hashing
+- Optimized database
+- Expandable dashboards on admin interface
+- Personally customized greetings based on roles and names on the top of the page
+- Smooth animations
