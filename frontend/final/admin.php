@@ -401,16 +401,19 @@ $stat_mechanics = count_rows($conn, 'Mechanics');
         // LEFT JOIN on Drivers so vehicles with no driver still appear.
         // GROUP BY v.vin collapses any accidental duplicate join rows to one per vehicle.
         $res = $conn->query(
-          "SELECT v.vin, v.registration_number, v.manufacturer, v.model, MIN(vc.category_name) AS category_name,
-                  v.year_of_manufacture, v.operational_status, MIN(d.depot_name) AS depot_name,
-                  v.driver_id,
-                  MIN(TRIM(CONCAT(COALESCE(dr.first_name,''), ' ', COALESCE(dr.last_name,'')))) AS driver_name
-           FROM Vehicles v
-           JOIN Vehicle_Categories vc ON v.category_id = vc.category_id
-           JOIN Depots d ON v.current_depot_id = d.depot_id
-           LEFT JOIN Drivers dr ON v.driver_id = dr.driver_id
-           GROUP BY v.vin, v.registration_number, v.manufacturer, v.model, v.year_of_manufacture, v.operational_status, v.driver_id
-           ORDER BY v.vin");
+          "SELECT v.vin, v.registration_number, v.manufacturer, v.model,
+          vc.category_name,
+          v.year_of_manufacture, v.operational_status,
+          d.depot_name,
+          va.driver_id,
+          TRIM(CONCAT(COALESCE(dr.first_name,''), ' ', COALESCE(dr.last_name,''))) AS driver_name
+          FROM Vehicles v
+          JOIN Vehicle_Categories vc ON v.category_id = vc.category_id
+          JOIN Depots d ON v.current_depot_id = d.depot_id
+          LEFT JOIN Vehicle_Assignments va
+          ON v.vin = va.vin AND va.unassigned_at IS NULL
+          LEFT JOIN Drivers dr ON va.driver_id = dr.driver_id
+          ORDER BY v.vin");
         if ($res && $res->num_rows > 0) {
           // Build driver <option> list once, reused per row.
           $driverOptions = "";

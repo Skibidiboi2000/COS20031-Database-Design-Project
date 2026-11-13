@@ -19,9 +19,9 @@
 // over the remote IP instead of using the loopback.
 mysqli_report(MYSQLI_REPORT_OFF); // handle connect failure ourselves, don't throw
 
-$DB_USER = 'admin';
-$DB_PASS = '1234';
-$DB_NAME = 'SmartFleetProject';
+$DB_USER = 'root';
+$DB_PASS = '';
+$DB_NAME = 'smart_fleet';
 $DB_HOSTS = ['127.0.0.1', '100.98.213.61']; // local loopback first, remote fallback
 
 $conn = null;

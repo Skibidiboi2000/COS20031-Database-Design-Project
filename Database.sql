@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS sample;
-CREATE DATABASE sample;
-USE sample;
+DROP DATABASE IF EXISTS smart_fleet;
+CREATE DATABASE smart_fleet;
+USE smart_fleet;
 
 CREATE TABLE Depots (
     depot_id INT AUTO_INCREMENT NOT NULL,
@@ -8,6 +8,18 @@ CREATE TABLE Depots (
     location VARCHAR(255) NOT NULL,
     
     PRIMARY KEY (depot_id)
+);
+
+CREATE TABLE Accounts (
+    account_id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'driver', 'mechanic', 'customer')
+        NOT NULL DEFAULT 'customer',
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE Vehicle_categories (
