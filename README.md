@@ -45,12 +45,6 @@ This interface where granted all permissions (Create, Read, Update and Delete). 
 - Smooth animations
 ## Website Link
 https://professionals-strategic-calls-charges.trycloudflare.com/login.php?fbclid=IwY2xjawTi2B5wZG9mA2V4dG4DYWVtAjExAHNydGMGYXBwX2lkATAAAR4km5F_84HmdMamO5RyT4rH57vAcbUSaqcefs4n1XvVDodtlFC-vz-z8CJ8zw_aem_4ZunOnyu6Ssc-ai9QFbclA
-### Admin Access
-vuduyanh20012@gmail.com
-huynhphanyuki@gmail.com
-giakhangdao2704@gmail.com
-gkhang121951@gmail.com
-Password: 1
 ### How to use 
 Follow these instructions to set up and run the Smart Fleet Management System locally using XAMPP.
 
